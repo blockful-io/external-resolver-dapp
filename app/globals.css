@@ -31,3 +31,9 @@ body {
     text-wrap: balance;
   }
 }
+
+.text-gradient-ens {
+  background-image: linear-gradient(330deg, #44BCF0 4.54%, #7298F8 59.2%, #A099FF 148.85%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
