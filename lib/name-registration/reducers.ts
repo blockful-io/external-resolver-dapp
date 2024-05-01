@@ -4,10 +4,12 @@ import { RegistrationStep } from "./constants";
 
 export interface NameRegistrationData {
   currentRegistrationStep: RegistrationStep;
+  myData: null;
 }
 
 export const nameRegistrationInitialState: NameRegistrationData = {
   currentRegistrationStep: RegistrationStep.RegistrationYears,
+  myData: null,
 };
 
 const nameRegistrationReducer = (

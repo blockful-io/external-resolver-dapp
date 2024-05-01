@@ -1,10 +1,11 @@
 import { SVGProps } from "react";
 
-export const Forms = (props: SVGProps<SVGSVGElement>) => {
+export const HomepageBg = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
+      className="absolute w-full h-full px-6 pt-10"
       viewBox="0 0 1175 515"
       fill="none"
     >
