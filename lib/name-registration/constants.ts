@@ -8,3 +8,16 @@ export enum RegistrationStep {
   Register = "Register",
   Registered = "Registered",
 }
+
+export enum RegistrationBlock {
+  DomainSettings = "DomainSettings",
+  RequestToRegister = "RequestToRegister",
+  RegisterDomain = "RegisterDomain",
+  Registered = "Registered",
+}
+
+export interface ProgressBlockTabStep {
+  title: string;
+  subtitle: string;
+  registrationBlock: RegistrationBlock;
+}
