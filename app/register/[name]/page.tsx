@@ -2,7 +2,38 @@
 
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { isAction } from "redux";
+
+export enum RegistrationBlock {
+  DomainSettings = "DomainSettings",
+  RequestToRegister = "RequestToRegister",
+  RegisterDomain = "RegisterDomain",
+  Registered = "Registered",
+}
+
+export const getRegistrationStepBlock = (
+  step: RegistrationStep
+): RegistrationBlock => {
+  switch (step) {
+    case RegistrationStep.RegistrationYears:
+    case RegistrationStep.PrimaryName:
+    case RegistrationStep.ENSResolver:
+      return RegistrationBlock.DomainSettings;
+
+    case RegistrationStep.RequestToRegister:
+    case RegistrationStep.WaitingRegistrationLocktime:
+    case RegistrationStep.NameSecuredToBeRegistered:
+      return RegistrationBlock.RequestToRegister;
+
+    case RegistrationStep.Register:
+      return RegistrationBlock.RegisterDomain;
+
+    case RegistrationStep.Registered:
+      return RegistrationBlock.Registered;
+
+    default:
+      throw new Error("Invalid registration step");
+  }
+};
 
 export default function RegisterNamePage() {
   const { nameRegistrationData, setCurrentRegistrationStep } =
@@ -18,9 +49,11 @@ export default function RegisterNamePage() {
               title={step.title}
               subtitle={step.subtitle}
               stepNumber={index + 1}
+              registrationBlock={step.registrationBlock}
               key={step.title}
-              // TODO: review this logic
-              isActive={index === 0}
+              currentRegistrationBlock={getRegistrationStepBlock(
+                nameRegistrationData.currentRegistrationStep
+              )}
             />
           );
         })}
@@ -47,6 +80,20 @@ export default function RegisterNamePage() {
         >
           Set as Primary Name
         </button>
+        <button
+          className="m-3 p-3 bg-white border border-gray-300 rounded-md text-black"
+          onClick={() =>
+            setCurrentRegistrationStep(RegistrationStep.RequestToRegister)
+          }
+        >
+          Set Request to register
+        </button>
+        <button
+          className="m-3 p-3 bg-white border border-gray-300 rounded-md text-black"
+          onClick={() => setCurrentRegistrationStep(RegistrationStep.Register)}
+        >
+          Set to register
+        </button>
       </div>
     </div>
   );
@@ -55,29 +102,46 @@ export default function RegisterNamePage() {
 interface ProgressStep {
   title: string;
   subtitle: string;
+  registrationBlock: RegistrationBlock;
 }
 
 const progressSteps: ProgressStep[] = [
-  { title: "Domain settings", subtitle: "Customize name preferences" },
-  { title: "Request to register", subtitle: "Commit to avoid front-running" },
-  { title: "Register domain", subtitle: "Registration transcation" },
+  {
+    title: "Domain settings",
+    subtitle: "Customize name preferences",
+    registrationBlock: RegistrationBlock.DomainSettings,
+  },
+  {
+    title: "Request to register",
+    subtitle: "Commit to avoid front-running",
+    registrationBlock: RegistrationBlock.RequestToRegister,
+  },
+  {
+    title: "Register domain",
+    subtitle: "Registration transcation",
+    registrationBlock: RegistrationBlock.RegisterDomain,
+  },
 ];
 
 interface ProgressComponentProps extends ProgressStep {
   stepNumber: number;
-  isActive: boolean;
+  currentRegistrationBlock: RegistrationBlock;
 }
 
 const ProgressComponent = ({
   title,
   subtitle,
   stepNumber,
-  isActive,
+  registrationBlock,
+  currentRegistrationBlock,
 }: ProgressComponentProps) => {
+  console.log("registrationBlock ", registrationBlock);
+  console.log("currentRegistrationBlock ", currentRegistrationBlock);
+  const isActive = registrationBlock === currentRegistrationBlock;
   return (
     <div className="flex gap-3 items-center justify-center">
       <div
-        className={`w-8 h-8 flex items-center justify-center rounded-full ${
+        className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 ${
           isActive ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-400"
         }`}
       >
@@ -85,7 +149,7 @@ const ProgressComponent = ({
       </div>
       <div className="flex flex-col">
         <h3
-          className={`text-sm  ${
+          className={`text-sm transition-all duration-200  ${
             isActive ? "font-bold text-blue-500" : "font-normal text-black"
           }`}
         >
