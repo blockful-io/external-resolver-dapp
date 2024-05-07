@@ -1,6 +1,6 @@
 import { Button, WalletSVG } from "@ensdomains/thorin";
 
-export const Header = () => {
+export const DappHeader = () => {
   return (
     <div className="w-full h-20 bg-white px-6 flex justify-between items-center shadow-sm">
       <div className="flex items-center justify-center gap-2.5">

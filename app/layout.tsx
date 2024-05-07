@@ -7,7 +7,7 @@ import { ThorinGlobalStyles, lightTheme } from "../lib/thorin";
 import { ThemeProvider } from "../lib/styled-components";
 import { Provider } from "react-redux";
 import nameRegistrationStore from "@/lib/store";
-import { Header } from "@/components/01-atoms/Header";
+import { DappHeader } from "@/components/01-atoms/DappHeader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
         <ThorinGlobalStyles />
         <html lang="en">
           <body className={`${inter.className} h-screen flex flex-col`}>
-            <Header />
+            <DappHeader />
             <main className="relative z-10 h-full flex-grow">{children}</main>
           </body>
         </html>
