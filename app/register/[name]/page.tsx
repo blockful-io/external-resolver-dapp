@@ -1,6 +1,6 @@
 "use client";
 
-import { HomepageBg } from "@/components/01-atoms/HomepageBg";
+import ProgressBlock from "@/components/02-molecules/ProgressBlock";
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 
@@ -9,9 +9,10 @@ export default function RegisterNamePage() {
     useNameRegistration();
 
   return (
-    <div className="text-black flex relative h-screen flex-col items-center justify-center bg-white p-4 overflow-clip">
-      <HomepageBg />
-      <div className="z-10 pt-20 mx-auto text-center">
+    <div className="text-black flex h-full flex-col items-center justify-start bg-white">
+      <div className="w-full h-1 neon-effect bg-blue-500" />
+      <ProgressBlock />
+      <div className="z-10 mx-auto text-center py-10  px-[60px] h-full">
         <h1 className="mb-5 text-xl font-semibold">Register Name Page</h1>
         <p className="mb-10">
           currentRegistrationStep:{" "}
@@ -32,6 +33,20 @@ export default function RegisterNamePage() {
           }
         >
           Set as Primary Name
+        </button>
+        <button
+          className="m-3 p-3 bg-white border border-gray-300 rounded-md text-black"
+          onClick={() =>
+            setCurrentRegistrationStep(RegistrationStep.RequestToRegister)
+          }
+        >
+          Set Request to register
+        </button>
+        <button
+          className="m-3 p-3 bg-white border border-gray-300 rounded-md text-black"
+          onClick={() => setCurrentRegistrationStep(RegistrationStep.Register)}
+        >
+          Set to register
         </button>
       </div>
     </div>
