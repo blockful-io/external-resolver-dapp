@@ -1,6 +1,7 @@
 "use client";
 
 import ProgressBlock from "@/components/02-molecules/ProgressBlock";
+import RegistrationBody from "@/components/02-molecules/RegistrationBody";
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 
@@ -14,6 +15,7 @@ export default function RegisterNamePage() {
       <ProgressBlock />
       <div className="z-10 mx-auto text-center py-10  px-[60px] h-full">
         <h1 className="mb-5 text-xl font-semibold">Register Name Page</h1>
+        <RegistrationBody />
         <p className="mb-10">
           currentRegistrationStep:{" "}
           {nameRegistrationData.currentRegistrationStep}
