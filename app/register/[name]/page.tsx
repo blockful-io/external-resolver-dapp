@@ -1,7 +1,9 @@
 "use client";
 
 import ProgressBlock from "@/components/02-molecules/ProgressBlock";
+import RegistrationBody from "@/components/02-molecules/RegistrationBody";
 import RegistrationSummary from "@/components/02-molecules/RegistrationSummary";
+
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 
@@ -13,8 +15,11 @@ export default function RegisterNamePage() {
     <div className="text-black flex h-full flex-col items-center justify-start bg-white">
       <div className="w-full h-1 neon-effect bg-blue-500" />
       <ProgressBlock />
+
       <div className="z-10 mx-auto text-center py-10  px-[60px] h-full flex items-start">
         <div className="w-1/2">
+          <RegistrationBody />
+
           <h1 className="mb-5 text-xl font-semibold">Register Name Page</h1>
           <p className="mb-10">
             currentRegistrationStep:{" "}
