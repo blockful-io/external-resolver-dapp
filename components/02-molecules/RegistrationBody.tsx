@@ -23,7 +23,7 @@ export default function RegistrationBody() {
     const stepKeys = Object.keys(RegistrationStep) as Array<
       keyof typeof RegistrationStep
     >;
-    const currentIndex = stepKeys.indexOf(currentStep as any);
+    const currentIndex = stepKeys.indexOf(currentStep);
     const nextStep = stepKeys[currentIndex + 1] || stepKeys[0];
     setCurrentRegistrationStep(RegistrationStep[nextStep]);
   };
@@ -32,7 +32,7 @@ export default function RegistrationBody() {
     const stepKeys = Object.keys(RegistrationStep) as Array<
       keyof typeof RegistrationStep
     >;
-    const currentIndex = stepKeys.indexOf(currentStep as any);
+    const currentIndex = stepKeys.indexOf(currentStep);
     const previousStep =
       currentIndex > 0
         ? stepKeys[currentIndex - 1]
@@ -46,7 +46,7 @@ export default function RegistrationBody() {
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
       />
-      <div className="flex gap-4 items-center justify-center mt-4">
+      <div className="flex gap-4 items-center justify-start mt-4">
         <button onClick={handlePreviousStep} className="p-4 bg-blue-50">
           Previous Step
         </button>
