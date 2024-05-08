@@ -18,10 +18,9 @@ export default function RegistrationYearsComponent({
       <BackButton onClick={handlePreviousStep} />
 
       <div className="max-w-[500px] w-full flex flex-col gap-7">
-        <Typography fontVariant="extraLargeBold">
+        <Typography className="text-start" fontVariant="extraLargeBold">
           How many years do you want to register this domain?
         </Typography>
-
         <div className="flex">
           <div className="flex justify-between items-center border border-gray-200 rounded-[8px]">
             <div className="p-4 border-r border-gray-200">
