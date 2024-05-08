@@ -26,9 +26,9 @@ export default function PrimaryNameComponent({
       <BackButton onClick={handlePreviousStep} />
 
       <div className="max-w-[500px] w-full flex items-start flex-col gap-7">
-        <Typography className="text-start" fontVariant="extraLargeBold">
+        <h3 className="text-start text-[34px] font-medium">
           Do you want to use this domain as your primary name?
-        </Typography>
+        </h3>
 
         <div className="flex gap-3">
           <div
