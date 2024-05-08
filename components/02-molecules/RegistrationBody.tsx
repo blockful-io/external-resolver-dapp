@@ -46,14 +46,6 @@ export default function RegistrationBody() {
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
       />
-      <div className="flex gap-4 items-center justify-start mt-4">
-        <button onClick={handlePreviousStep} className="p-4 bg-blue-50">
-          Previous Step
-        </button>
-        <button onClick={handleNextStep} className="p-4 bg-blue-50">
-          Next Step
-        </button>
-      </div>
     </div>
   );
 }
