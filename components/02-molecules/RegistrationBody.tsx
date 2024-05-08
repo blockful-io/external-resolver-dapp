@@ -23,7 +23,7 @@ export default function RegistrationBody() {
     const stepKeys = Object.keys(RegistrationStep) as Array<
       keyof typeof RegistrationStep
     >;
-    const currentIndex = stepKeys.indexOf(currentStep as any);
+    const currentIndex = stepKeys.indexOf(currentStep);
     const nextStep = stepKeys[currentIndex + 1] || stepKeys[0];
     setCurrentRegistrationStep(RegistrationStep[nextStep]);
   };
@@ -32,7 +32,7 @@ export default function RegistrationBody() {
     const stepKeys = Object.keys(RegistrationStep) as Array<
       keyof typeof RegistrationStep
     >;
-    const currentIndex = stepKeys.indexOf(currentStep as any);
+    const currentIndex = stepKeys.indexOf(currentStep);
     const previousStep =
       currentIndex > 0
         ? stepKeys[currentIndex - 1]
