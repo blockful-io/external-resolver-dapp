@@ -2,14 +2,14 @@
 
 import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
-import { Typography, PlusSVG, MinusSVG } from "@ensdomains/thorin";
+import { PlusSVG, MinusSVG } from "@ensdomains/thorin";
 
 interface RegistrationYearsComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-export default function RegistrationYearsComponent({
+export function RegistrationYearsComponent({
   handlePreviousStep,
   handleNextStep,
 }: RegistrationYearsComponentProps) {

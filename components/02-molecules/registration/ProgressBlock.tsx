@@ -6,7 +6,7 @@ import {
 } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { getRegistrationStepBlock } from "@/lib/name-registration/utils";
-import ProgressBlockTabComponent from "../01-atoms/ProgressBlockTab";
+import ProgressBlockTabComponent from "../../01-atoms/ProgressBlockTab";
 
 export default function ProgressBlock() {
   const { nameRegistrationData } = useNameRegistration();

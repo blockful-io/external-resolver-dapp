@@ -10,7 +10,7 @@ const EthIcon = (props: SVGProps<SVGSVGElement>) => {
       fill="none"
       {...props}
     >
-      <g clip-path="url(#clip0_8498_2099)">
+      <g clipPath="url(#clip0_8498_2099)">
         <path
           d="M7.36609 0L7.20508 0.546928V16.4161L7.36609 16.5767L14.7322 12.2225L7.36609 0Z"
           fill="#343434"

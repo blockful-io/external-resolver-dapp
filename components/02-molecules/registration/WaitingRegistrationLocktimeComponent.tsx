@@ -6,7 +6,7 @@ interface WaitingRegistrationLocktimeComponentProps {
   handleNextStep: () => void;
 }
 
-export default function WaitingRegistrationLocktimeComponent({
+export function WaitingRegistrationLocktimeComponent({
   handlePreviousStep,
   handleNextStep,
 }: WaitingRegistrationLocktimeComponentProps) {

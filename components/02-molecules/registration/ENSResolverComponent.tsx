@@ -14,7 +14,7 @@ interface ENSResolverComponentProps {
   handleNextStep: () => void;
 }
 
-export default function ENSResolverComponent({
+export function ENSResolverComponent({
   handlePreviousStep,
   handleNextStep,
 }: ENSResolverComponentProps) {
@@ -23,9 +23,12 @@ export default function ENSResolverComponent({
   const radioButtonRefArbitrum = useRef(null);
   const radioButtonRefOptimism = useRef(null);
 
-  const handleDivClick = (radioRef: React.RefObject<HTMLInputElement>) => {
+  const handleENSResolverSelection = (
+    radioRef: React.RefObject<HTMLInputElement>
+  ) => {
     radioRef?.current?.click();
   };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -39,7 +42,7 @@ export default function ENSResolverComponent({
         </Typography>
         <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
           <div
-            onClick={() => handleDivClick(radioButtonRefMainnet)}
+            onClick={() => handleENSResolverSelection(radioButtonRefMainnet)}
             className="flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200"
           >
             <div>
@@ -56,7 +59,7 @@ export default function ENSResolverComponent({
             </div>
           </div>
           <div
-            onClick={() => handleDivClick(radioButtonRefDatabase)}
+            onClick={() => handleENSResolverSelection(radioButtonRefDatabase)}
             className="flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200"
           >
             <div>
@@ -73,8 +76,8 @@ export default function ENSResolverComponent({
             </div>
           </div>
 
-          <div
-            onClick={() => handleDivClick(radioButtonRefArbitrum)}
+          <button
+            onClick={() => handleENSResolverSelection(radioButtonRefArbitrum)}
             className="flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200"
           >
             <div>
@@ -89,10 +92,10 @@ export default function ENSResolverComponent({
               <ArbitrumIcon className="h-6 w-6" />
               Arbitrum
             </div>
-          </div>
+          </button>
 
           <div
-            onClick={() => handleDivClick(radioButtonRefOptimism)}
+            onClick={() => handleENSResolverSelection(radioButtonRefOptimism)}
             className="flex cursor-pointer items-center gap-4 p-3"
           >
             <div>

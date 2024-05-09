@@ -6,7 +6,7 @@ interface NameSecuredToBeRegisteredComponentProps {
   handleNextStep: () => void;
 }
 
-export default function NameSecuredToBeRegisteredComponent({
+export function NameSecuredToBeRegisteredComponent({
   handlePreviousStep,
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) {

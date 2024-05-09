@@ -10,7 +10,7 @@ interface PrimaryNameComponentProps {
   handleNextStep: () => void;
 }
 
-export default function PrimaryNameComponent({
+export function PrimaryNameComponent({
   handlePreviousStep,
   handleNextStep,
 }: PrimaryNameComponentProps) {

@@ -9,7 +9,7 @@ interface RequestToRegisterComponentProps {
   handleNextStep: () => void;
 }
 
-export default function RequestToRegisterComponent({
+export function RequestToRegisterComponent({
   handlePreviousStep,
   handleNextStep,
 }: RequestToRegisterComponentProps) {

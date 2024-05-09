@@ -6,7 +6,7 @@ interface RegisterComponentProps {
   handleNextStep: () => void;
 }
 
-export default function RegisterComponent({
+export function RegisterComponent({
   handlePreviousStep,
   handleNextStep,
 }: RegisterComponentProps) {
