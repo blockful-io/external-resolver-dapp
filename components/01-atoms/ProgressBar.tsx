@@ -11,7 +11,7 @@ export const ProgressBar = () => {
   return (
     <div className="w-full relative h-1 bg-gray-200">
       <div
-        className={`absolute w-1/2 h-full bg-blue-500 transition-all duration-200 neon-effect`}
+        className="absolute w-1/2 h-full bg-blue-500 transition-all duration-200 neon-effect"
         style={{ width: `${progressPercentage}%` }}
       ></div>
     </div>
