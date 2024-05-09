@@ -1,5 +1,3 @@
-"use client";
-
 import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
 import { Button, WalletSVG } from "@ensdomains/thorin";

@@ -2,7 +2,7 @@
 
 import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
-import { RadioButton, Typography } from "@ensdomains/thorin";
+import { RadioButton } from "@ensdomains/thorin";
 import { useRef } from "react";
 
 interface PrimaryNameComponentProps {
