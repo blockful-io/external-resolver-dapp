@@ -1,6 +1,6 @@
 import { CurrencyToggle, Typography } from "@ensdomains/thorin";
-import CartIcon from "../01-atoms/icons/cart-icon";
-import InfoCircleIcon from "../01-atoms/icons/info-circle";
+import CartIcon from "../../01-atoms/icons/cart-icon";
+import InfoCircleIcon from "../../01-atoms/icons/info-circle";
 
 export default function RegistrationSummary() {
   return (

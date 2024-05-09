@@ -2,14 +2,16 @@
 
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import RegistrationYearsComponent from "./registration/RegistrationYearsComponent";
-import PrimaryNameComponent from "./registration/PrimaryNameComponent";
-import ENSResolverComponent from "./registration/ENSResolverComponent";
-import RequestToRegisterComponent from "./registration/RequestToRegisterComponent";
-import WaitingRegistrationLocktimeComponent from "./registration/WaitingRegistrationLocktimeComponent";
-import NameSecuredToBeRegisteredComponent from "./registration/NameSecuredToBeRegisteredComponent";
-import RegisterComponent from "./registration/RegisterComponent";
-import RegisteredComponent from "./registration/RegisteredComponent";
+import {
+  ENSResolverComponent,
+  NameSecuredToBeRegisteredComponent,
+  PrimaryNameComponent,
+  RegisterComponent,
+  RegisteredComponent,
+  RegistrationYearsComponent,
+  RequestToRegisterComponent,
+  WaitingRegistrationLocktimeComponent,
+} from ".";
 
 export default function RegistrationBody() {
   const { nameRegistrationData, setCurrentRegistrationStep } =
@@ -42,15 +44,10 @@ export default function RegistrationBody() {
 
   return (
     <div>
-      <CurrentComponent />
-      <div className="flex gap-4 items-center justify-center mt-4">
-        <button onClick={handlePreviousStep} className="p-4 bg-blue-50">
-          Previous Step
-        </button>
-        <button onClick={handleNextStep} className="p-4 bg-blue-50">
-          Next Step
-        </button>
-      </div>
+      <CurrentComponent
+        handleNextStep={handleNextStep}
+        handlePreviousStep={handlePreviousStep}
+      />
     </div>
   );
 }

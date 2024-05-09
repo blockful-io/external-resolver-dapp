@@ -1,5 +1,28 @@
-export default function WaitingRegistrationLocktimeComponent() {
+import BackButton from "@/components/01-atoms/BackButton";
+import NextButton from "@/components/01-atoms/NextButton";
+
+interface WaitingRegistrationLocktimeComponentProps {
+  handlePreviousStep: () => void;
+  handleNextStep: () => void;
+}
+
+export function WaitingRegistrationLocktimeComponent({
+  handlePreviousStep,
+  handleNextStep,
+}: WaitingRegistrationLocktimeComponentProps) {
   return (
-    <div className="bg-pink-500 p-4">WaitingRegistrationLocktimeComponent</div>
+    <div className="flex flex-col gap-[44px] justify-start items-start">
+      <BackButton onClick={handlePreviousStep} />
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+        <h3 className="text-[72px]">🔒</h3>
+        <h3 className="text-start text-[34px] font-medium">
+          We are securing your domain
+        </h3>
+        <p className="text-gray-500 text-left text-[16px]">
+          Please just wait a few seconds while we do this operation.
+        </p>
+      </div>
+      <NextButton onClick={handleNextStep} />
+    </div>
   );
 }
