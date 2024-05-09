@@ -8,6 +8,7 @@ import { Action } from "redux";
 export enum NameRegistrationAction {
   "model/currentRegistrationStep" = "model/currentRegistrationStep",
   "model/registrationYears" = "model/registrationYears",
+  "model/isPrimaryName" = "model/isPrimaryName",
 }
 
 // Actions
@@ -21,6 +22,11 @@ export const updateCurrentRegistrationStep = (
 export const updateRegistrationYears = (registrationYears: number) => ({
   type: NameRegistrationAction["model/registrationYears"],
   payload: registrationYears,
+});
+
+export const updateIsPrimaryName = (isPrimaryName: boolean) => ({
+  type: NameRegistrationAction["model/isPrimaryName"],
+  payload: isPrimaryName,
 });
 
 /*

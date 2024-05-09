@@ -2,6 +2,7 @@
 
 import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton } from "@ensdomains/thorin";
 import { useRef } from "react";
 
@@ -16,6 +17,10 @@ export function PrimaryNameComponent({
 }: PrimaryNameComponentProps) {
   const radioButtonRefYes = useRef(null);
   const radioButtonRefNo = useRef(null);
+
+  const { nameRegistrationData, setIsPrimaryName } = useNameRegistration();
+
+  const { isPrimaryName } = nameRegistrationData;
 
   const handleDivClick = (radioRef: React.RefObject<HTMLInputElement>) => {
     radioRef?.current?.click();
@@ -36,6 +41,10 @@ export function PrimaryNameComponent({
             onClick={() => handleDivClick(radioButtonRefYes)}
           >
             <RadioButton
+              checked={isPrimaryName}
+              onChange={() => {
+                setIsPrimaryName(true);
+              }}
               ref={radioButtonRefYes}
               label="Yes"
               name="RadioButtonGroup"
@@ -47,6 +56,10 @@ export function PrimaryNameComponent({
             onClick={() => handleDivClick(radioButtonRefNo)}
           >
             <RadioButton
+              checked={!isPrimaryName}
+              onChange={() => {
+                setIsPrimaryName(false);
+              }}
               ref={radioButtonRefNo}
               label="No"
               name="RadioButtonGroup"
