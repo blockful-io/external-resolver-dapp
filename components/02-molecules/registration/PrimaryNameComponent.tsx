@@ -56,7 +56,7 @@ export function PrimaryNameComponent({
             onClick={() => handleDivClick(radioButtonRefNo)}
           >
             <RadioButton
-              checked={!isPrimaryName}
+              checked={isPrimaryName === false}
               onChange={() => {
                 setIsPrimaryName(false);
               }}

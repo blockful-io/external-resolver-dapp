@@ -1,11 +1,11 @@
-"use client";
-
 import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
 import ArbitrumIcon from "@/components/01-atoms/icons/arbitrum";
 import DatabaseIcon from "@/components/01-atoms/icons/database";
 import EthIcon from "@/components/01-atoms/icons/eth";
 import OptimismIcon from "@/components/01-atoms/icons/optimism";
+import { EnsResolver } from "@/lib/name-registration/constants";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton, Typography } from "@ensdomains/thorin";
 import { useRef } from "react";
 
@@ -22,6 +22,10 @@ export function ENSResolverComponent({
   const radioButtonRefDatabase = useRef(null);
   const radioButtonRefArbitrum = useRef(null);
   const radioButtonRefOptimism = useRef(null);
+
+  const { nameRegistrationData, setEnsResolver } = useNameRegistration();
+
+  const { ensResolver } = nameRegistrationData;
 
   const handleENSResolverSelection = (
     radioRef: React.RefObject<HTMLInputElement>
@@ -47,6 +51,10 @@ export function ENSResolverComponent({
           >
             <div>
               <RadioButton
+                checked={ensResolver === EnsResolver.Mainnet}
+                onChange={() => {
+                  setEnsResolver(EnsResolver.Mainnet);
+                }}
                 ref={radioButtonRefMainnet}
                 label=""
                 name="RadioButtonGroup"
@@ -64,6 +72,10 @@ export function ENSResolverComponent({
           >
             <div>
               <RadioButton
+                checked={ensResolver === EnsResolver.Database}
+                onChange={() => {
+                  setEnsResolver(EnsResolver.Database);
+                }}
                 ref={radioButtonRefDatabase}
                 label=""
                 name="RadioButtonGroup"
@@ -82,6 +94,10 @@ export function ENSResolverComponent({
           >
             <div>
               <RadioButton
+                checked={ensResolver === EnsResolver.Arbitrum}
+                onChange={() => {
+                  setEnsResolver(EnsResolver.Arbitrum);
+                }}
                 ref={radioButtonRefArbitrum}
                 label=""
                 name="RadioButtonGroup"
@@ -100,6 +116,10 @@ export function ENSResolverComponent({
           >
             <div>
               <RadioButton
+                checked={ensResolver === EnsResolver.Optimism}
+                onChange={() => {
+                  setEnsResolver(EnsResolver.Optimism);
+                }}
                 ref={radioButtonRefOptimism}
                 label=""
                 name="RadioButtonGroup"

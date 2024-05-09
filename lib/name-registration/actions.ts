@@ -1,7 +1,7 @@
 /* eslint-disable import/named */
 import { RootState } from "../store";
 import { ThunkAction } from "redux-thunk";
-import { RegistrationStep } from "./constants";
+import { EnsResolver, RegistrationStep } from "./constants";
 import { Action } from "redux";
 
 // Action types
@@ -9,6 +9,7 @@ export enum NameRegistrationAction {
   "model/currentRegistrationStep" = "model/currentRegistrationStep",
   "model/registrationYears" = "model/registrationYears",
   "model/isPrimaryName" = "model/isPrimaryName",
+  "model/ensResolver" = "model/ensResolver",
 }
 
 // Actions
@@ -27,6 +28,11 @@ export const updateRegistrationYears = (registrationYears: number) => ({
 export const updateIsPrimaryName = (isPrimaryName: boolean) => ({
   type: NameRegistrationAction["model/isPrimaryName"],
   payload: isPrimaryName,
+});
+
+export const updateEnsResolver = (ensResolver: EnsResolver) => ({
+  type: NameRegistrationAction["model/ensResolver"],
+  payload: ensResolver,
 });
 
 /*
