@@ -7,6 +7,7 @@ import { Action } from "redux";
 // Action types
 export enum NameRegistrationAction {
   "model/currentRegistrationStep" = "model/currentRegistrationStep",
+  "model/registrationYears" = "model/registrationYears",
 }
 
 // Actions
@@ -15,6 +16,11 @@ export const updateCurrentRegistrationStep = (
 ) => ({
   type: NameRegistrationAction["model/currentRegistrationStep"],
   payload: currentRegistrationStep,
+});
+
+export const updateRegistrationYears = (registrationYears: number) => ({
+  type: NameRegistrationAction["model/registrationYears"],
+  payload: registrationYears,
 });
 
 /*

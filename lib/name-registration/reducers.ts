@@ -4,11 +4,13 @@ import { RegistrationStep } from "./constants";
 
 export interface NameRegistrationData {
   currentRegistrationStep: RegistrationStep;
+  registrationYears: number;
   myData: null;
 }
 
 export const nameRegistrationInitialState: NameRegistrationData = {
   currentRegistrationStep: RegistrationStep.RegistrationYears,
+  registrationYears: 1,
   myData: null,
 };
 
@@ -24,6 +26,12 @@ const nameRegistrationReducer = (
       return {
         ...state,
         currentRegistrationStep: action.payload,
+      };
+    case NameRegistrationAction["model/registrationYears"]:
+      console.log("aspodkaspid", action);
+      return {
+        ...state,
+        registrationYears: action.payload,
       };
     default:
       return state;

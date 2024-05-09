@@ -1,8 +1,13 @@
 import { CurrencyToggle, Typography } from "@ensdomains/thorin";
 import CartIcon from "../../01-atoms/icons/cart-icon";
 import InfoCircleIcon from "../../01-atoms/icons/info-circle";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 
 export default function RegistrationSummary() {
+  const { nameRegistrationData } = useNameRegistration();
+
+  const { registrationYears } = nameRegistrationData;
+
   return (
     <div className="w-[474px] border border-gray-200 rounded-[12px] flex flex-col overflow-hidden">
       <div className="p-6 border-b border-gray-200 flex flex-col items-start gap-6">
@@ -27,7 +32,9 @@ export default function RegistrationSummary() {
           <CurrencyToggle />
         </div>
         <div className="flex w-full justify-between items-center">
-          <p>1 year registration</p>
+          <p>
+            {registrationYears} year{registrationYears > 1 && "s"} registration
+          </p>
           <div>$5.00</div>
         </div>
         <div className="flex w-full justify-between items-center">

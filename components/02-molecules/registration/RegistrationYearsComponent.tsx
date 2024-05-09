@@ -1,9 +1,7 @@
-"use client";
-
 import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { PlusSVG, MinusSVG } from "@ensdomains/thorin";
-import { useState } from "react";
 
 interface RegistrationYearsComponentProps {
   handlePreviousStep: () => void;
@@ -14,14 +12,16 @@ export function RegistrationYearsComponent({
   handlePreviousStep,
   handleNextStep,
 }: RegistrationYearsComponentProps) {
-  const [years, setYears] = useState<number>(1);
+  const { nameRegistrationData, setRegistrationYears } = useNameRegistration();
+
+  const { registrationYears } = nameRegistrationData;
 
   const handlePlusButtonClick = () => {
-    setYears(years + 1);
+    setRegistrationYears(registrationYears + 1);
   };
 
   const handleMinusButtonClick = () => {
-    setYears(years - 1);
+    setRegistrationYears(registrationYears - 1);
   };
 
   return (
@@ -35,13 +35,13 @@ export function RegistrationYearsComponent({
         <div className="flex">
           <div className="flex justify-between items-center border border-gray-200 rounded-[8px] overflow-hidden">
             <button
-              disabled={years === 1}
+              disabled={registrationYears === 1}
               onClick={handleMinusButtonClick}
               className="p-4 border-r border-gray-200 hover:bg-gray-50"
             >
               <MinusSVG className="w-3 h-3 text-gray-500" />
             </button>
-            <div className="w-[120px]">{years}</div>
+            <div className="w-[120px]">{registrationYears}</div>
             <button
               onClick={handlePlusButtonClick}
               className="p-4 border-l border-gray-200 hover:bg-gray-50"
