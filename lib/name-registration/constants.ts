@@ -21,3 +21,10 @@ export interface ProgressBlockTabStep {
   subtitle: string;
   registrationBlock: RegistrationBlock;
 }
+
+export enum EnsResolver {
+  Mainnet = "Mainnet",
+  Database = "Database",
+  Arbitrum = "Arbitrum",
+  Optimism = "Optimism",
+}
