@@ -5,8 +5,8 @@ export const ProgressBar = () => {
   const { nameRegistrationData } = useNameRegistration();
 
   const currentStep = nameRegistrationData.currentRegistrationStep;
-  const barNumber = steps.indexOf(currentStep) + 1;
-  const progressPercentage = (barNumber / (steps.length - 1)) * 100;
+  const stepIndex = steps.indexOf(currentStep) + 1;
+  const progressPercentage = (stepIndex / (steps.length - 1)) * 100;
 
   return (
     <div className="w-full relative h-1 bg-gray-200">
@@ -18,13 +18,4 @@ export const ProgressBar = () => {
   );
 };
 
-const steps = [
-  RegistrationStep.RegistrationYears,
-  RegistrationStep.PrimaryName,
-  RegistrationStep.ENSResolver,
-  RegistrationStep.RequestToRegister,
-  RegistrationStep.WaitingRegistrationLocktime,
-  RegistrationStep.NameSecuredToBeRegistered,
-  RegistrationStep.Register,
-  RegistrationStep.Registered,
-];
+const steps = Object.values(RegistrationStep);
