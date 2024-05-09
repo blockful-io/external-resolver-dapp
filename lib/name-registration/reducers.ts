@@ -32,19 +32,16 @@ const nameRegistrationReducer = (
         currentRegistrationStep: action.payload,
       };
     case NameRegistrationAction["model/registrationYears"]:
-      console.log("aspodkaspid", action);
       return {
         ...state,
         registrationYears: action.payload,
       };
     case NameRegistrationAction["model/isPrimaryName"]:
-      console.log("aspodkaspid", action);
       return {
         ...state,
         isPrimaryName: action.payload,
       };
     case NameRegistrationAction["model/ensResolver"]:
-      console.log("aspodkaspid", action);
       return {
         ...state,
         ensResolver: action.payload,
