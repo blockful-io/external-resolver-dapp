@@ -1,4 +1,3 @@
-import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { PlusSVG, MinusSVG } from "@ensdomains/thorin";
@@ -9,7 +8,6 @@ interface RegistrationYearsComponentProps {
 }
 
 export function RegistrationYearsComponent({
-  handlePreviousStep,
   handleNextStep,
 }: RegistrationYearsComponentProps) {
   const { nameRegistrationData, setRegistrationYears } = useNameRegistration();

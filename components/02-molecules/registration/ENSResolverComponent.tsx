@@ -134,7 +134,7 @@ export function ENSResolverComponent({
         </div>
       </div>
 
-      <NextButton onClick={handleNextStep} />
+      <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
     </div>
   );
 }
