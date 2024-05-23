@@ -29,7 +29,7 @@ export default function RegisterNamePage() {
           <div className="h-[50px] w-full" />
           <div className="flex flex-col gap-1">
             <div className="text-[26px]">{name}</div>
-            <p className="text-[16px] text-gray-400">
+            <p className="text-base text-gray-400">
               Cool Cats is a collection of 9,999 randomly generated and
               stylistically curated NFTs.
             </p>
