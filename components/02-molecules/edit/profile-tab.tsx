@@ -1,10 +1,17 @@
 "use client";
 
+import { Field, Tab } from "@/types/editTypes";
 import { Input, Textarea } from "@ensdomains/thorin";
 import Image from "next/image";
 import React from "react";
+import { useFields } from "./FieldsContext";
+
+const fields: Field[] = [{ label: "Website", value: "asd" }];
 
 const ProfileTab = () => {
+  const { fields, addField, updateField } = useFields();
+  const profileFields = fields[Tab.Profile];
+
   return (
     <div className="w-full">
       <div className="w-full h-[120px] bg-gradient-ens rounded-[12px] flex items-end justify-center">
@@ -18,12 +25,17 @@ const ProfileTab = () => {
       </div>
       <div className="flex flex-col gap-4">
         <div className="h-6 w-full"></div>
-        <Input
-          clearable
-          label="Website"
-          placeholder="https://coolcats.com"
-          type="text"
-        />
+        {profileFields.map((field, index) => (
+          <Input
+            key={field.label}
+            clearable
+            label={field.label}
+            placeholder={field.placeholder}
+            type={"text"}
+            value={field.value}
+            onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
+          />
+        ))}
         <Textarea
           clearable
           label="Description"
