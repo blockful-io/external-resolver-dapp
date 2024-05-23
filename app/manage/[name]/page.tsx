@@ -1,13 +1,36 @@
 "use client";
 
+import PencilIcon from "@/components/01-atoms/icons/pencil-icon";
+import AccountsTab from "@/components/02-molecules/accounts-tab";
+import AddressesTab from "@/components/02-molecules/addresses-tab";
+import OthersTab from "@/components/02-molecules/others-tab";
+import ProfileTab from "@/components/02-molecules/profile-tab";
 import Table from "@/components/02-molecules/table";
-import { LeftChevronSVG } from "@ensdomains/thorin";
+import { Button, LeftChevronSVG, Modal } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState } from "react";
+
+enum Tab {
+  Profile,
+  Accounts,
+  Addresses,
+  Others,
+}
+
+const tabComponents: Record<Tab, React.FC> = {
+  [Tab.Profile]: ProfileTab,
+  [Tab.Accounts]: AccountsTab,
+  [Tab.Addresses]: AddressesTab,
+  [Tab.Others]: OthersTab,
+};
 
 export default function RegisterNamePage() {
   const params = useParams();
   const name = params.name;
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(Tab.Profile);
+  const CurrentComponent = tabComponents[selectedTab];
 
   return (
     <div className="text-black flex h-full flex-col items-center justify-start bg-white">
@@ -44,9 +67,106 @@ export default function RegisterNamePage() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-[1216px] py-10">
+      <div className="w-full max-w-[1216px] py-10 flex flex-col gap-4">
+        <div className="w-full flex justify-between items-center">
+          <h3 className="text-[22px]">Profile records</h3>
+          <div>
+            <Button
+              onClick={() => {
+                setModalOpen(true);
+              }}
+              size="small"
+              prefix={<PencilIcon />}
+            >
+              Edit
+            </Button>
+          </div>
+        </div>
+        <div></div>
         <Table />
       </div>
+      <Modal
+        open={modalOpen}
+        onDismiss={() => {
+          setModalOpen(false);
+        }}
+      >
+        <div className="w-[480px] border rounded-[12px] overflow-hidden">
+          <div className="border-b border-gray-200">
+            <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b">
+              Edit Records
+            </div>
+            <div className="flex justify-around w-full bg-white">
+              <button
+                onClick={() => {
+                  setSelectedTab(Tab.Profile);
+                }}
+                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
+                  selectedTab === Tab.Profile
+                    ? "text-blue-500 border-blue-500"
+                    : "text-gray-500 border-gray-200"
+                }`}
+              >
+                Profile
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedTab(Tab.Accounts);
+                }}
+                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
+                  selectedTab === Tab.Accounts
+                    ? "text-blue-500 border-blue-500"
+                    : "text-gray-500 border-gray-200"
+                }`}
+              >
+                Accounts
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedTab(Tab.Addresses);
+                }}
+                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
+                  selectedTab === Tab.Addresses
+                    ? "text-blue-500 border-blue-500"
+                    : "text-gray-500 border-gray-200"
+                }`}
+              >
+                Addresses
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedTab(Tab.Others);
+                }}
+                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
+                  selectedTab === Tab.Others
+                    ? "text-blue-500 border-blue-500"
+                    : "text-gray-500 border-gray-200"
+                }`}
+              >
+                Others
+              </button>
+            </div>
+            <div className="w-full h-[448px] bg-white overflow-y-scroll p-6">
+              <CurrentComponent />
+            </div>
+          </div>
+          <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+            <div>
+              <Button
+                colorStyle="greySecondary"
+                onClick={() => {
+                  setModalOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+            <div>
+              <Button>Save</Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
