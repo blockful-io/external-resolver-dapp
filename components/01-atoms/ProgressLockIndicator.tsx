@@ -50,7 +50,7 @@ const ProgressLockIndicator = ({ timerDone }: ProgressLockIndicatorProps) => {
           timerDone ? "opacity-100" : "opacity-0"
         }`}
       >
-        <p className="text-[72px]">✅</p>
+        <p className="text-7xl">✅</p>
       </div>
     </div>
   );
