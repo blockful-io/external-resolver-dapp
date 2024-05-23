@@ -1,10 +1,10 @@
 "use client";
 
 import PencilIcon from "@/components/01-atoms/icons/pencil-icon";
-import AccountsTab from "@/components/02-molecules/accounts-tab";
-import AddressesTab from "@/components/02-molecules/addresses-tab";
-import OthersTab from "@/components/02-molecules/others-tab";
-import ProfileTab from "@/components/02-molecules/profile-tab";
+import AccountsTab from "@/components/02-molecules/edit/accounts-tab";
+import AddressesTab from "@/components/02-molecules/edit/addresses-tab";
+import OthersTab from "@/components/02-molecules/edit/others-tab";
+import ProfileTab from "@/components/02-molecules/edit/profile-tab";
 import Table from "@/components/02-molecules/table";
 import { Button, LeftChevronSVG, Modal } from "@ensdomains/thorin";
 import Link from "next/link";
