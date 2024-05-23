@@ -27,7 +27,7 @@ const Table = () => {
   ];
 
   return (
-    <div className="rounded-[8px] border border-gray-200 overflow-hidden">
+    <div className="rounded-lg border border-gray-200 overflow-hidden">
       <table className="w-full bg-white">
         <thead className="bg-gray-50">
           <tr>
