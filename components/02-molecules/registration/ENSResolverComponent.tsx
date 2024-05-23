@@ -53,7 +53,7 @@ export function ENSResolverComponent({
               className="flex items-center justify-center gap-1"
             >
               <ExternalLinkIcon className="w-3 h-3" />
-              <p className="text-blue-500 text-[14px]">Learn more</p>
+              <p className="text-blue-500 text-sm">Learn more</p>
             </a>
           </div>
         </div>
