@@ -1,8 +1,14 @@
+"use client";
+
 import { ListUpSVG } from "@ensdomains/thorin";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import React from "react";
 
 const Table = () => {
+  const router = useRouter();
+
   const data = [
     {
       domain: "coolcats.eth",
@@ -26,6 +32,10 @@ const Table = () => {
     },
   ];
 
+  const handleRowClick = (href: string) => {
+    router.push(href);
+  };
+
   return (
     <div className="rounded-lg border border-gray-200 overflow-hidden">
       <table className="w-full bg-white">
@@ -45,9 +55,10 @@ const Table = () => {
           {data.map((item, index) => (
             <tr
               key={index}
-              className="hover:bg-gray-100 transition-colors duration-200"
+              onClick={() => handleRowClick(`/manage/${item.domain}`)}
+              className="hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
             >
-              <td className="py-2 px-4 border-b align-middle cursor-pointer">
+              <td className="py-2 px-4 border-b align-middle">
                 <div className="flex items-center">
                   <Image
                     width={32}
