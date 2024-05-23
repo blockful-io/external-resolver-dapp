@@ -1,9 +1,10 @@
 import { Input, Button } from "@ensdomains/thorin";
 import React from "react";
 import { useFields, Tab } from "./FieldsContext";
+import AddCustomTextRecord from "./AddCustomTextRecord";
 
 const AccountsTab: React.FC = () => {
-  const { fields, addField, updateField } = useFields();
+  const { fields, updateField } = useFields();
   const accountsFields = fields[Tab.Accounts];
 
   return (
@@ -20,7 +21,7 @@ const AccountsTab: React.FC = () => {
             onChange={(e) => updateField(Tab.Accounts, index, e.target.value)}
           />
         ))}
-        <Button onClick={() => addField(Tab.Accounts)}>Add Field</Button>
+        <AddCustomTextRecord tab={Tab.Accounts} />
       </div>
     </div>
   );

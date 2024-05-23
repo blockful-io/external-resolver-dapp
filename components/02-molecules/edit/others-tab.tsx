@@ -3,6 +3,7 @@
 import { Button, Input } from "@ensdomains/thorin";
 import React from "react";
 import { Tab, useFields } from "./FieldsContext";
+import AddCustomTextRecord from "./AddCustomTextRecord";
 
 const OthersTab = () => {
   const { fields, addField, updateField } = useFields();
@@ -22,7 +23,7 @@ const OthersTab = () => {
             onChange={(e) => updateField(Tab.Others, index, e.target.value)}
           />
         ))}
-        <Button onClick={() => addField(Tab.Others)}>Add Field</Button>
+        <AddCustomTextRecord tab={Tab.Others} />
       </div>
     </div>
   );

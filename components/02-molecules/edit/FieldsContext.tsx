@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface FieldsContextType {
   fields: Record<Tab, Field[]>;
-  addField: (tab: Tab) => void;
+  addField: (tab: Tab, fieldName: string) => void;
   updateField: (tab: Tab, index: number, newValue: string) => void;
 }
 
@@ -32,9 +32,9 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     ],
   });
 
-  const addField = (tab: Tab) => {
+  const addField = (tab: Tab, fieldName: string) => {
     const newField: Field = {
-      label: `Field ${fields[tab].length + 1}`,
+      label: fieldName,
       placeholder: "",
       value: "",
     };
