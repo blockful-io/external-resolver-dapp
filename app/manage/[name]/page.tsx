@@ -17,7 +17,7 @@ export default function RegisterNamePage() {
             href="/manage"
             className="flex items-center justify-center flex-shrink text-white gap-2"
           >
-            <LeftChevronSVG /> <p>Back to black</p>
+            <LeftChevronSVG /> <p>Back</p>
           </Link>
         </div>
       </div>
