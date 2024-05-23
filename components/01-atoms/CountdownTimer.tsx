@@ -40,7 +40,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
           cy="50"
         />
         <circle
-          className={`text-blue-500 transition-all duration-1000 ease-linear`}
+          className="text-blue-500 transition-all duration-1000 ease-linear"
           strokeWidth="10"
           strokeDasharray={dashArray}
           stroke="currentColor"
