@@ -8,7 +8,7 @@ const ProgressLockIndicator = ({ timerDone }: ProgressLockIndicatorProps) => {
   return (
     <div className="relative w-[180px] h-[180px]">
       <svg
-        className={`animate-spin text-blue-500 h-full w-full`}
+        className="animate-spin text-blue-500 h-full w-full"
         viewBox="0 0 50 50"
         xmlns="http://www.w3.org/2000/svg"
       >
