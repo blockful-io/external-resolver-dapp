@@ -62,7 +62,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
           timerDone ? "opacity-100" : "opacity-0"
         }`}
       >
-        <p className="text-[72px]">✅</p>
+        <p className="text-7xl">✅</p>
       </div>
     </div>
   );
