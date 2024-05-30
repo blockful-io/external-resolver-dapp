@@ -69,7 +69,7 @@ export function PrimaryNameComponent({
         </div>
       </div>
 
-      <NextButton onClick={handleNextStep} />
+      <NextButton disabled={isPrimaryName === null} onClick={handleNextStep} />
     </div>
   );
 }

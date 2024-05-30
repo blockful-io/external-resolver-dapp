@@ -3,6 +3,7 @@ import NextButton from "@/components/01-atoms/NextButton";
 import ArbitrumIcon from "@/components/01-atoms/icons/arbitrum";
 import DatabaseIcon from "@/components/01-atoms/icons/database";
 import EthIcon from "@/components/01-atoms/icons/eth";
+import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import OptimismIcon from "@/components/01-atoms/icons/optimism";
 import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
@@ -38,12 +39,25 @@ export function ENSResolverComponent({
       <BackButton onClick={handlePreviousStep} />
 
       <div className="max-w-[500px] w-full flex items-start flex-col gap-7">
-        <h3 className="text-start text-[34px] font-medium">
-          Where do you want to store the domain data?
-        </h3>
-        <Typography className="text-start" fontVariant="small">
-          What are the differences?
-        </Typography>
+        <div className="flex flex-col gap-3">
+          <h3 className="text-start text-[34px] font-medium">
+            Where do you want to store the domain data?
+          </h3>
+          <div className="flex gap-2">
+            <Typography className="text-start" fontVariant="small">
+              What are the differences?
+            </Typography>
+            <a
+              target="_blank"
+              href="https://docs.ens.domains/resolvers/quickstart"
+              className="flex items-center justify-center gap-1"
+            >
+              <ExternalLinkIcon className="w-3 h-3" />
+              <p className="text-blue-500 text-sm">Learn more</p>
+            </a>
+          </div>
+        </div>
+
         <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
           <div
             onClick={() => handleENSResolverSelection(radioButtonRefMainnet)}
@@ -134,7 +148,7 @@ export function ENSResolverComponent({
         </div>
       </div>
 
-      <NextButton onClick={handleNextStep} />
+      <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
     </div>
   );
 }

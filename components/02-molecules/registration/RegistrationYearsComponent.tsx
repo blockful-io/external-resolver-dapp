@@ -1,4 +1,3 @@
-import BackButton from "@/components/01-atoms/BackButton";
 import NextButton from "@/components/01-atoms/NextButton";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { PlusSVG, MinusSVG } from "@ensdomains/thorin";
@@ -9,7 +8,6 @@ interface RegistrationYearsComponentProps {
 }
 
 export function RegistrationYearsComponent({
-  handlePreviousStep,
   handleNextStep,
 }: RegistrationYearsComponentProps) {
   const { nameRegistrationData, setRegistrationYears } = useNameRegistration();
@@ -26,8 +24,6 @@ export function RegistrationYearsComponent({
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
-      <BackButton onClick={handlePreviousStep} />
-
       <div className="max-w-[500px] w-full flex flex-col gap-7">
         <h3 className="text-start text-[34px] font-medium">
           How many years do you want to register this domain?
