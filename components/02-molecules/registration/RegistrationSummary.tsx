@@ -1,12 +1,14 @@
 import { CurrencyToggle, Tag, Typography } from "@ensdomains/thorin";
-import CartIcon from "../../01-atoms/icons/cart-icon";
-import InfoCircleIcon from "../../01-atoms/icons/info-circle";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { EnsResolver } from "@/lib/name-registration/constants";
-import ArbitrumIcon from "@/components/01-atoms/icons/arbitrum";
-import EthIcon from "@/components/01-atoms/icons/eth";
-import DatabaseIcon from "@/components/01-atoms/icons/database";
-import OptimismIcon from "@/components/01-atoms/icons/optimism";
+import {
+  ArbitrumIcon,
+  CartIcon,
+  DatabaseIcon,
+  EthIcon,
+  InfoCircleIcon,
+  OptimismIcon,
+} from "@/components/01-atoms";
 
 export default function RegistrationSummary() {
   const { nameRegistrationData } = useNameRegistration();
@@ -15,7 +17,7 @@ export default function RegistrationSummary() {
     nameRegistrationData;
 
   return (
-    <div className="w-[474px] border border-gray-200 rounded-[12px] flex flex-col overflow-hidden">
+    <div className="w-[474px] border border-gray-200 rounded-xl flex flex-col overflow-hidden">
       <div className="p-6 border-b border-gray-200 flex flex-col items-start gap-6">
         <Typography fontVariant="extraLarge">Registration summary</Typography>
         <div className="w-full flex justify-between items-center">
@@ -40,7 +42,7 @@ export default function RegistrationSummary() {
       </div>
       <div className="p-6 flex flex-col gap-5 border-b border-gray-200">
         <div className="flex w-full justify-between items-center">
-          <div className="px-4 py-3 bg-gray-50 rounded-[8px] gap-2 flex items-center justify-center border-gray-200 border">
+          <div className="px-4 py-3 bg-gray-50 rounded-lg gap-2 flex items-center justify-center border-gray-200 border">
             <InfoCircleIcon />
             <div>
               <p className="text-gray-400 text-sm font-semibold">65 gwei</p>

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import React from "react";
 
-const Table = () => {
+export const Table = () => {
   const router = useRouter();
 
   const data = [
@@ -93,5 +93,3 @@ const Table = () => {
     </div>
   );
 };
-
-export default Table;

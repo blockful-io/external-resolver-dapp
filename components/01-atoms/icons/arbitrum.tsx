@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 
-const ArbitrumIcon = (props: SVGProps<SVGSVGElement>) => {
+export const ArbitrumIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -33,5 +33,3 @@ const ArbitrumIcon = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
-
-export default ArbitrumIcon;

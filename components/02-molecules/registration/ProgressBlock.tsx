@@ -1,12 +1,12 @@
 "use client";
 
+import { ProgressBlockTabComponent } from "@/components/01-atoms";
 import {
   ProgressBlockTabStep,
   RegistrationBlock,
 } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { getRegistrationStepBlock } from "@/lib/name-registration/utils";
-import ProgressBlockTabComponent from "../../01-atoms/ProgressBlockTab";
 
 export default function ProgressBlock() {
   const { nameRegistrationData } = useNameRegistration();

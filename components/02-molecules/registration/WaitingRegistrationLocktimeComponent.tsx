@@ -1,6 +1,4 @@
-import BackButton from "@/components/01-atoms/BackButton";
-import CountdownTimer from "@/components/01-atoms/CountdownTimer";
-import NextButton from "@/components/01-atoms/NextButton";
+import { BackButton, NextButton } from "@/components/01-atoms";
 import ProgressLockIndicator from "@/components/01-atoms/ProgressLockIndicator";
 import { useEffect, useState } from "react";
 

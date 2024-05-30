@@ -5,7 +5,7 @@ interface NextButtonProps {
   disabled?: boolean;
 }
 
-const NextButton = ({ onClick, disabled = false }: NextButtonProps) => {
+export const NextButton = ({ onClick, disabled = false }: NextButtonProps) => {
   return (
     <div>
       <Button onClick={onClick} disabled={disabled}>
@@ -17,5 +17,3 @@ const NextButton = ({ onClick, disabled = false }: NextButtonProps) => {
     </div>
   );
 };
-
-export default NextButton;

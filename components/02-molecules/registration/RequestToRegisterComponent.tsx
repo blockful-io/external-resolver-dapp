@@ -1,5 +1,4 @@
-import BackButton from "@/components/01-atoms/BackButton";
-import NextButton from "@/components/01-atoms/NextButton";
+import { BackButton, NextButton } from "@/components/01-atoms";
 import { Button, WalletSVG } from "@ensdomains/thorin";
 
 interface RequestToRegisterComponentProps {

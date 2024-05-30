@@ -1,10 +1,12 @@
-import BackButton from "@/components/01-atoms/BackButton";
-import NextButton from "@/components/01-atoms/NextButton";
-import ArbitrumIcon from "@/components/01-atoms/icons/arbitrum";
-import DatabaseIcon from "@/components/01-atoms/icons/database";
-import EthIcon from "@/components/01-atoms/icons/eth";
+import {
+  ArbitrumIcon,
+  BackButton,
+  DatabaseIcon,
+  EthIcon,
+  NextButton,
+  OptimismIcon,
+} from "@/components/01-atoms";
 import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
-import OptimismIcon from "@/components/01-atoms/icons/optimism";
 import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton, Typography } from "@ensdomains/thorin";

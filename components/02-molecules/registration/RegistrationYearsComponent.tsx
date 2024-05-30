@@ -1,4 +1,4 @@
-import NextButton from "@/components/01-atoms/NextButton";
+import { NextButton } from "@/components/01-atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { PlusSVG, MinusSVG } from "@ensdomains/thorin";
 
@@ -29,7 +29,7 @@ export function RegistrationYearsComponent({
           How many years do you want to register this domain?
         </h3>
         <div className="flex">
-          <div className="flex justify-between items-center border border-gray-200 rounded-[8px] overflow-hidden">
+          <div className="flex justify-between items-center border border-gray-200 rounded-lg overflow-hidden">
             <button
               disabled={registrationYears === 1}
               onClick={handleMinusButtonClick}
