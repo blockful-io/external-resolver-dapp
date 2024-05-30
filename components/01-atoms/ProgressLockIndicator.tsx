@@ -8,7 +8,7 @@ const ProgressLockIndicator = ({ timerDone }: ProgressLockIndicatorProps) => {
   return (
     <div className="relative w-[180px] h-[180px]">
       <svg
-        className={`animate-spin text-blue-500 h-full w-full`}
+        className="animate-spin text-blue-500 h-full w-full"
         viewBox="0 0 50 50"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -43,14 +43,14 @@ const ProgressLockIndicator = ({ timerDone }: ProgressLockIndicatorProps) => {
           timerDone ? "opacity-0" : "opacity-100"
         }`}
       >
-        <p className="text-[72px]">🔒</p>
+        <p className="text-7xl">🔒</p>
       </div>
       <div
         className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
           timerDone ? "opacity-100" : "opacity-0"
         }`}
       >
-        <p className="text-[72px]">✅</p>
+        <p className="text-7xl">✅</p>
       </div>
     </div>
   );
