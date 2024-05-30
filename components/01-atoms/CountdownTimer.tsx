@@ -6,7 +6,7 @@ interface CountdownTimerProps {
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [dashArray, setDashArray] = useState("283");
+  const [remainingCircumference, setRemainingCircumference] = useState("283");
 
   const timerDone = timeLeft === 0;
 
@@ -22,7 +22,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
     const fraction = timeLeft / duration;
     const circumference = 2 * Math.PI * 45; // assuming radius 45 for the circle
     const newDashArray = `${fraction * circumference} ${circumference}`;
-    setDashArray(newDashArray);
+    setRemainingCircumference(newDashArray);
   }, [timeLeft, duration]);
 
   return (
@@ -42,7 +42,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
         <circle
           className={`text-blue-500 transition-all duration-1000 ease-linear`}
           strokeWidth="10"
-          strokeDasharray={dashArray}
+          strokeDasharray={remainingCircumference}
           stroke="currentColor"
           fill="transparent"
           r="45"
