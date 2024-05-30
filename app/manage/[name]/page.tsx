@@ -7,12 +7,11 @@ import {
   OthersTab,
   ProfileTab,
   Table,
-} from "@/components/02-molecules";
-import {
   FieldsProvider,
   useFields,
   Tab,
-} from "@/components/02-molecules/edit/FieldsContext";
+} from "@/components/02-molecules";
+
 import { Button, LeftChevronSVG, Modal } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useParams } from "next/navigation";
