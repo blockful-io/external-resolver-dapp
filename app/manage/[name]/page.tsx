@@ -93,7 +93,7 @@ const ManageNamePageContent: React.FC = () => {
           setFields(initialFields);
         }}
       >
-        <div className="w-[480px] border rounded-[12px] overflow-hidden">
+        <div className="w-[480px] border rounded-xl overflow-hidden">
           <div className="border-b border-gray-200">
             <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b">
               Edit Records

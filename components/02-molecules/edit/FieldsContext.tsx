@@ -1,4 +1,4 @@
-import { Field, Tab } from "@/types/editTypes";
+import { Field, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface FieldsContextType {

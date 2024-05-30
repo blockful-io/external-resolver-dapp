@@ -41,7 +41,7 @@ const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
         value={fieldName}
         onChange={(e) => setFieldName(e.target.value)}
       />
-      <div className="flex rounded-[8px] border border-gray-200">
+      <div className="flex rounded-lg border border-gray-200">
         <button
           onClick={() => {
             setButtonType(ButtonType.ADD_RECORD);

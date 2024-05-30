@@ -44,7 +44,7 @@ export function ENSResolverComponent({
         <Typography className="text-start" fontVariant="small">
           What are the differences?
         </Typography>
-        <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
+        <div className="flex flex-col border rounded-lg border-gray-200 w-full">
           <div
             onClick={() => handleENSResolverSelection(radioButtonRefMainnet)}
             className="flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200"

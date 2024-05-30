@@ -32,7 +32,7 @@ export function RegistrationYearsComponent({
           How many years do you want to register this domain?
         </h3>
         <div className="flex">
-          <div className="flex justify-between items-center border border-gray-200 rounded-[8px] overflow-hidden">
+          <div className="flex justify-between items-center border border-gray-200 rounded-lg overflow-hidden">
             <button
               disabled={registrationYears === 1}
               onClick={handleMinusButtonClick}

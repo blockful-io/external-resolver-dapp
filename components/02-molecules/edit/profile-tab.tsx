@@ -1,6 +1,6 @@
 "use client";
 
-import { Tab } from "@/types/editTypes";
+import { Tab } from "@/types/editFieldsTypes";
 import { Input, Textarea } from "@ensdomains/thorin";
 import Image from "next/image";
 import React from "react";
@@ -12,13 +12,13 @@ export const ProfileTab = () => {
 
   return (
     <div className="w-full">
-      <div className="w-full h-[120px] bg-gradient-ens rounded-[12px] flex items-end justify-center">
+      <div className="w-full h-[120px] bg-gradient-ens rounded-xl flex items-end justify-center">
         <Image
           width={80}
           height={80}
           alt="user avatar"
           src="/coolcat.avif"
-          className="rounded-[8px] translate-y-6 border-2 border-white"
+          className="rounded-lg translate-y-6 border-2 border-white"
         />
       </div>
       <div className="flex flex-col gap-4">
@@ -29,7 +29,7 @@ export const ProfileTab = () => {
             clearable
             label={field.label}
             placeholder={field.placeholder}
-            type={"text"}
+            type="text"
             value={field.value}
             onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
           />
