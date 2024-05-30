@@ -1,12 +1,14 @@
 import { CurrencyToggle, Tag, Typography } from "@ensdomains/thorin";
-import CartIcon from "../../01-atoms/icons/cart-icon";
-import InfoCircleIcon from "../../01-atoms/icons/info-circle";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { EnsResolver } from "@/lib/name-registration/constants";
-import ArbitrumIcon from "@/components/01-atoms/icons/arbitrum";
-import EthIcon from "@/components/01-atoms/icons/eth";
-import DatabaseIcon from "@/components/01-atoms/icons/database";
-import OptimismIcon from "@/components/01-atoms/icons/optimism";
+import {
+  ArbitrumIcon,
+  CartIcon,
+  DatabaseIcon,
+  EthIcon,
+  InfoCircleIcon,
+  OptimismIcon,
+} from "@/components/01-atoms";
 
 export default function RegistrationSummary() {
   const { nameRegistrationData } = useNameRegistration();

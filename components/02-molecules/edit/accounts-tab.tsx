@@ -1,9 +1,9 @@
-import { Input, Button } from "@ensdomains/thorin";
+import { Input } from "@ensdomains/thorin";
 import React from "react";
 import { useFields, Tab } from "./FieldsContext";
 import AddCustomTextRecord from "./AddCustomTextRecord";
 
-const AccountsTab: React.FC = () => {
+export const AccountsTab: React.FC = () => {
   const { fields, updateField } = useFields();
   const accountsFields = fields[Tab.Accounts];
 
@@ -26,5 +26,3 @@ const AccountsTab: React.FC = () => {
     </div>
   );
 };
-
-export default AccountsTab;

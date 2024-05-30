@@ -2,16 +2,14 @@
 
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import {
-  ENSResolverComponent,
-  NameSecuredToBeRegisteredComponent,
-  PrimaryNameComponent,
-  RegisterComponent,
-  RegisteredComponent,
-  RegistrationYearsComponent,
-  RequestToRegisterComponent,
-  WaitingRegistrationLocktimeComponent,
-} from ".";
+import { RegistrationYearsComponent } from "./";
+import { PrimaryNameComponent } from "./PrimaryNameComponent";
+import { ENSResolverComponent } from "./ENSResolverComponent";
+import { RequestToRegisterComponent } from "./RequestToRegisterComponent";
+import { WaitingRegistrationLocktimeComponent } from "./WaitingRegistrationLocktimeComponent";
+import { NameSecuredToBeRegisteredComponent } from "./NameSecuredToBeRegisteredComponent";
+import { RegisterComponent } from "./RegisterComponent";
+import { RegisteredComponent } from "./RegisteredComponent";
 
 export default function RegistrationBody() {
   const { nameRegistrationData, setCurrentRegistrationStep } =

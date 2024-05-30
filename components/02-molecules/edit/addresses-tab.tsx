@@ -5,8 +5,8 @@ import React from "react";
 import { Tab, useFields } from "./FieldsContext";
 import AddCustomTextRecord from "./AddCustomTextRecord";
 
-const AddressesTab = () => {
-  const { fields, addField, updateField } = useFields();
+export const AddressesTab = () => {
+  const { fields, updateField } = useFields();
   const addressesFields = fields[Tab.Addresses];
 
   return (
@@ -28,5 +28,3 @@ const AddressesTab = () => {
     </div>
   );
 };
-
-export default AddressesTab;

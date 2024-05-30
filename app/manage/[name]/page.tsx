@@ -2,15 +2,17 @@
 
 import { PencilIcon } from "@/components/01-atoms";
 import {
+  AccountsTab,
+  AddressesTab,
+  OthersTab,
+  ProfileTab,
+  Table,
+} from "@/components/02-molecules";
+import {
   FieldsProvider,
   useFields,
   Tab,
 } from "@/components/02-molecules/edit/FieldsContext";
-import AccountsTab from "@/components/02-molecules/edit/accounts-tab";
-import AddressesTab from "@/components/02-molecules/edit/addresses-tab";
-import OthersTab from "@/components/02-molecules/edit/others-tab";
-import ProfileTab from "@/components/02-molecules/edit/profile-tab";
-import Table from "@/components/02-molecules/table";
 import { Button, LeftChevronSVG, Modal } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useParams } from "next/navigation";

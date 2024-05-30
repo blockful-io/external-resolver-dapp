@@ -1,11 +1,11 @@
 "use client";
 
-import { Button, Input } from "@ensdomains/thorin";
+import { Input } from "@ensdomains/thorin";
 import React from "react";
 import { Tab, useFields } from "./FieldsContext";
 import AddCustomTextRecord from "./AddCustomTextRecord";
 
-const OthersTab = () => {
+export const OthersTab = () => {
   const { fields, addField, updateField } = useFields();
   const othersFields = fields[Tab.Others];
 
@@ -28,5 +28,3 @@ const OthersTab = () => {
     </div>
   );
 };
-
-export default OthersTab;
