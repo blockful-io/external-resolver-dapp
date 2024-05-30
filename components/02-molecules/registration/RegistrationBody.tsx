@@ -2,7 +2,7 @@
 
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { RegistrationYearsComponent } from "./";
+import { RegistrationYearsComponent } from "./RegistrationYearsComponent";
 import { PrimaryNameComponent } from "./PrimaryNameComponent";
 import { ENSResolverComponent } from "./ENSResolverComponent";
 import { RequestToRegisterComponent } from "./RequestToRegisterComponent";
