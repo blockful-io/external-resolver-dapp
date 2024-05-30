@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 
-const DatabaseIcon = (props: SVGProps<SVGSVGElement>) => {
+export const DatabaseIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,5 +25,3 @@ const DatabaseIcon = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
-
-export default DatabaseIcon;

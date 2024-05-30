@@ -5,8 +5,6 @@ import ProgressBlock from "@/components/02-molecules/registration/ProgressBlock"
 import RegistrationBody from "@/components/02-molecules/registration/RegistrationBody";
 import RegistrationSummary from "@/components/02-molecules/registration/RegistrationSummary";
 
-import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-
 export default function RegisterNamePage() {
   return (
     <div className="text-black flex h-full flex-col items-center justify-start bg-white">

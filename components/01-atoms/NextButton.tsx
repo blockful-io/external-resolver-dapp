@@ -4,7 +4,7 @@ interface NextButtonProps {
   onClick: () => void;
 }
 
-const NextButton = ({ onClick }: NextButtonProps) => {
+export const NextButton = ({ onClick }: NextButtonProps) => {
   return (
     <div>
       <Button onClick={onClick}>
@@ -16,5 +16,3 @@ const NextButton = ({ onClick }: NextButtonProps) => {
     </div>
   );
 };
-
-export default NextButton;

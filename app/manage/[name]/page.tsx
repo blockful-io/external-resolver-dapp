@@ -1,6 +1,6 @@
 "use client";
 
-import PencilIcon from "@/components/01-atoms/icons/pencil-icon";
+import { PencilIcon } from "@/components/01-atoms";
 import {
   FieldsProvider,
   useFields,
@@ -31,9 +31,6 @@ const ManageNamePageContent: React.FC = () => {
   const CurrentComponent = tabComponents[selectedTab];
 
   const { fields, initialFields, setInitialFields, setFields } = useFields();
-
-  console.log("fields ", fields);
-  console.log("initialFields ", initialFields);
 
   return (
     <div className="text-black flex h-full flex-col items-center justify-start bg-white">
@@ -91,7 +88,7 @@ const ManageNamePageContent: React.FC = () => {
       <Modal
         open={modalOpen}
         onDismiss={() => {
-          // setFields(initialFields);
+          setFields(initialFields);
         }}
       >
         <div className="w-[480px] border rounded-[12px] overflow-hidden">

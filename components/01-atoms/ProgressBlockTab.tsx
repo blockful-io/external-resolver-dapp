@@ -10,7 +10,7 @@ interface ProgressBlockTabComponentProps extends ProgressBlockTabStep {
   currentRegistrationBlock: RegistrationBlock;
 }
 
-const ProgressBlockTabComponent = ({
+export const ProgressBlockTabComponent = ({
   title,
   subtitle,
   stepNumber,
@@ -42,5 +42,3 @@ const ProgressBlockTabComponent = ({
     </div>
   );
 };
-
-export default ProgressBlockTabComponent;

@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 
-const PencilIcon = (props: SVGProps<SVGSVGElement>) => {
+export const PencilIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,5 +35,3 @@ const PencilIcon = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
-
-export default PencilIcon;

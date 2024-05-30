@@ -4,7 +4,7 @@ interface BackButtonProps {
   onClick: () => void;
 }
 
-const BackButton = ({ onClick }: BackButtonProps) => {
+export const BackButton = ({ onClick }: BackButtonProps) => {
   return (
     <button
       onClick={onClick}
@@ -17,5 +17,3 @@ const BackButton = ({ onClick }: BackButtonProps) => {
     </button>
   );
 };
-
-export default BackButton;
