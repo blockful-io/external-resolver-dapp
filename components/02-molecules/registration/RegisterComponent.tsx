@@ -5,10 +5,10 @@ interface RegisterComponentProps {
   handleNextStep: () => void;
 }
 
-export function RegisterComponent({
+export const RegisterComponent = ({
   handlePreviousStep,
   handleNextStep,
-}: RegisterComponentProps) {
+}: RegisterComponentProps) => {
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -24,4 +24,4 @@ export function RegisterComponent({
       <NextButton onClick={handleNextStep} />
     </div>
   );
-}
+};

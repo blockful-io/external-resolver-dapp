@@ -7,17 +7,19 @@ interface WaitingRegistrationLocktimeComponentProps {
   handleNextStep: () => void;
 }
 
-export function WaitingRegistrationLocktimeComponent({
+const ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME = 60000;
+
+export const WaitingRegistrationLocktimeComponent = ({
   handlePreviousStep,
   handleNextStep,
-}: WaitingRegistrationLocktimeComponentProps) {
+}: WaitingRegistrationLocktimeComponentProps) => {
   const [timerDone, setTimerDone] = useState(false);
 
   // Simulate a delay to demonstrate the transition
   useEffect(() => {
     const timer = setTimeout(() => {
       setTimerDone(true);
-    }, 5000);
+    }, ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME);
 
     return () => clearTimeout(timer);
   }, []);
@@ -39,4 +41,4 @@ export function WaitingRegistrationLocktimeComponent({
       <NextButton onClick={handleNextStep} />
     </div>
   );
-}
+};

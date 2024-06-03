@@ -1,15 +1,22 @@
 /* eslint-disable import/named */
-import { RootState } from "../store";
+import { RootState } from "../globalStore";
 import { ThunkAction } from "redux-thunk";
 import { EnsResolver, RegistrationStep } from "./constants";
 import { Action } from "redux";
+import { ENSName } from "@namehash/ens-utils";
+import { TransactionReceipt } from "viem";
 
 // Action types
 export enum NameRegistrationAction {
+  "controller/namePrice" = "controller/namePrice",
+  "controller/commitTxReceipt" = "controller/commitTxReceipt",
+  "controller/registrationPrice" = "controller/registrationPrice",
+  "controller/estimatedNetworkFee" = "controller/estimatedNetworkFee",
   "model/currentRegistrationStep" = "model/currentRegistrationStep",
   "model/registrationYears" = "model/registrationYears",
-  "model/isPrimaryName" = "model/isPrimaryName",
+  "model/asPrimaryName" = "model/asPrimaryName",
   "model/ensResolver" = "model/ensResolver",
+  "model/name" = "model/name",
 }
 
 // Actions
@@ -25,14 +32,41 @@ export const updateRegistrationYears = (registrationYears: number) => ({
   payload: registrationYears,
 });
 
-export const updateIsPrimaryName = (isPrimaryName: boolean) => ({
-  type: NameRegistrationAction["model/isPrimaryName"],
-  payload: isPrimaryName,
+export const updateIsPrimaryName = (asPrimaryName: boolean) => ({
+  type: NameRegistrationAction["model/asPrimaryName"],
+  payload: asPrimaryName,
 });
 
 export const updateEnsResolver = (ensResolver: EnsResolver) => ({
   type: NameRegistrationAction["model/ensResolver"],
   payload: ensResolver,
+});
+
+export const updateNameToRegister = (nameToRegister: ENSName | null) => ({
+  type: NameRegistrationAction["model/name"],
+  payload: nameToRegister,
+});
+
+export const updateCommitTxReceipt = (
+  txReceipt: TransactionReceipt | null
+) => ({
+  type: NameRegistrationAction["controller/commitTxReceipt"],
+  payload: txReceipt,
+});
+
+export const updateNamePrice = (namePrice: bigint) => ({
+  type: NameRegistrationAction["controller/namePrice"],
+  payload: namePrice,
+});
+
+export const updateEstimatedNetworkFee = (estimatedNetworkFee: bigint) => ({
+  type: NameRegistrationAction["controller/estimatedNetworkFee"],
+  payload: estimatedNetworkFee,
+});
+
+export const updateRegistrationPrice = (registrationPrice: bigint) => ({
+  type: NameRegistrationAction["controller/registrationPrice"],
+  payload: registrationPrice,
 });
 
 /*

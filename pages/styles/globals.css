@@ -33,19 +33,33 @@ body {
 }
 
 .text-gradient-ens {
-  background-image: linear-gradient(330deg, #44BCF0 4.54%, #7298F8 59.2%, #A099FF 148.85%);
+  background-image: linear-gradient(
+    330deg,
+    #44bcf0 4.54%,
+    #7298f8 59.2%,
+    #a099ff 148.85%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-
 @keyframes shimmer {
-  0%, 100% { background-position: -150%; }
-  50% { background-position: 150%; }
+  0%,
+  100% {
+    background-position: -150%;
+  }
+  50% {
+    background-position: 150%;
+  }
 }
 
 .neon-effect {
-  background-image: linear-gradient(90deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.1) 100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0px,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 4s infinite;
 }

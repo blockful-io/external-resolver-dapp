@@ -5,10 +5,10 @@ interface NameSecuredToBeRegisteredComponentProps {
   handleNextStep: () => void;
 }
 
-export function NameSecuredToBeRegisteredComponent({
+export const NameSecuredToBeRegisteredComponent = ({
   handlePreviousStep,
   handleNextStep,
-}: NameSecuredToBeRegisteredComponentProps) {
+}: NameSecuredToBeRegisteredComponentProps) => {
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -25,4 +25,4 @@ export function NameSecuredToBeRegisteredComponent({
       <NextButton onClick={handleNextStep} />
     </div>
   );
-}
+};

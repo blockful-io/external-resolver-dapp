@@ -1,5 +1,3 @@
-"use client";
-
 import { ListUpSVG } from "@ensdomains/thorin";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   EmailIcon,
   GithubIcon,
@@ -31,7 +29,6 @@ import {
   Toggle,
 } from "@ensdomains/thorin";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useState } from "react";
 
 const tabComponents: Record<Tab, React.FC> = {
@@ -41,9 +38,7 @@ const tabComponents: Record<Tab, React.FC> = {
   [Tab.Others]: OthersTab,
 };
 
-const ManageNamePageContent: React.FC = () => {
-  const params = useParams();
-  const name = params.name;
+export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(Tab.Profile);
   const CurrentComponent = tabComponents[selectedTab];
@@ -252,14 +247,24 @@ const ManageNamePageContent: React.FC = () => {
       </Modal>
     </div>
   );
-};
+}
 
-const ManageNamePage: React.FC = () => {
+export async function getServerSideProps({
+  params,
+}: {
+  params: { name: string };
+}) {
+  return {
+    props: {
+      name: params.name,
+    },
+  };
+}
+
+export default function ManageNamePage({ name }: { name: string }) {
   return (
     <FieldsProvider>
-      <ManageNamePageContent />
+      <ManageNamePageContent name={name} />
     </FieldsProvider>
   );
-};
-
-export default ManageNamePage;
+}
