@@ -56,12 +56,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   );
 
   const setInitialFields = (fields: Record<Tab, Field[]>) => {
-    const deepCopiedFields = { ...fields };
+    const deepCopiedFields = structuredClone(fields);
     setInitialFieldsState(deepCopiedFields);
   };
 
   const setFields = (fields: Record<Tab, Field[]>) => {
-    const deepCopiedFields = { ...fields };
+    const deepCopiedFields = structuredClone(fields);
     setFieldsState(deepCopiedFields);
   };
 
