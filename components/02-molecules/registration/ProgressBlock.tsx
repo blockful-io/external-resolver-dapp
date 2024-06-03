@@ -1,5 +1,3 @@
-"use client";
-
 import { ProgressBlockTabComponent } from "@/components/01-atoms";
 import {
   ProgressBlockTabStep,
@@ -8,7 +6,7 @@ import {
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { getRegistrationStepBlock } from "@/lib/name-registration/utils";
 
-export default function ProgressBlock() {
+export const ProgressBlock = () => {
   const { nameRegistrationData } = useNameRegistration();
 
   return (
@@ -29,7 +27,7 @@ export default function ProgressBlock() {
       })}
     </div>
   );
-}
+};
 
 const progressBlockTabSteps: ProgressBlockTabStep[] = [
   {

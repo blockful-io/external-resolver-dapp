@@ -1,5 +1,7 @@
 import { RegistrationBlock, RegistrationStep } from "./constants";
 
+/* NAME REGISTRATION UI RELATED LOGIC ⬇️ */
+
 export const getRegistrationStepBlock = (
   step: RegistrationStep
 ): RegistrationBlock => {

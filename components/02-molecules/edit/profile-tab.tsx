@@ -1,5 +1,3 @@
-"use client";
-
 import { Tab } from "@/types/editFieldsTypes";
 import { Input, Textarea } from "@ensdomains/thorin";
 import Image from "next/image";

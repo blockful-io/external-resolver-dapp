@@ -1,5 +1,3 @@
-"use client";
-
 import { Button, CheckSVG, CrossSVG, Input } from "@ensdomains/thorin";
 import React, { useState } from "react";
 import { Tab, useFields } from "./FieldsContext";

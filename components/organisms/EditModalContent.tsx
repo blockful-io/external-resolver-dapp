@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import {
   AccountsTab,
@@ -14,9 +12,7 @@ import {
   CheckCircleSVG,
   CounterClockwiseArrowSVG,
   InfoCircleSVG,
-  PageButtons,
 } from "@ensdomains/thorin";
-import { Field } from "@/types/editFieldsTypes";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -29,44 +25,6 @@ interface EditModalContentProps {
   closeModal: () => void;
 }
 
-// const getChangedFields = (
-//   currentFields: Record<Tab, Field[]>,
-//   initialFields: Record<Tab, Field[]>
-// ) => {
-//   const changes: Record<
-//     Tab,
-//     { added: Field[]; changed: { index: number; field: Field }[] }
-//   > = {} as Record<
-//     Tab,
-//     { added: Field[]; changed: { index: number; field: Field }[] }
-//   >;
-
-//   Object.entries(currentFields).forEach(([tab, currentTabFields]) => {
-//     const tabKey = tab as unknown as Tab; // Cast the key to the Tab type through unknown
-//     const initialTabFields = initialFields[tabKey] || [];
-
-//     const addedFields = currentTabFields.slice(initialTabFields.length);
-//     const changedFields = currentTabFields
-//       .slice(0, initialTabFields.length)
-//       .map((field, index) => ({
-//         index,
-//         field,
-//       }))
-//       .filter(
-//         ({ field, index }) => field.value !== initialTabFields[index]?.value
-//       );
-
-//     if (addedFields.length > 0 || changedFields.length > 0) {
-//       changes[tabKey] = {
-//         added: addedFields,
-//         changed: changedFields,
-//       };
-//     }
-//   });
-
-//   return changes;
-// };
-
 export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   const [selectedTab, setSelectedTab] = useState(Tab.Profile);
   const [isSaving, setIsSaving] = useState(false);
@@ -74,8 +32,6 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   const CurrentComponent = tabComponents[selectedTab];
 
   const { fields, initialFields, setInitialFields, setFields } = useFields();
-
-  // console.log(getChangedFields(fields, initialFields));
 
   if (recordsEdited) {
     return (
@@ -240,12 +196,7 @@ const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
         </div>
 
         <div className="w-full">
-          <Button
-            onClick={() => {
-              nextStep();
-            }}
-            colorStyle="bluePrimary"
-          >
+          <Button onClick={nextStep} colorStyle="bluePrimary">
             Open Wallet
           </Button>
         </div>
@@ -253,12 +204,7 @@ const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
 
       <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
         <div>
-          <Button
-            colorStyle="greySecondary"
-            onClick={() => {
-              back();
-            }}
-          >
+          <Button colorStyle="greySecondary" onClick={back}>
             Back
           </Button>
         </div>
@@ -279,7 +225,7 @@ const RecordsEdited = ({ back }: RecordsEditedProps) => {
       </div>
 
       <div className="w-full gap-6 flex flex-col items-center justify-center bg-white overflow-y-scroll p-6 border-b border-gray-200">
-        <div className="text-[72px] text-gray-400">🎉</div>
+        <div className="text-7xl text-gray-400">🎉</div>
 
         <div className="flex flex-col items-center gap-1">
           <p className="text-[26px] font-semibold">Records edited!</p>
@@ -291,12 +237,7 @@ const RecordsEdited = ({ back }: RecordsEditedProps) => {
 
       <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
         <div>
-          <Button
-            colorStyle="bluePrimary"
-            onClick={() => {
-              back();
-            }}
-          >
+          <Button colorStyle="bluePrimary" onClick={back}>
             Done
           </Button>
         </div>
@@ -304,3 +245,41 @@ const RecordsEdited = ({ back }: RecordsEditedProps) => {
     </div>
   );
 };
+
+// const getChangedFields = (
+//   currentFields: Record<Tab, Field[]>,
+//   initialFields: Record<Tab, Field[]>
+// ) => {
+//   const changes: Record<
+//     Tab,
+//     { added: Field[]; changed: { index: number; field: Field }[] }
+//   > = {} as Record<
+//     Tab,
+//     { added: Field[]; changed: { index: number; field: Field }[] }
+//   >;
+
+//   Object.entries(currentFields).forEach(([tab, currentTabFields]) => {
+//     const tabKey = tab as unknown as Tab; // Cast the key to the Tab type through unknown
+//     const initialTabFields = initialFields[tabKey] || [];
+
+//     const addedFields = currentTabFields.slice(initialTabFields.length);
+//     const changedFields = currentTabFields
+//       .slice(0, initialTabFields.length)
+//       .map((field, index) => ({
+//         index,
+//         field,
+//       }))
+//       .filter(
+//         ({ field, index }) => field.value !== initialTabFields[index]?.value
+//       );
+
+//     if (addedFields.length > 0 || changedFields.length > 0) {
+//       changes[tabKey] = {
+//         added: addedFields,
+//         changed: changedFields,
+//       };
+//     }
+//   });
+
+//   return changes;
+// };
