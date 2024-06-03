@@ -17,7 +17,7 @@ export const NameSecuredToBeRegisteredComponent = ({
         <h3 className="text-start text-[34px] font-medium">
           Now let&apos;s do the actual transaction
         </h3>
-        <p className="text-gray-500 text-left text-[16px]">
+        <p className="text-gray-500 text-left text-base">
           The domain is almost yours! Double check the information before
           confirming in your wallet.
         </p>

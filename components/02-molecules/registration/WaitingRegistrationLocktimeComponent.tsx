@@ -34,7 +34,7 @@ export const WaitingRegistrationLocktimeComponent = ({
         <h3 className="text-start text-[34px] font-medium">
           We are securing your domain
         </h3>
-        <p className="text-gray-500 text-left text-[16px]">
+        <p className="text-gray-500 text-left text-base">
           Please just wait a few seconds while we do this operation.
         </p>
       </div>
