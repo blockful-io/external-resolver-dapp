@@ -14,7 +14,9 @@ import {
   useFields,
   Tab,
   ProfileRecordItem,
+  Table,
 } from "@/components/02-molecules";
+import { EditModalContent } from "@/components/organisms/EditModalContent";
 
 import {
   Button,
@@ -154,96 +156,30 @@ export function ManageNamePageContent({ name }: { name: string }) {
           </div>
         </div>
       </div>
-
-      <Modal
-        open={modalOpen}
-        onDismiss={() => {
-          setFields(initialFields);
-        }}
-      >
-        <div className="w-[480px] border rounded-xl overflow-hidden">
-          <div className="border-b border-gray-200">
-            <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b">
-              Edit Records
-            </div>
-            <div className="flex justify-around w-full bg-white">
-              <button
-                onClick={() => {
-                  setSelectedTab(Tab.Profile);
-                }}
-                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-                  selectedTab === Tab.Profile
-                    ? "text-blue-500 border-blue-500"
-                    : "text-gray-500 border-gray-200"
-                }`}
-              >
-                Profile
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedTab(Tab.Accounts);
-                }}
-                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-                  selectedTab === Tab.Accounts
-                    ? "text-blue-500 border-blue-500"
-                    : "text-gray-500 border-gray-200"
-                }`}
-              >
-                Accounts
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedTab(Tab.Addresses);
-                }}
-                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-                  selectedTab === Tab.Addresses
-                    ? "text-blue-500 border-blue-500"
-                    : "text-gray-500 border-gray-200"
-                }`}
-              >
-                Addresses
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedTab(Tab.Others);
-                }}
-                className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-                  selectedTab === Tab.Others
-                    ? "text-blue-500 border-blue-500"
-                    : "text-gray-500 border-gray-200"
-                }`}
-              >
-                Others
-              </button>
-            </div>
-            <div className="w-full h-[448px] bg-white overflow-y-scroll p-6">
-              <CurrentComponent />
-            </div>
-          </div>
-          <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
-            <div>
-              <Button
-                colorStyle="greySecondary"
-                onClick={() => {
-                  setModalOpen(false);
-                  setFields(initialFields);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-            <div>
-              <Button
-                onClick={() => {
-                  setModalOpen(false);
-                  setInitialFields(fields);
-                }}
-              >
-                Save
-              </Button>
-            </div>
+      <div className="w-full max-w-[1216px] py-10 flex flex-col gap-4">
+        <div className="w-full flex justify-between items-center">
+          <h3 className="text-[22px]">Profile records</h3>
+          <div>
+            <Button
+              onClick={() => {
+                setModalOpen(true);
+              }}
+              size="small"
+              prefix={<PencilIcon />}
+            >
+              Edit
+            </Button>
           </div>
         </div>
+        <div></div>
+        <Table />
+      </div>
+      <Modal open={modalOpen} onDismiss={() => {}}>
+        <EditModalContent
+          closeModal={() => {
+            setModalOpen(false);
+          }}
+        />
       </Modal>
     </div>
   );
