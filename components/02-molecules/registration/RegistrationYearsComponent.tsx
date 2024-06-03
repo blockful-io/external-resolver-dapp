@@ -1,15 +1,14 @@
 import { NextButton } from "@/components/01-atoms";
+import { MinusSVG, PlusSVG } from "@ensdomains/thorin";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { PlusSVG, MinusSVG } from "@ensdomains/thorin";
 
 interface RegistrationYearsComponentProps {
-  handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-export function RegistrationYearsComponent({
+export const RegistrationYearsComponent = ({
   handleNextStep,
-}: RegistrationYearsComponentProps) {
+}: RegistrationYearsComponentProps) => {
   const { nameRegistrationData, setRegistrationYears } = useNameRegistration();
 
   const { registrationYears } = nameRegistrationData;
@@ -50,4 +49,4 @@ export function RegistrationYearsComponent({
       <NextButton onClick={handleNextStep} />
     </div>
   );
-}
+};

@@ -1,15 +1,55 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
 import { Button, WalletSVG } from "@ensdomains/thorin";
+import {
+  BackButton,
+  BlockchainCTA,
+  TransactionConfirmedInBlockchainCTA,
+} from "@/components/01-atoms";
+import { commit } from "@/lib/name-registration/blockchain-txs";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { useUser } from "@/lib/wallet/useUser";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useBalance } from "wagmi";
+import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
+import { TransactionErrorType } from "@/lib/wallet/txError";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-export function RequestToRegisterComponent({
+export const RequestToRegisterComponent = ({
   handlePreviousStep,
   handleNextStep,
-}: RequestToRegisterComponentProps) {
+}: RequestToRegisterComponentProps) => {
+  const { authedUser } = useUser();
+  const { data: ethBalance } = useBalance({
+    address: authedUser as `0x${string}`,
+    chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
+  });
+  const { nameRegistrationData } = useNameRegistration();
+  const { openConnectModal } = useConnectModal();
+
+  const commitToRegister = async (): Promise<
+    `0x${string}` | TransactionErrorType
+  > => {
+    if (!authedUser) {
+      throw new Error(
+        "Impossible to register a name without an authenticated user"
+      );
+    }
+
+    if (!nameRegistrationData.name) {
+      throw new Error("Impossible to register a name without a name");
+    }
+
+    return await commit({
+      authenticatedAddress: authedUser,
+      ensName: nameRegistrationData.name,
+      durationInYears: BigInt(nameRegistrationData.registrationYears),
+      registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
+    });
+  };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -27,12 +67,32 @@ export function RequestToRegisterComponent({
       </div>
 
       <div>
-        <Button colorStyle="bluePrimary" prefix={<WalletSVG />}>
-          Open Wallet
-        </Button>
+        {nameRegistrationData.commitTxReceipt ? (
+          <TransactionConfirmedInBlockchainCTA onClick={() => {}} />
+        ) : !authedUser ? (
+          <Button
+            colorStyle="bluePrimary"
+            onClick={openConnectModal}
+            prefix={<WalletSVG />}
+          >
+            Open Wallet
+          </Button>
+        ) : typeof ethBalance === "undefined" ||
+          !nameRegistrationData.registrationPrice ? (
+          <Button colorStyle="blueSecondary" disabled>
+            Loading balance...
+          </Button>
+        ) : ethBalance.value < nameRegistrationData.registrationPrice ? (
+          <Button colorStyle="redSecondary" className="pointer-events-none">
+            Insufficient ETH balance
+          </Button>
+        ) : (
+          <BlockchainCTA
+            onSuccess={handleNextStep}
+            transactionRequest={commitToRegister}
+          />
+        )}
       </div>
-
-      <NextButton onClick={handleNextStep} />
     </div>
   );
-}
+};

@@ -1,11 +1,38 @@
-"use client";
-
-import { ChangeEvent, useState } from "react";
-import { CrossCircleSVG, Spinner } from "@ensdomains/thorin";
-import { HomepageBg } from "../components/01-atoms/HomepageBg";
+import { ChangeEvent, useEffect, useState } from "react";
+import { CrossCircleSVG, Spinner, Tag } from "@ensdomains/thorin";
+import { HomepageBg } from "@/components/01-atoms";
+import { isNameAvailable } from "@/lib/name-registration/blockchain-txs";
+import { ENSName, buildENSName } from "@namehash/ens-utils";
+import { DebounceInput } from "react-debounce-input";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
   const [domain, setDomain] = useState("");
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!domain) return;
+
+    setIsAvailable(null);
+
+    let ensName: null | ENSName = null;
+    try {
+      ensName = buildENSName(domain);
+    } catch (error) {
+      console.error(error);
+      setIsAvailable(false);
+      return;
+    }
+
+    isNameAvailable(ensName)
+      .then((isAvailable: boolean) => {
+        setIsAvailable(isAvailable);
+      })
+      .catch(() => {
+        setIsAvailable(false);
+      });
+  }, [domain]);
 
   const clearDomainSearch = () => {
     setDomain("");
@@ -13,6 +40,12 @@ export default function Home() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setDomain(e.target.value);
+  };
+
+  const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === "Enter" && domain) {
+      router.push(`/register/${domain}`);
+    }
   };
 
   return (
@@ -38,9 +71,12 @@ export default function Home() {
         <div className="w-full h-[52px] relative max-w-[470px] ">
           <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl">
             <div className="flex w-full justify-center items-center p-2 pl-5">
-              <input
+              <DebounceInput
+                minLength={3}
                 value={domain}
+                debounceTimeout={300}
                 onChange={handleInputChange}
+                onKeyDown={(e) => goToRegisterPage(e)}
                 className="w-full py-2 text-black"
                 placeholder="Search for a domain"
               />
@@ -64,11 +100,29 @@ export default function Home() {
               }`}
             >
               <div className="flex w-full justify-between items-center border-gray-200 border-t p-4 pl-5 ">
-                <p className="text-gray-500">
-                  {domain ? `${domain}.eth` : <span />}
+                <p className="text-gray-500 min-h-6">
+                  {domain ? (
+                    domain.includes(".eth") ? (
+                      domain
+                    ) : (
+                      `${domain}.eth`
+                    )
+                  ) : (
+                    <span />
+                  )}
                 </p>
 
-                <Spinner color="blue" />
+                {isAvailable === null ? (
+                  <Spinner color="blue" />
+                ) : isAvailable ? (
+                  <Tag colorStyle="greenSecondary" size="small">
+                    Available
+                  </Tag>
+                ) : (
+                  <Tag colorStyle="blueSecondary" size="small">
+                    Registered
+                  </Tag>
+                )}
               </div>
             </div>
           </div>

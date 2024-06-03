@@ -6,9 +6,9 @@ import {
   NextButton,
   OptimismIcon,
 } from "@/components/01-atoms";
-import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { RadioButton, Typography } from "@ensdomains/thorin";
 import { useRef } from "react";
 
@@ -17,10 +17,10 @@ interface ENSResolverComponentProps {
   handleNextStep: () => void;
 }
 
-export function ENSResolverComponent({
+export const ENSResolverComponent = ({
   handlePreviousStep,
   handleNextStep,
-}: ENSResolverComponentProps) {
+}: ENSResolverComponentProps) => {
   const radioButtonRefMainnet = useRef(null);
   const radioButtonRefDatabase = useRef(null);
   const radioButtonRefArbitrum = useRef(null);
@@ -153,4 +153,4 @@ export function ENSResolverComponent({
       <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
     </div>
   );
-}
+};

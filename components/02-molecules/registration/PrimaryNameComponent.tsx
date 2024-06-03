@@ -1,5 +1,3 @@
-"use client";
-
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton } from "@ensdomains/thorin";
@@ -10,16 +8,16 @@ interface PrimaryNameComponentProps {
   handleNextStep: () => void;
 }
 
-export function PrimaryNameComponent({
+export const PrimaryNameComponent = ({
   handlePreviousStep,
   handleNextStep,
-}: PrimaryNameComponentProps) {
+}: PrimaryNameComponentProps) => {
   const radioButtonRefYes = useRef(null);
   const radioButtonRefNo = useRef(null);
 
-  const { nameRegistrationData, setIsPrimaryName } = useNameRegistration();
+  const { nameRegistrationData, setAsPrimaryName } = useNameRegistration();
 
-  const { isPrimaryName } = nameRegistrationData;
+  const { asPrimaryName } = nameRegistrationData;
 
   const handleDivClick = (radioRef: React.RefObject<HTMLInputElement>) => {
     radioRef?.current?.click();
@@ -40,9 +38,9 @@ export function PrimaryNameComponent({
             onClick={() => handleDivClick(radioButtonRefYes)}
           >
             <RadioButton
-              checked={isPrimaryName === true}
+              checked={asPrimaryName === true}
               onChange={() => {
-                setIsPrimaryName(true);
+                setAsPrimaryName(true);
               }}
               ref={radioButtonRefYes}
               label="Yes"
@@ -55,9 +53,9 @@ export function PrimaryNameComponent({
             onClick={() => handleDivClick(radioButtonRefNo)}
           >
             <RadioButton
-              checked={isPrimaryName === false}
+              checked={asPrimaryName === false}
               onChange={() => {
-                setIsPrimaryName(false);
+                setAsPrimaryName(false);
               }}
               ref={radioButtonRefNo}
               label="No"
@@ -68,7 +66,7 @@ export function PrimaryNameComponent({
         </div>
       </div>
 
-      <NextButton disabled={isPrimaryName === null} onClick={handleNextStep} />
+      <NextButton disabled={asPrimaryName === null} onClick={handleNextStep} />
     </div>
   );
-}
+};
