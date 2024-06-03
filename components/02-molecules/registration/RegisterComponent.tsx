@@ -17,7 +17,7 @@ export function RegisterComponent({
         <h3 className="text-start text-[34px] font-medium">
           Congrats! You&apos;re now owner of isadoranunes.eth
         </h3>
-        <p className="text-gray-500 text-left text-[16px]">
+        <p className="text-gray-500 text-left text-base">
           Your name was successfully registered, you can now view and manage it.
         </p>
       </div>

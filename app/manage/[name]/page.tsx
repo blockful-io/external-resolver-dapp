@@ -111,7 +111,7 @@ const ManageNamePageContent: React.FC = () => {
 
           <div className="py-4 flex flex-col gap-8">
             <div className="flex flex-col gap-4">
-              <h3 className="font-semibold text-[16px]">Addresses</h3>
+              <h3 className="font-semibold text-base">Addresses</h3>
 
               <ProfileRecordItem
                 icon={EthTransparentSVG}
@@ -120,7 +120,7 @@ const ManageNamePageContent: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <h3 className="font-semibold text-[16px]">Other records</h3>
+              <h3 className="font-semibold text-base">Other records</h3>
 
               <ProfileRecordItem
                 icon={KeySVG}
@@ -130,7 +130,7 @@ const ManageNamePageContent: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <h3 className="font-semibold text-[16px]">Ownership</h3>
+              <h3 className="font-semibold text-base">Ownership</h3>
 
               <ProfileRecordItem
                 icon={CogSVG}

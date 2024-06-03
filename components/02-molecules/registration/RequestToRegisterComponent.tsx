@@ -19,7 +19,7 @@ export function RequestToRegisterComponent({
         <h3 className="text-start text-[34px] font-medium">
           Start registration process
         </h3>
-        <p className="text-gray-500 text-left text-[16px]">
+        <p className="text-gray-500 text-left text-base">
           First, a 0 ETH transaction is performed where your name is hashed with
           a secret key so that no one else can view the name you&apos;re trying
           to register.
