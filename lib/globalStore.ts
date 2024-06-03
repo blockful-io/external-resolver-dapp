@@ -8,8 +8,12 @@ const nameRegistrationStore = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [],
-        ignoredPaths: [],
+        ignoredActions: [
+          "controller/namePrice",
+          "controller/registrationPrice",
+          "controller/estimatedNetworkFee",
+        ],
+        ignoredPaths: ["estimatedNetworkFee", "registrationPrice", "namePrice"],
       },
     }),
 });

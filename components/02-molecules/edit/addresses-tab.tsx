@@ -1,5 +1,3 @@
-"use client";
-
 import { Button, Input } from "@ensdomains/thorin";
 import React from "react";
 import { Tab, useFields } from "./FieldsContext";

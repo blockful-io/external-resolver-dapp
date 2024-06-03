@@ -1,5 +1,3 @@
-"use client";
-
 import Table from "@/components/02-molecules/table";
 
 export default function RegisterNamePage() {

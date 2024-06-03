@@ -1,35 +1,59 @@
-"use client";
-
-import { useAppDispatch, useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../globalStore";
 import { nameRegistrationInitialState } from "./reducers";
 import {
+  updateCommitTxReceipt,
   updateCurrentRegistrationStep,
   updateEnsResolver,
+  updateEstimatedNetworkFee,
   updateIsPrimaryName,
+  updateNamePrice,
+  updateNameToRegister,
+  updateRegistrationPrice,
   updateRegistrationYears,
 } from "./actions";
 import { EnsResolver, RegistrationStep } from "./constants";
+import { ENSName } from "@namehash/ens-utils";
+import { TransactionReceipt } from "viem";
 
-export const useNameRegistration = (): {
+interface NameRegistrationData {
   nameRegistrationData: {
+    commitTxReceipt: TransactionReceipt | null;
     currentRegistrationStep: RegistrationStep;
+    estimatedNetworkFee: bigint | null;
+    registrationPrice: bigint | null;
     registrationYears: number;
-    isPrimaryName: boolean;
+    namePrice: bigint | null;
     ensResolver: EnsResolver;
+    asPrimaryName: boolean;
+    name: ENSName | null;
   };
+  setNamePrice: (namePrice: bigint) => void;
+  setEstimatedNetworkFee: (estimatedNetworkFee: bigint) => void;
+  setRegistrationPrice: (registrationPrice: bigint) => void;
   setCurrentRegistrationStep: (
     currentRegistrationStep: RegistrationStep
   ) => void;
+  setCommitTxReceipt: (txReceipt: TransactionReceipt) => void;
   setRegistrationYears: (registrationYears: number) => void;
-  setIsPrimaryName: (isPrimaryName: boolean) => void;
+  setNameToRegister: (nameToRegister: ENSName) => void;
+  setAsPrimaryName: (asPrimaryName: boolean) => void;
   setEnsResolver: (ensResolver: EnsResolver) => void;
-} => {
+}
+
+export const useNameRegistration = (): NameRegistrationData => {
   const currentRegistrationStep = useAppSelector(
     (state) => state.currentRegistrationStep
   );
+  const estimatedNetworkFee = useAppSelector(
+    (state) => state.estimatedNetworkFee
+  );
   const registrationYears = useAppSelector((state) => state.registrationYears);
-  const isPrimaryName = useAppSelector((state) => state.isPrimaryName);
+  const registrationPrice = useAppSelector((state) => state.registrationPrice);
+  const commitTxReceipt = useAppSelector((state) => state.commitTxReceipt);
+  const asPrimaryName = useAppSelector((state) => state.asPrimaryName);
   const ensResolver = useAppSelector((state) => state.ensResolver);
+  const namePrice = useAppSelector((state) => state.namePrice);
+  const name = useAppSelector((state) => state.name);
 
   const dispatch = useAppDispatch();
 
@@ -43,25 +67,55 @@ export const useNameRegistration = (): {
     dispatch(updateRegistrationYears(registrationYears));
   };
 
-  const setIsPrimaryName = (isPrimaryName: boolean) => {
-    dispatch(updateIsPrimaryName(isPrimaryName));
+  const setAsPrimaryName = (asPrimaryName: boolean) => {
+    dispatch(updateIsPrimaryName(asPrimaryName));
   };
 
   const setEnsResolver = (ensResolver: EnsResolver) => {
     dispatch(updateEnsResolver(ensResolver));
   };
 
+  const setNameToRegister = (nameToRegister: ENSName) => {
+    dispatch(updateNameToRegister(nameToRegister));
+  };
+
+  const setCommitTxReceipt = (txReceipt: TransactionReceipt) => {
+    dispatch(updateCommitTxReceipt(txReceipt));
+  };
+
+  const setNamePrice = (namePrice: bigint) => {
+    dispatch(updateNamePrice(namePrice));
+  };
+
+  const setEstimatedNetworkFee = (estimatedNetworkFee: bigint) => {
+    dispatch(updateEstimatedNetworkFee(estimatedNetworkFee));
+  };
+
+  const setRegistrationPrice = (registrationPrice: bigint) => {
+    dispatch(updateRegistrationPrice(registrationPrice));
+  };
+
   return {
     nameRegistrationData:
       {
         currentRegistrationStep,
+        estimatedNetworkFee,
         registrationYears,
-        isPrimaryName,
+        registrationPrice,
+        commitTxReceipt,
+        asPrimaryName,
         ensResolver,
+        namePrice,
+        name,
       } || nameRegistrationInitialState,
     setCurrentRegistrationStep,
+    setEstimatedNetworkFee,
     setRegistrationYears,
-    setIsPrimaryName,
+    setRegistrationPrice,
+    setCommitTxReceipt,
+    setNameToRegister,
+    setAsPrimaryName,
     setEnsResolver,
+    setNamePrice,
   };
 };
