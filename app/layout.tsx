@@ -23,7 +23,7 @@ export default function RootLayout({
         <html lang="en">
           <body className={`${inter.className} h-screen flex flex-col`}>
             <DappHeader />
-            <main className="relative z-10 h-full flex-grow">{children}</main>
+            <main className="relative z-10 flex-grow">{children}</main>
           </body>
         </html>
       </ThemeProvider>

@@ -1,18 +1,35 @@
 "use client";
 
-import { PencilIcon } from "@/components/01-atoms";
+import {
+  EmailIcon,
+  GithubIcon,
+  LinkedInIcon,
+  PencilIcon,
+  TwitterIcon,
+} from "@/components/01-atoms";
 import {
   AccountsTab,
   AddressesTab,
   OthersTab,
   ProfileTab,
-  Table,
   FieldsProvider,
   useFields,
   Tab,
+  ProfileRecordItem,
 } from "@/components/02-molecules";
 
-import { Button, LeftChevronSVG, Modal } from "@ensdomains/thorin";
+import {
+  Button,
+  CalendarSVG,
+  CogSVG,
+  EthTransparentSVG,
+  HeartSVG,
+  InfoCircleSVG,
+  KeySVG,
+  LeftChevronSVG,
+  Modal,
+  Toggle,
+} from "@ensdomains/thorin";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -34,7 +51,7 @@ const ManageNamePageContent: React.FC = () => {
   const { fields, initialFields, setInitialFields, setFields } = useFields();
 
   return (
-    <div className="text-black flex h-full flex-col items-center justify-start bg-white">
+    <div className="text-black flex flex-col items-center justify-start bg-white">
       <div className="w-full h-[200px] bg-gradient-ens py-10 px-[60px] flex items-start">
         <div className="w-full max-w-[1216px] flex mx-auto">
           <Link
@@ -48,9 +65,21 @@ const ManageNamePageContent: React.FC = () => {
       <div className="w-full relative max-w-[1216px] m-auo">
         <div className="w-[100px] h-[100px] bg-purple-500 absolute left-0 -translate-y-1/2 border-4 border-white rounded-[10px]"></div>
       </div>
-      <div className="w-full px-[60px] border-b border-gray-200">
+      <div className="w-full px-[60px]">
         <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
-          <div className="h-[50px] w-full" />
+          <div className="h-[50px] w-full flex justify-end items-end">
+            <div>
+              <Button
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+                size="small"
+                prefix={<PencilIcon />}
+              >
+                Edit
+              </Button>
+            </div>
+          </div>
           <div className="flex flex-col gap-1">
             <div className="text-[26px]">{name}</div>
             <p className="text-base text-gray-400">
@@ -58,34 +87,79 @@ const ManageNamePageContent: React.FC = () => {
               stylistically curated NFTs.
             </p>
           </div>
-          <div className="w-full flex translate-y-[1px]">
-            <button className="flex p-4 border-b border-blue-500 text-blue-500 font-semibold hover:bg-gray-50 transition-colors duration-200">
-              Profile
-            </button>
-            <button className="flex p-4 border-b text-gray-400 hover:bg-gray-50 transition-colors duration-200">
-              Subdomains
-            </button>
+          <div className="flex justify-between">
+            <div className="flex items-center justify-center gap-1">
+              <div className="p-2">
+                <EmailIcon className="w-5 h-5" />
+              </div>
+              <div className="p-2">
+                <GithubIcon className="w-5 h-5" />
+              </div>
+              <div className="p-2">
+                <TwitterIcon className="w-5 h-5" />
+              </div>
+              <div className="p-2">
+                <LinkedInIcon className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-full border border-gray-200">
+              <Toggle />
+              <p>Primary name</p>
+              <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
+            </div>
+          </div>
+
+          <div className="py-4 flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <h3 className="font-semibold text-[16px]">Addresses</h3>
+
+              <ProfileRecordItem
+                icon={EthTransparentSVG}
+                text="0x000ee...575FB098991"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <h3 className="font-semibold text-[16px]">Other records</h3>
+
+              <ProfileRecordItem
+                icon={KeySVG}
+                label="keywords"
+                text="0x000ee...575FB098991"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <h3 className="font-semibold text-[16px]">Ownership</h3>
+
+              <ProfileRecordItem
+                icon={CogSVG}
+                label="manager"
+                text="0x000ee...575FB098991"
+              />
+
+              <ProfileRecordItem
+                icon={HeartSVG}
+                label="manager"
+                text="0x000ee...575FB098991"
+              />
+
+              <ProfileRecordItem
+                icon={CalendarSVG}
+                label="manager"
+                text="0x000ee...575FB098991"
+              />
+
+              <ProfileRecordItem
+                icon={EthTransparentSVG}
+                label="manager"
+                text="0x000ee...575FB098991"
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div className="w-full max-w-[1216px] py-10 flex flex-col gap-4">
-        <div className="w-full flex justify-between items-center">
-          <h3 className="text-[22px]">Profile records</h3>
-          <div>
-            <Button
-              onClick={() => {
-                setModalOpen(true);
-              }}
-              size="small"
-              prefix={<PencilIcon />}
-            >
-              Edit
-            </Button>
-          </div>
-        </div>
-        <div></div>
-        <Table />
-      </div>
+
       <Modal
         open={modalOpen}
         onDismiss={() => {
