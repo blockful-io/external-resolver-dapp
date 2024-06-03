@@ -1,4 +1,4 @@
-import { useUser } from "../../lib/wallet/useUser";
+import { useUser } from "@/lib/wallet/useUser";
 
 export const UserDropdown = () => {
   const { authedUser } = useUser();
