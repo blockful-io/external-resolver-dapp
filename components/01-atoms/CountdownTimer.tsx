@@ -1,10 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 
 interface CountdownTimerProps {
   duration: number; // duration in seconds
+  onTimeEnd?: () => void;
 }
 
-const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
+const CountdownTimer: React.FC<CountdownTimerProps> = ({
+  duration,
+  onTimeEnd,
+}) => {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [remainingCircumference, setRemainingCircumference] = useState("283");
 
@@ -17,6 +22,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ duration }) => {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      onTimeEnd?.();
+    }
+  }, [timeLeft]);
 
   useEffect(() => {
     const fraction = timeLeft / duration;

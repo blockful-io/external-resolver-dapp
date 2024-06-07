@@ -10,6 +10,7 @@ import {
 } from "@ensdomains/thorin";
 import { useState } from "react";
 import { TransactionErrorType } from "@/lib/wallet/txError";
+import { TransactionReceipt } from "viem";
 
 enum BlockchainCTAState {
   OPEN_WALLET,
@@ -20,7 +21,7 @@ enum BlockchainCTAState {
 
 interface BlockchainCTAProps {
   transactionRequest: () => Promise<`0x${string}` | TransactionErrorType>;
-  onSuccess: () => void;
+  onSuccess: (txReceipt: TransactionReceipt) => void;
 }
 
 export const BlockchainCTA = ({
@@ -61,9 +62,14 @@ export const BlockchainCTA = ({
 
       const txReceipt = await awaitBlockchainTxReceipt(txHashOrError);
 
-      setCommitTxReceipt(txReceipt);
-      setBlockchainCtaStatus(BlockchainCTAState.CONFIRMED);
-      setTimeout(() => onSuccess(), 5000);
+      if (txReceipt.status === "success") {
+        setBlockchainCtaStatus(BlockchainCTAState.CONFIRMED);
+        onSuccess(txReceipt);
+      } else {
+        console.error(txReceipt);
+        toast.error(`Request failed: please try again`);
+        setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+      }
     }
   };
 
@@ -91,7 +97,7 @@ const TransactionRequestConfirmedCTA = ({
       shape="rounded"
       suffix={<LinkSVG />}
     >
-      Awaiting Blockchain approval
+      Awaiting Blockchain confirmation
     </Button>
   );
 };

@@ -14,7 +14,6 @@ export const RegistrationBody = () => {
     useNameRegistration();
 
   const currentStep = nameRegistrationData.currentRegistrationStep;
-  const commitTxReceipt = nameRegistrationData.commitTxReceipt;
 
   const handleNextStep = () => {
     const stepKeys = Object.keys(RegistrationStep) as Array<
@@ -22,6 +21,7 @@ export const RegistrationBody = () => {
     >;
     const currentIndex = stepKeys.indexOf(currentStep);
     const nextStep = stepKeys[currentIndex + 1] || stepKeys[0];
+
     setCurrentRegistrationStep(RegistrationStep[nextStep]);
   };
 

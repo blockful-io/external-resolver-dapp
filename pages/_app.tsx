@@ -51,7 +51,7 @@ export default function App({
                     <DappHeader />
                     <main>
                       <div className="relative z-10 h-full flex-grow">
-                        <Toaster />
+                        <Toaster position="bottom-right" />
                         <Component {...pageProps} />
                       </div>
                     </main>

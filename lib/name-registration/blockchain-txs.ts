@@ -150,28 +150,28 @@ export const commit = async ({
   2nd step of a name registration
 */
 export const register = async ({
-  value,
   ensName,
-  walletClient,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
-  value: bigint;
   ensName: ENSName;
   durationInYears: bigint;
-  walletClient: WalletClient;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
-  if (!walletClient) throw new Error("WalletClient not found");
+  try {
+    const walletClient = createCustomWalletClient(authenticatedAddress);
 
-  const client = walletClient.extend(publicActions);
+    const client = walletClient.extend(publicActions);
 
-  const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
+    if (!client) throw new Error("WalletClient not found");
 
-  return client
-    .writeContract({
+    const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
+
+    const value = await getNamePrice({ ensName, durationInYears });
+
+    const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
       chain: isTestnet ? sepolia : mainnet,
       account: authenticatedAddress,
@@ -187,15 +187,15 @@ export const register = async ({
       ],
       abi: ETHRegistrarABI,
       functionName: "register",
-      value: value,
-    })
-    .then((transactionHash) => {
-      return transactionHash;
-    })
-    .catch((error) => {
-      const errorType = getBlockchainTransactionError(error);
-      return errorType;
+      value,
     });
+
+    return txHash;
+  } catch (error) {
+    console.error(error);
+    const errorType = getBlockchainTransactionError(error);
+    return errorType;
+  }
 };
 
 // Utils ⬇️

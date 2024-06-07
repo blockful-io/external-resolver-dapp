@@ -19,7 +19,6 @@ export const RegisteredComponent = ({
           Your name was successfully registered, you can now view and manage it.
         </p>
       </div>
-      <NextButton onClick={handleNextStep} />
     </div>
   );
 };

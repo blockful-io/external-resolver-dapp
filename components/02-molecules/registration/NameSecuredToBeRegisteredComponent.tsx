@@ -1,4 +1,11 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
+import { BackButton, BlockchainCTA, NextButton } from "@/components/01-atoms";
+import { register } from "@/lib/name-registration/blockchain-txs";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { TransactionErrorType } from "@/lib/wallet/txError";
+import { useUser } from "@/lib/wallet/useUser";
+import { Button, WalletSVG } from "@ensdomains/thorin";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { TransactionReceipt } from "viem";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -9,6 +16,31 @@ export const NameSecuredToBeRegisteredComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) => {
+  const { authedUser } = useUser();
+  const { nameRegistrationData, setCommitTxReceipt } = useNameRegistration();
+  const { openConnectModal } = useConnectModal();
+
+  const registerName = async (): Promise<
+    `0x${string}` | TransactionErrorType
+  > => {
+    if (!authedUser) {
+      throw new Error(
+        "Impossible to register a name without an authenticated user"
+      );
+    }
+
+    if (!nameRegistrationData.name) {
+      throw new Error("Impossible to register a name without a name");
+    }
+
+    return await register({
+      authenticatedAddress: authedUser,
+      ensName: nameRegistrationData.name,
+      durationInYears: BigInt(nameRegistrationData.registrationYears),
+      registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
+    });
+  };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -22,7 +54,26 @@ export const NameSecuredToBeRegisteredComponent = ({
           confirming in your wallet.
         </p>
       </div>
-      <NextButton onClick={handleNextStep} />
+      <div>
+        {!authedUser ? (
+          <Button
+            colorStyle="bluePrimary"
+            onClick={openConnectModal}
+            prefix={<WalletSVG />}
+          >
+            Open Wallet
+          </Button>
+        ) : (
+          <BlockchainCTA
+            onSuccess={(txReceipt: TransactionReceipt) => {
+              setCommitTxReceipt(txReceipt);
+
+              setTimeout(() => handleNextStep(), 5000);
+            }}
+            transactionRequest={registerName}
+          />
+        )}
+      </div>
     </div>
   );
 };
