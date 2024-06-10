@@ -21,6 +21,7 @@ import {
   Button,
   CalendarSVG,
   CogSVG,
+  CopySVG,
   EthTransparentSVG,
   HeartSVG,
   InfoCircleSVG,
@@ -67,17 +68,17 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
-      <div className="w-full h-[200px] bg-gradient-ens py-10 px-[60px] flex items-start">
+      <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
         <div className="w-full max-w-[1216px] flex mx-auto">
           <Link
             href="/manage"
-            className="flex items-center justify-center flex-shrink text-white gap-2"
+            className="flex items-center justify-center flex-shrink text-gray-400 hover:text-black duration-300 transition-colors gap-2"
           >
-            <LeftChevronSVG /> <p>Back</p>
+            <LeftChevronSVG /> <p className="text-black">Back</p>
           </Link>
         </div>
       </div>
-      <div className="w-full relative max-w-[1216px] m-auo">
+      {/* <div className="w-full relative max-w-[1216px] m-auo">
         <Image
           alt="avatar image"
           width={100}
@@ -85,10 +86,11 @@ export function ManageNamePageContent({ name }: { name: string }) {
           src={ensData?.textRecords?.avatar}
           className="w-[100px] h-[100px] bg-purple-500 absolute left-0 -translate-y-1/2 border-4 border-white rounded-[10px]"
         />
-      </div>
-      <div className="w-full px-[60px]">
+      </div> */}
+
+      <div className="w-full p-[60px]">
         <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
-          <div className="h-[50px] w-full flex justify-end items-end">
+          {/* <div className="h-[50px] w-full flex justify-end items-end">
             <div>
               <Button
                 onClick={() => {
@@ -100,100 +102,148 @@ export function ManageNamePageContent({ name }: { name: string }) {
                 Edit
               </Button>
             </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-[26px]">{name}</div>
-            <p className="text-base text-gray-400">
-              {ensData?.textRecords?.description}
-            </p>
-          </div>
-          <div className="flex justify-between">
-            <div className="flex items-center justify-center gap-1">
-              {ensData?.textRecords?.["email"] && (
-                <Link
-                  target="_blank"
-                  href={`mailto:${ensData?.textRecords?.["email"]}`}
-                  className="p-2"
-                >
-                  <EmailIcon className="w-5 h-5" />
-                </Link>
-              )}
+          </div> */}
+          <div className="w-full flex gap-[60px]">
+            <div className="w-[376px] flex flex-col rounded-md overflow-hidden border border-gray-200 ">
+              <div className="h-[120px] w-full bg-gradient-ens" />
 
-              {!!ensData?.textRecords?.["com.github"] && (
-                <Link
-                  target="_blank"
-                  href={`https://github.com/${ensData?.textRecords["com.github"]}`}
-                  className="p-2"
-                >
-                  <GithubIcon className="w-5 h-5" />
-                </Link>
-              )}
+              <div className="w-full px-6 pb-6 flex flex-col gap-5">
+                <div className="h-[56px] items-end w-full flex justify-between">
+                  <Image
+                    alt="avatar image"
+                    width={100}
+                    height={100}
+                    src={ensData?.textRecords?.avatar}
+                    className="w-[100px] h-[100px] bg-purple-500 border-4 border-white rounded-[10px]"
+                  />
+                  <div>
+                    <Button
+                      onClick={() => {
+                        setModalOpen(true);
+                      }}
+                      size="small"
+                      prefix={<PencilIcon />}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                </div>
 
-              {ensData?.textRecords?.["com.twitter"] && (
-                <Link
-                  target="_blank"
-                  href={`https://x.com/${ensData?.textRecords["com.twitter"]}`}
-                  className="p-2"
-                >
-                  <TwitterIcon className="w-5 h-5" />
-                </Link>
-              )}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-[26px]">Coolcats.eth</h3>
+                    <CopySVG className="text-gray-400 cursor-pointer hover:text-black transition-colors duration-300" />
+                  </div>
+                  <h3 className="text-[16px] text-blue-500">
+                    www.coolcats.com
+                  </h3>
+                </div>
 
-              {ensData?.textRecords?.["com.linkedin"] && (
-                <Link
-                  target="_blank"
-                  href={`https://www.linkedin.com/in/${ensData?.textRecords["com.linkedin"]}`}
-                  className="p-2"
-                >
-                  <LinkedInIcon className="w-5 h-5" />
-                </Link>
-              )}
+                <p className="text-base text-gray-400">
+                  {ensData?.textRecords?.description}
+                  Cool Cats is a collection of 9,999 randomly generated and
+                  stylistically curated NFTs.
+                </p>
+
+                <div className="flex items-center justify-center gap-2 p-3 rounded-md border border-gray-200">
+                  <Toggle />
+                  <p>Primary name</p>
+                  <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
+                </div>
+
+                <div className="flex flex-col items-start justify-center gap-1">
+                  {ensData?.textRecords?.["email"] && (
+                    <Link
+                      target="_blank"
+                      href={`mailto:${ensData?.textRecords?.["email"]}`}
+                      className="p-2"
+                    >
+                      <EmailIcon className="w-5 h-5" />
+                      <h3>{ensData?.textRecords?.["email"]}</h3>
+                    </Link>
+                  )}
+
+                  {!!ensData?.textRecords?.["com.github"] && (
+                    <Link
+                      target="_blank"
+                      href={`https://github.com/${ensData?.textRecords["com.github"]}`}
+                      className="p-2 flex gap-2 group"
+                    >
+                      <GithubIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
+                      <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+                        {ensData?.textRecords?.["com.github"]}
+                      </h3>
+                    </Link>
+                  )}
+
+                  {ensData?.textRecords?.["com.twitter"] && (
+                    <Link
+                      target="_blank"
+                      href={`https://x.com/${ensData?.textRecords["com.twitter"]}`}
+                      className="p-2 flex gap-2 group"
+                    >
+                      <TwitterIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
+                      <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+                        {ensData?.textRecords?.["com.github"]}
+                      </h3>
+                    </Link>
+                  )}
+
+                  {ensData?.textRecords?.["com.linkedin"] && (
+                    <Link
+                      target="_blank"
+                      href={`https://www.linkedin.com/in/${ensData?.textRecords["com.linkedin"]}`}
+                      className="p-2"
+                    >
+                      <LinkedInIcon className="w-5 h-5" />
+                    </Link>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2 p-3 rounded-full border border-gray-200">
-              <Toggle />
-              <p>Primary name</p>
-              <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
-            </div>
-          </div>
 
-          <div className="py-4 flex flex-col gap-8">
-            <div className="flex flex-col gap-4">
-              <h3 className="font-semibold text-base">Addresses</h3>
+            <div className="flex-grow flex gap-11 flex-col">
+              <div className="flex flex-col gap-4">
+                <h3 className="font-semibold text-base">Addresses</h3>
 
-              <ProfileRecordItem
-                icon={EthTransparentSVG}
-                text={formatHexAddress(ensData?.address)}
-              />
-            </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <ProfileRecordItem
+                    icon={EthTransparentSVG}
+                    text={formatHexAddress(ensData?.address)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <h3 className="font-semibold text-base">Ownership</h3>
 
-            <div className="flex flex-col gap-4">
-              <h3 className="font-semibold text-base">Ownership</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <ProfileRecordItem
+                    icon={CogSVG}
+                    label="manager"
+                    text={formatHexAddress(ensData?.ownerId)}
+                  />
 
-              <ProfileRecordItem
-                icon={CogSVG}
-                label="manager"
-                text={formatHexAddress(ensData?.ownerId)}
-              />
+                  <ProfileRecordItem
+                    icon={HeartSVG}
+                    label="owner"
+                    text={formatHexAddress(ensData?.ownerId)}
+                  />
 
-              <ProfileRecordItem
-                icon={HeartSVG}
-                label="owner"
-                text={formatHexAddress(ensData?.ownerId)}
-              />
+                  <ProfileRecordItem
+                    icon={CalendarSVG}
+                    label="expiry"
+                    text={formatDate({
+                      unixTimestamp: parseInt(ensData?.expiryDate),
+                    })}
+                  />
 
-              <ProfileRecordItem
-                icon={CalendarSVG}
-                label="expiry"
-                text={formatDate({
-                  unixTimestamp: parseInt(ensData?.expiryDate),
-                })}
-              />
-
-              <ProfileRecordItem
-                icon={EthTransparentSVG}
-                label="parent"
-                text={ensData?.parentName}
-              />
+                  <ProfileRecordItem
+                    icon={EthTransparentSVG}
+                    label="parent"
+                    text={ensData?.parentName}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
