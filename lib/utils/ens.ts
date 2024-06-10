@@ -3,7 +3,7 @@ import { publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
 import moment from "moment";
 
-const ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
+const ENS_ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
 
 export interface ResolvedEnsData {
   ownerId: `0x${string}`;
@@ -14,7 +14,7 @@ export interface ResolvedEnsData {
   textRecords: ENSRecords;
 }
 
-const QUERY = `
+const ENS_QUERY = `
     query($domain: String!) {
         domains(where:{name: $domain}) { 
             resolvedAddress {
@@ -35,17 +35,14 @@ const QUERY = `
     }
 `;
 
-const request = async (
-  endpoint: string,
-  query: string,
-  variables: Record<string, any>,
-  fetchOptions: RequestInit = {}
-) => {
-  const res = await fetch(endpoint, {
-    ...fetchOptions,
-    body: JSON.stringify({ query, variables }),
+const fetchEnsDataRequest = async (domain: string) => {
+  const res = await fetch(ENS_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: ENS_QUERY,
+      variables: { domain },
+    }),
   });
 
   assert.strictEqual(200, res.status);
@@ -80,61 +77,57 @@ const fetchAllEnsTextRecords = async (
           name: normalize(domain),
           key,
         });
-        records[key] = ensText ?? "No record found";
+        records[key] = ensText ?? "";
       }
     } catch (error) {
       console.error(`Error fetching text record for key ${key}:`, error);
       records[key] = "Error fetching record";
     }
   });
-
   await Promise.all(promises);
 
   return records;
 };
 
-export const getENSData = (opts?: Partial<{ endpointUrl: string }>) => {
-  const endpointUrl = opts?.endpointUrl || ENDPOINT;
+export async function getENS(_domain: string): Promise<any> {
+  if (!(ADDRESS_REGEX.test(_domain) || _domain?.endsWith(".eth")))
+    throw new Error(`Invalid ENS domain or ethereum address: ${_domain}`);
+  const domain = _domain;
 
-  return async function getENS(
-    _domain: string,
-    fetchOptions?: RequestInit
-  ): Promise<any> {
-    if (!(ADDRESS_REGEX.test(_domain) || _domain?.endsWith(".eth")))
-      throw new Error(`Invalid ENS domain or ethereum address: ${_domain}`);
-    const domain = _domain;
+  const ens = await fetchEnsDataRequest(domain);
 
-    const ens = await request(endpointUrl, QUERY, { domain }, fetchOptions);
+  if (ens) {
+    let returnedData: ResolvedEnsData = {
+      ownerId: ens.owner.id,
+      address: ens.resolvedAddress.id,
+      expiryDate: ens.expiryDate,
+      parentName: ens.parent.name,
+      coinTypes: ens.resolver.coinTypes,
+      textRecords: {},
+    };
 
-    if (ens) {
-      const records = await fetchAllEnsTextRecords(
-        domain,
-        ens.resolver.texts
-      ).then((records) => {
-        const returnedData: ResolvedEnsData = {
-          ownerId: ens.owner.id,
-          address: ens.resolvedAddress.id,
-          expiryDate: ens.expiryDate,
-          parentName: ens.parent.name,
-          coinTypes: ens.resolver.coinTypes,
-          textRecords: records,
-        };
-
-        return returnedData;
-      });
-
-      return records;
-    } else {
-      return {
-        owner: null,
-        address: null,
-        records: {},
-        domain: null,
-        coins: {},
-      };
+    if (ens?.resolver?.texts) {
+      await fetchAllEnsTextRecords(domain, ens.resolver.texts).then(
+        (records) => {
+          returnedData = {
+            ...returnedData,
+            textRecords: records,
+          };
+        }
+      );
     }
-  };
-};
+
+    return returnedData;
+  } else {
+    return {
+      owner: null,
+      address: null,
+      records: {},
+      domain: null,
+      coins: {},
+    };
+  }
+}
 
 export function formatHexAddress(hexAddress: string): string {
   const startLength = 6;

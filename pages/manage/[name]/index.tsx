@@ -16,7 +16,7 @@ import {
 } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
-import { formatDate, formatHexAddress, getENSData } from "@/lib/utils/ens";
+import { formatDate, formatHexAddress, getENS } from "@/lib/utils/ens";
 
 import {
   Button,
@@ -32,7 +32,6 @@ import {
   SkeletonGroup,
   Toggle,
 } from "@ensdomains/thorin";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -51,8 +50,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   const handleFetchENS = async () => {
     try {
-      const resolveENS = getENSData();
-      const data = await resolveENS(name);
+      const data = await getENS(name);
       setEnsData(data);
       setError(null);
     } catch (err) {
@@ -68,8 +66,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
   useEffect(() => {
     handleFetchENS();
   }, []);
-
-  console.log("ENS DATA ", ensData);
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
@@ -152,10 +148,12 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         <Link
                           target="_blank"
                           href={`mailto:${ensData?.textRecords?.["email"]}`}
-                          className="p-2"
+                          className="p-2 flex gap-2 group"
                         >
-                          <EmailIcon className="w-5 h-5" />
-                          <h3>{ensData?.textRecords?.["email"]}</h3>
+                          <EmailIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
+                          <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+                            {ensData?.textRecords?.["email"]}
+                          </h3>
                         </Link>
                       )}
 
@@ -180,7 +178,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         >
                           <TwitterIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
                           <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.textRecords?.["com.github"]}
+                            {ensData?.textRecords?.["com.twitter"]}
                           </h3>
                         </Link>
                       )}
