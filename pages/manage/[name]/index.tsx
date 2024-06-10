@@ -67,6 +67,28 @@ export function ManageNamePageContent({ name }: { name: string }) {
     handleFetchENS();
   }, []);
 
+  const excludeKeys = [
+    "com.twitter",
+    "com.telegram",
+    "avatar",
+    "com.github",
+    "email",
+    "description",
+    "name",
+    "url",
+  ];
+
+  let filteredRecords: Record<string, string> = {};
+
+  if (ensData) {
+    filteredRecords = Object.keys(ensData.textRecords)
+      .filter((key) => !excludeKeys.includes(key))
+      .reduce((obj: Record<string, string>, key) => {
+        obj[key] = ensData.textRecords[key];
+        return obj;
+      }, {});
+  }
+
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
       <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
@@ -198,19 +220,41 @@ export function ManageNamePageContent({ name }: { name: string }) {
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                <div className="flex flex-col gap-4">
-                  <Skeleton>
-                    <h3 className="font-semibold text-base">Addresses</h3>
-                  </Skeleton>
-                  <div className="grid grid-cols-2 gap-4">
+                {ensData?.address && (
+                  <div className="flex flex-col gap-4">
                     <Skeleton>
-                      <ProfileRecordItem
-                        icon={EthTransparentSVG}
-                        text={formatHexAddress(ensData?.address)}
-                      />
+                      <h3 className="font-semibold text-base">Addresses</h3>
                     </Skeleton>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Skeleton>
+                        <ProfileRecordItem
+                          icon={EthTransparentSVG}
+                          text={formatHexAddress(ensData?.address)}
+                        />
+                      </Skeleton>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {Object.keys(filteredRecords).length !== 0 && (
+                  <div className="flex flex-col gap-4">
+                    <Skeleton>
+                      <h3 className="font-semibold text-base">Other Records</h3>
+                    </Skeleton>
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.entries(filteredRecords).map(([key, value]) => (
+                        <Skeleton key={key}>
+                          <ProfileRecordItem
+                            icon={EthTransparentSVG}
+                            key={key}
+                            label={key}
+                            text={value}
+                          />
+                        </Skeleton>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-col gap-4">
                   <Skeleton>
                     <h3 className="font-semibold text-base">Ownership</h3>
