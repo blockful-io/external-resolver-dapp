@@ -96,13 +96,13 @@ export async function getENS(_domain: string): Promise<any> {
 
   const ens = await fetchEnsDataRequest(domain);
 
-  if (ens) {
+  if (!!ens) {
     let returnedData: ResolvedEnsData = {
-      ownerId: ens.owner.id,
-      address: ens.resolvedAddress.id,
-      expiryDate: ens.expiryDate,
-      parentName: ens.parent.name,
-      coinTypes: ens.resolver.coinTypes,
+      ownerId: ens?.owner?.id,
+      address: ens?.resolvedAddress?.id,
+      expiryDate: ens?.expiryDate,
+      parentName: ens?.parent?.name,
+      coinTypes: ens?.resolver?.coinTypes,
       textRecords: {},
     };
 
