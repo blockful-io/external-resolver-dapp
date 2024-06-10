@@ -14,9 +14,9 @@ import {
   Tab,
   ProfileRecordItem,
 } from "@/components/02-molecules";
+import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { formatDate, formatHexAddress, getENSData } from "@/lib/utils/ens";
-import { isTestnet } from "@/lib/wallet/chains";
 
 import {
   Button,
@@ -69,6 +69,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
     handleFetchENS();
   }, []);
 
+  console.log("ENS DATA ", ensData);
+
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
       <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
@@ -91,15 +93,17 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
                   <div className="w-full px-6 pb-6 flex flex-col gap-5">
                     <div className="h-[56px] items-end w-full flex justify-between">
-                      <Skeleton>
-                        <Image
+                      {ensData?.textRecords?.avatar ? (
+                        <CustomImage
                           alt="avatar image"
                           width={100}
                           height={100}
                           src={ensData?.textRecords?.avatar}
-                          className="w-[100px] h-[100px] bg-purple-500 border-4 border-white rounded-[10px]"
+                          className="w-[100px] h-[100px] border-4 border-white rounded-[10px]"
                         />
-                      </Skeleton>
+                      ) : (
+                        <div className="w-[100px] h-[100px] border-4 bg-gradient-ens border-white rounded-[10px]" />
+                      )}
 
                       <div>
                         <Button
@@ -117,12 +121,18 @@ export function ManageNamePageContent({ name }: { name: string }) {
                     <div className="flex flex-col">
                       <Skeleton>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-[26px]">Coolcats.eth</h3>
+                          <h3 className="text-[26px]">{name}</h3>
                           <CopySVG className="text-gray-400 cursor-pointer hover:text-black transition-colors duration-300" />
                         </div>
-                        <h3 className="text-[16px] text-blue-500">
-                          www.coolcats.com
-                        </h3>
+                        {ensData?.textRecords?.url && (
+                          <a
+                            href={ensData.textRecords.url}
+                            target="_blank"
+                            className="text-[16px] text-blue-500"
+                          >
+                            {ensData.textRecords.url}
+                          </a>
+                        )}
                       </Skeleton>
                     </div>
                     <Skeleton>

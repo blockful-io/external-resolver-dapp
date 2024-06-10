@@ -69,12 +69,19 @@ const fetchAllEnsTextRecords = async (
 
   const promises = textKeys.map(async (key) => {
     try {
-      const ensText = await publicClient.getEnsText({
-        name: normalize(domain),
-        key,
-      });
-
-      records[key] = ensText ?? "No record found";
+      let ensText;
+      if (key === "avatar") {
+        ensText = await publicClient.getEnsAvatar({
+          name: normalize(domain),
+        });
+        records[key] = ensText ?? "";
+      } else {
+        ensText = await publicClient.getEnsText({
+          name: normalize(domain),
+          key,
+        });
+        records[key] = ensText ?? "No record found";
+      }
     } catch (error) {
       console.error(`Error fetching text record for key ${key}:`, error);
       records[key] = "Error fetching record";
