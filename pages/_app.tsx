@@ -25,7 +25,7 @@ import { DappHeader } from "@/components/01-atoms";
 import { Session } from "next-auth";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export default function App({
   Component,
@@ -39,11 +39,11 @@ export default function App({
         <Provider store={nameRegistrationStore}>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider theme={lightTheme}>
+              <ThorinGlobalStyles />
               <RainbowKitSiweNextAuthProvider
                 getSiweMessageOptions={getSiweMessageOptions}
               >
                 <RainbowKitProvider>
-                  <ThorinGlobalStyles />
                   <div
                     style={{ background: "#fff" }}
                     className={`${inter.className} h-screen flex flex-col`}
