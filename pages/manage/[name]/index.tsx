@@ -78,31 +78,9 @@ export function ManageNamePageContent({ name }: { name: string }) {
           </Link>
         </div>
       </div>
-      {/* <div className="w-full relative max-w-[1216px] m-auo">
-        <Image
-          alt="avatar image"
-          width={100}
-          height={100}
-          src={ensData?.textRecords?.avatar}
-          className="w-[100px] h-[100px] bg-purple-500 absolute left-0 -translate-y-1/2 border-4 border-white rounded-[10px]"
-        />
-      </div> */}
 
       <div className="w-full p-[60px]">
         <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
-          {/* <div className="h-[50px] w-full flex justify-end items-end">
-            <div>
-              <Button
-                onClick={() => {
-                  setModalOpen(true);
-                }}
-                size="small"
-                prefix={<PencilIcon />}
-              >
-                Edit
-              </Button>
-            </div>
-          </div> */}
           <div className="w-full flex gap-[60px]">
             <div className="w-[376px] flex flex-col rounded-md overflow-hidden border border-gray-200 ">
               <div className="h-[120px] w-full bg-gradient-ens" />
