@@ -52,8 +52,6 @@ const request = async (
 
   const json = await res.json();
 
-  console.log("JSON ", json);
-
   return json.data.domains[0];
 };
 
@@ -106,8 +104,6 @@ export const getENSData = (opts?: Partial<{ endpointUrl: string }>) => {
         domain,
         ens.resolver.texts
       ).then((records) => {
-        console.log("ENS Text Records:", records);
-
         const returnedData: ResolvedEnsData = {
           ownerId: ens.owner.id,
           address: ens.resolvedAddress.id,

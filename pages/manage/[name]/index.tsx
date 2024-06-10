@@ -16,6 +16,7 @@ import {
 } from "@/components/02-molecules";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { formatDate, formatHexAddress, getENSData } from "@/lib/utils/ens";
+import { isTestnet } from "@/lib/wallet/chains";
 
 import {
   Button,
