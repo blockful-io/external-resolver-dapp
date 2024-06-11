@@ -36,6 +36,7 @@ export const NameSecuredToBeRegisteredComponent = ({
     return await register({
       authenticatedAddress: authedUser,
       ensName: nameRegistrationData.name,
+      domainResolver: nameRegistrationData.ensResolver,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });
@@ -68,7 +69,7 @@ export const NameSecuredToBeRegisteredComponent = ({
             onSuccess={(txReceipt: TransactionReceipt) => {
               setCommitTxReceipt(txReceipt);
 
-              setTimeout(() => handleNextStep(), 5000);
+              setTimeout(handleNextStep, 5000);
             }}
             transactionRequest={registerName}
           />

@@ -11,6 +11,8 @@ import {
 import { useState } from "react";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { TransactionReceipt } from "viem";
+import Link from "next/link";
+import { isTestnet } from "@/lib/wallet/chains";
 
 enum BlockchainCTAState {
   OPEN_WALLET,
@@ -30,8 +32,9 @@ export const BlockchainCTA = ({
 }: BlockchainCTAProps) => {
   const [blockchainCtaStatus, setBlockchainCtaStatus] =
     useState<BlockchainCTAState>(BlockchainCTAState.OPEN_WALLET);
-
-  const { setCommitTxReceipt } = useNameRegistration();
+  const [txHashOrError, setTxHashOrError] = useState<
+    `0x${string}` | undefined
+  >();
 
   const sendBlockchainTx = async () => {
     setBlockchainCtaStatus(BlockchainCTAState.APPROVING_IN_WALLET);
@@ -58,6 +61,8 @@ export const BlockchainCTA = ({
       toast.error(`Request failed: please try again`);
       setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
     } else {
+      setTxHashOrError(txHashOrError);
+
       setBlockchainCtaStatus(BlockchainCTAState.WAITING_FOR_CONFIRMATION);
 
       const txReceipt = await awaitBlockchainTxReceipt(txHashOrError);
@@ -73,9 +78,10 @@ export const BlockchainCTA = ({
     }
   };
 
-  return BlockchainCTAComponent({ onClick: () => sendBlockchainTx() })[
-    blockchainCtaStatus
-  ];
+  return BlockchainCTAComponent({
+    onClick: () => sendBlockchainTx(),
+    txHash: txHashOrError,
+  })[blockchainCtaStatus];
 };
 
 const OpenWalletCTA = ({ onClick }: BlockchainCTAComponentProps) => {
@@ -88,17 +94,33 @@ const OpenWalletCTA = ({ onClick }: BlockchainCTAComponentProps) => {
 
 const TransactionRequestConfirmedCTA = ({
   onClick,
+  txHash,
 }: BlockchainCTAComponentProps) => {
   return (
-    <Button
-      className="pointer-events-none"
-      colorStyle="bluePrimary"
-      onClick={onClick}
-      shape="rounded"
-      suffix={<LinkSVG />}
-    >
-      Awaiting Blockchain confirmation
-    </Button>
+    <div className="flex flex-col space-y-2 justify">
+      <Button
+        className="pointer-events-none"
+        colorStyle="bluePrimary"
+        onClick={onClick}
+        shape="rounded"
+        suffix={<LinkSVG />}
+      >
+        Awaiting Blockchain confirmation
+      </Button>
+      {txHash && (
+        <Link
+          target="_blank"
+          className="underline text-blue-500 font-bold hover:text-blue-400 transition"
+          href={
+            isTestnet
+              ? `https://sepolia.etherscan.io/tx/${txHash}`
+              : `https://etherscan.io/tx/${txHash}`
+          }
+        >
+          [see details]
+        </Link>
+      )}
+    </div>
   );
 };
 
@@ -151,16 +173,20 @@ export const TransactionConfirmedInBlockchainCTA = ({
 
 interface BlockchainCTAComponentProps {
   onClick: () => void;
+  txHash?: `0x${string}`;
 }
 
-const BlockchainCTAComponent = ({ onClick }: BlockchainCTAComponentProps) => {
+const BlockchainCTAComponent = ({
+  onClick,
+  txHash,
+}: BlockchainCTAComponentProps) => {
   return {
     [BlockchainCTAState.OPEN_WALLET]: <OpenWalletCTA onClick={onClick} />,
     [BlockchainCTAState.APPROVING_IN_WALLET]: (
       <TransactionRequestSentCTA onClick={onClick} />
     ),
     [BlockchainCTAState.WAITING_FOR_CONFIRMATION]: (
-      <TransactionRequestConfirmedCTA onClick={onClick} />
+      <TransactionRequestConfirmedCTA onClick={onClick} txHash={txHash} />
     ),
     [BlockchainCTAState.CONFIRMED]: (
       <TransactionConfirmedInBlockchainCTA onClick={onClick} />

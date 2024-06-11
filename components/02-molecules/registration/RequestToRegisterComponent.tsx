@@ -45,6 +45,7 @@ export const RequestToRegisterComponent = ({
     return await commit({
       authenticatedAddress: authedUser,
       ensName: nameRegistrationData.name,
+      domainResolver: nameRegistrationData.ensResolver,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });

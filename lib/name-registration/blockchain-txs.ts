@@ -4,6 +4,8 @@ import { publicClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
+  EnsResolver,
+  ensResolverAddress,
   nameRegistrationContracts,
 } from "./constants";
 
@@ -98,12 +100,14 @@ export async function makeCommitment({
 */
 export const commit = async ({
   ensName,
+  domainResolver,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
   durationInYears: bigint;
+  domainResolver: EnsResolver;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -123,7 +127,7 @@ export const commit = async ({
       durationInYears: durationInYears,
       secret: getNameRegistrationSecret(),
       reverseRecord: registerAndSetAsPrimaryName,
-      resolverAddress: nameRegistrationContracts.ENS_PUBLIC_RESOLVER,
+      resolverAddress: ensResolverAddress[domainResolver],
       ownerControlledFuses: DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
     });
 
@@ -151,12 +155,14 @@ export const commit = async ({
 */
 export const register = async ({
   ensName,
+  domainResolver,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
   durationInYears: bigint;
+  domainResolver: EnsResolver;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -169,8 +175,6 @@ export const register = async ({
 
     const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
 
-    const value = await getNamePrice({ ensName, durationInYears });
-
     const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
       chain: isTestnet ? sepolia : mainnet,
@@ -180,14 +184,13 @@ export const register = async ({
         authenticatedAddress,
         durationInYears * SECONDS_PER_YEAR,
         getNameRegistrationSecret(),
-        nameRegistrationContracts.ENS_PUBLIC_RESOLVER,
+        ensResolverAddress[domainResolver],
         [addrCalldata],
         registerAndSetAsPrimaryName,
         DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
       ],
       abi: ETHRegistrarABI,
       functionName: "register",
-      value,
     });
 
     return txHash;
