@@ -1,14 +1,14 @@
+import { HomepageBg } from "@/components/01-atoms";
 import { ChangeEvent, useEffect, useState } from "react";
 import { CrossCircleSVG, Spinner, Tag } from "@ensdomains/thorin";
-import { HomepageBg } from "@/components/01-atoms";
 import { isNameAvailable } from "@/lib/name-registration/blockchain-txs";
-import { ENSName, buildENSName } from "@namehash/ens-utils";
+import { ENSName, buildENSName, Normalization } from "@namehash/ens-utils";
 import { DebounceInput } from "react-debounce-input";
 import { useRouter } from "next/router";
 
 export default function Home() {
   const router = useRouter();
-  const [domain, setDomain] = useState("");
+  const [domain, setDomain] = useState<ENSName | null>(null);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -16,16 +16,7 @@ export default function Home() {
 
     setIsAvailable(null);
 
-    let ensName: null | ENSName = null;
-    try {
-      ensName = buildENSName(domain);
-    } catch (error) {
-      console.error(error);
-      setIsAvailable(false);
-      return;
-    }
-
-    isNameAvailable(ensName)
+    isNameAvailable(domain)
       .then((isAvailable: boolean) => {
         setIsAvailable(isAvailable);
       })
@@ -35,11 +26,20 @@ export default function Home() {
   }, [domain]);
 
   const clearDomainSearch = () => {
-    setDomain("");
+    setDomain(null);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDomain(e.target.value);
+    let ensName: ENSName | null = null;
+
+    try {
+      ensName = buildENSName(e.target.value);
+    } catch (error) {
+      console.error(error);
+      setIsAvailable(false);
+    }
+
+    setDomain(ensName);
   };
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -67,14 +67,14 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Input  */}
-        <div className="w-full h-[52px] relative max-w-[470px] ">
+        {/* Input */}
+        <div className="w-full h-[52px] relative max-w-[470px]">
           <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl">
             <div className="flex w-full justify-center items-center p-2 pl-5">
               <DebounceInput
                 minLength={3}
-                value={domain}
                 debounceTimeout={300}
+                value={domain?.displayName}
                 onChange={handleInputChange}
                 onKeyDown={(e) => goToRegisterPage(e)}
                 className="w-full py-2 text-black"
@@ -100,12 +100,18 @@ export default function Home() {
               }`}
             >
               <div className="flex w-full justify-between items-center border-gray-200 border-t p-4 pl-5 ">
-                <p className="text-gray-500 min-h-6">
+                <p
+                  className={
+                    domain?.normalization === Normalization.unnormalized
+                      ? "text-red-500"
+                      : "text-gray-400 min-h-6"
+                  }
+                >
                   {domain ? (
-                    domain.includes(".eth") ? (
-                      domain
+                    domain.displayName.includes(".eth") ? (
+                      domain.displayName
                     ) : (
-                      `${domain}.eth`
+                      `${domain.displayName}.eth`
                     )
                   ) : (
                     <span />

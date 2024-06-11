@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ensdomains/thorin": "^0.6.50",
-    "@namehash/ens-utils": "1.8.6",
+    "@namehash/ens-utils": "^1.12.1",
     "@rainbow-me/rainbowkit": "2.0.4",
     "@rainbow-me/rainbowkit-siwe-next-auth": "^0.4.0",
     "@reduxjs/toolkit": "^2.2.3",
