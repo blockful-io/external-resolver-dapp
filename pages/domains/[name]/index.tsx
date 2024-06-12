@@ -52,7 +52,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       <div className="w-full h-[200px] bg-gradient-ens py-10 px-[60px] flex items-start">
         <div className="w-full max-w-[1216px] flex mx-auto">
           <Link
-            href="/manage"
+            href="/domains"
             className="flex items-center justify-center flex-shrink text-white gap-2"
           >
             <LeftChevronSVG /> <p>Back</p>
