@@ -2,19 +2,20 @@ import assert from "assert";
 import { publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
 import moment from "moment";
+import { isAddress } from "viem";
 
 const ENS_ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
 
 export interface ResolvedEnsData {
-  ownerId: `0x${string}`;
-  address: `0x${string}`;
-  parentName: string;
-  expiryDate: string;
-  coinTypes: string[];
-  textRecords: ENSRecords;
+  ownerId: `0x${string}` | null;
+  address: `0x${string}` | null;
+  parentName: string | null;
+  expiryDate: string | null;
+  coinTypes: string[] | null;
+  textRecords: ENSRecords | null;
 }
 
-const ENS_QUERY = `
+const ENS_DOMAIN_TEXT_RECORDS_QUERY = `
     query($domain: String!) {
         domains(where:{name: $domain}) { 
             resolvedAddress {
@@ -40,7 +41,7 @@ const fetchEnsDataRequest = async (domain: string) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      query: ENS_QUERY,
+      query: ENS_DOMAIN_TEXT_RECORDS_QUERY,
       variables: { domain },
     }),
   });
@@ -89,10 +90,9 @@ const fetchAllEnsTextRecords = async (
   return records;
 };
 
-export async function getENS(_domain: string): Promise<any> {
-  if (!(ADDRESS_REGEX.test(_domain) || _domain?.endsWith(".eth")))
-    throw new Error(`Invalid ENS domain or ethereum address: ${_domain}`);
-  const domain = _domain;
+export async function getENS(domain: string): Promise<ResolvedEnsData> {
+  if (!(ADDRESS_REGEX.test(domain) || domain?.endsWith(".eth")))
+    throw new Error(`Invalid ENS domain or ethereum address: ${domain}`);
 
   const ens = await fetchEnsDataRequest(domain);
 
@@ -120,11 +120,12 @@ export async function getENS(_domain: string): Promise<any> {
     return returnedData;
   } else {
     return {
-      owner: null,
+      ownerId: null,
       address: null,
-      records: {},
-      domain: null,
-      coins: {},
+      expiryDate: null,
+      parentName: null,
+      coinTypes: null,
+      textRecords: {},
     };
   }
 }
@@ -138,7 +139,7 @@ export function formatHexAddress(hexAddress: string): string {
   }
 
   // Validate input
-  if (!hexAddress || !hexAddress.startsWith("0x") || hexAddress.length !== 42) {
+  if (isAddress(hexAddress)) {
     throw new Error("Invalid Ethereum address");
   }
 
