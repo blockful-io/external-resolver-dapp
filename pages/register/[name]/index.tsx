@@ -10,7 +10,7 @@ import {
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { useEffect } from "react";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
 export async function getServerSideProps({
