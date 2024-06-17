@@ -16,7 +16,14 @@ import {
 } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
-import { formatDate, formatHexAddress, getENS } from "@/lib/utils/ens";
+import {
+  formatDate,
+  formatHexAddress,
+  getENS,
+  writeEnsData,
+} from "@/lib/utils/ens";
+import { isTestnet } from "@/lib/wallet/chains";
+import { useUser } from "@/lib/wallet/useUser";
 
 import {
   Button,
@@ -48,6 +55,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [ensData, setEnsData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { authedUser } = useUser();
+
   const handleFetchENS = async () => {
     try {
       const data = await getENS(name);
@@ -65,6 +74,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   useEffect(() => {
     handleFetchENS();
+
+    writeEnsData("0x89F8e4020c0dd384F13c288bc5743F963F9D8fdF", "pikonha.eth");
   }, []);
 
   const excludeKeys = [

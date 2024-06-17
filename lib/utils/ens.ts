@@ -1,8 +1,24 @@
 import assert from "assert";
 import { publicClient } from "../wallet/wallet-config";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
 import moment from "moment";
-import { isAddress } from "viem";
+import {
+  Address,
+  BaseError,
+  Hash,
+  Hex,
+  PrivateKeyAccount,
+  RawContractError,
+  encodeFunctionData,
+  getChainContractAddress,
+  isAddress,
+  namehash,
+  toHex,
+} from "viem";
+
+import { abi as dbAbi } from "./DatabaseResolver.json";
+import { abi as uAbi } from "./UniversalResolver.json";
+import { sepolia } from "viem/chains";
 
 const ENS_ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
 
@@ -53,6 +69,138 @@ const fetchEnsDataRequest = async (domain: string) => {
   return json.data.domains[0];
 };
 
+// export async function handleDBStorage({
+//   domain,
+//   url,
+//   message,
+//   signer,
+// }: {
+//   // need help with those 2
+//   domain: DomainData;
+//   url: string;
+//   message: MessageData;
+//   signer: PrivateKeyAccount;
+// }) {
+//   const signature = await signer.signTypedData({
+//     domain,
+//     message,
+//     types: {
+//       Message: [
+//         { name: "functionSelector", type: "bytes4" },
+//         { name: "sender", type: "address" },
+//         { name: "parameters", type: "Parameter[]" },
+//         { name: "expirationTimestamp", type: "uint256" },
+//       ],
+//       Parameter: [
+//         { name: "name", type: "string" },
+//         { name: "value", type: "string" },
+//       ],
+//     },
+//     primaryType: "Message",
+//   });
+
+//   const callData = encodeFunctionData({
+//     abi: dbAbi,
+//     functionName: message.functionSelector,
+//     args: message.parameters.map((arg) => arg.value),
+//   });
+//   await ccipRequest({
+//     body: {
+//       data: callData,
+//       signature: { message, domain, signature },
+//       sender: message.sender,
+//     },
+//     url,
+//   });
+// }
+
+// export type CcipRequestParameters = {
+//   body: { data: Hex; signature: TypedSignature; sender: Address };
+//   url: string;
+// };
+
+// export async function ccipRequest({
+//   body,
+//   url,
+// }: CcipRequestParameters): Promise<Response> {
+//   return await fetch(url.replace("/{sender}/{data}.json", ""), {
+//     body: JSON.stringify(body, (_, value) =>
+//       typeof value === "bigint" ? value.toString() : value
+//     ),
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
+// }
+
+export const writeEnsData = async (authedUser: string, domain: string) => {
+  const resolver = getChainContractAddress({
+    chain: sepolia,
+    contract: "ensUniversalResolver",
+  });
+
+  const [resolverAddr] = (await publicClient.readContract({
+    address: resolver,
+    functionName: "findResolver",
+    abi: uAbi,
+    args: [toHex(packetToBytes("eduardo.eth"))],
+  })) as Hash[];
+
+  // REGISTER NEW DOMAIN
+  try {
+    await publicClient.simulateContract({
+      functionName: "register",
+      abi: dbAbi,
+      args: [namehash("eduardo.eth"), 999999999n],
+      account: authedUser as Hash,
+      address: resolverAddr,
+    });
+  } catch (err) {
+    console.log("error :", err);
+    // const data = getRevertErrorData(err);
+    // if (data?.errorName === "StorageHandledByOffChainDatabase") {
+    //   const [domain, url, message] = data.args as [
+    //     DomainData,
+    //     string,
+    //     MessageData
+    //   ];
+    //   await handleDBStorage({ domain, url, message, signer });
+    // } else {
+    //   console.error("writing failed: ", { err });
+    // }
+  }
+
+  try {
+    await publicClient.simulateContract({
+      functionName: "setText",
+      abi: dbAbi,
+      args: [namehash("eduardo.eth"), "com.twitter", "@blockful.eth"],
+      address: resolverAddr, // contract to call
+      account: authedUser as Hash, // conta do usuário logado
+    });
+  } catch (err) {
+    console.log("error :", err);
+    // const data = getRevertErrorData(err)
+    // if (data?.errorName === "StorageHandledByOffChainDatabase’) {
+    //   const [domain, url, message] = data?.args as [
+    //     DomainData,
+    //     string,
+    //     MessageData,
+    //   ]
+    //   await handleDBStorage({ domain, url, message, signer })
+    // } else {
+    //   console.error(‘writing failed: ’, { err })
+    // }
+  }
+};
+
+// export function getRevertErrorData(err: unknown) {
+//   if (!(err instanceof BaseError)) return undefined;
+//   const error = err.walk() as RawContractError;
+//   return error?.data as { errorName: string; args: unknown[] };
+// }
+
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 
 export interface ENSRecords {
@@ -86,6 +234,8 @@ const fetchAllEnsTextRecords = async (
     }
   });
   await Promise.all(promises);
+
+  console.log("records: ", records);
 
   return records;
 };
@@ -138,8 +288,9 @@ export function formatHexAddress(hexAddress: string): string {
     return "";
   }
 
+  console.log(hexAddress);
   // Validate input
-  if (isAddress(hexAddress)) {
+  if (!isAddress(hexAddress)) {
     throw new Error("Invalid Ethereum address");
   }
 
