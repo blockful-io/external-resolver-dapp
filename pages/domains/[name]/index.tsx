@@ -94,7 +94,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
         <div className="w-full max-w-[1216px] flex mx-auto">
           <Link
-            href="/manage"
+            href="/domains"
             className="flex items-center justify-center flex-shrink text-gray-400 hover:text-black duration-300 transition-colors gap-2"
           >
             <LeftChevronSVG /> <p className="text-black">Back</p>
