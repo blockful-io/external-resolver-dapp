@@ -1,5 +1,4 @@
 import { toast } from "react-hot-toast";
-import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { awaitBlockchainTxReceipt } from "@/lib/wallet/txUtils";
 import {
   AeroplaneSVG,
@@ -46,6 +45,8 @@ export const BlockchainCTA = ({
       txHashOrError === TransactionErrorType.REVERTED ||
       txHashOrError === TransactionErrorType.NO_MATCHING_KEY;
     const transactionDeclined = txHashOrError === TransactionErrorType.DECLINED;
+    const transactionFailedDueToInsufficientBalance =
+      txHashOrError === TransactionErrorType.INSUFFICIENT_BALANCE;
     const transactionFailed = txHashOrError === TransactionErrorType.UNKNOWN;
 
     if (transactionReverted) {
@@ -59,6 +60,10 @@ export const BlockchainCTA = ({
     } else if (transactionFailed) {
       console.error(txHashOrError);
       toast.error(`Request failed: please try again`);
+      setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+    } else if (transactionFailedDueToInsufficientBalance) {
+      console.error(txHashOrError);
+      toast.error(`Insufficient wallet balance: add funds and try again`);
       setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
     } else {
       setTxHashOrError(txHashOrError);
@@ -97,27 +102,33 @@ const TransactionRequestConfirmedCTA = ({
   txHash,
 }: BlockchainCTAComponentProps) => {
   return (
-    <div className="flex flex-col space-y-2 justify">
+    <div className="flex flex-col space-y-6 justify">
       <Button
         className="pointer-events-none"
         colorStyle="bluePrimary"
         onClick={onClick}
         shape="rounded"
-        suffix={<LinkSVG />}
+        suffix={
+          <span className="relative flex h-2 w-2 ml-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+          </span>
+        }
       >
         Awaiting Blockchain confirmation
       </Button>
       {txHash && (
         <Link
           target="_blank"
-          className="underline text-blue-500 font-bold hover:text-blue-400 transition"
+          className="flex space-x-2 text-blue-500 font-bold hover:text-blue-400 transition"
           href={
             isTestnet
               ? `https://sepolia.etherscan.io/tx/${txHash}`
               : `https://etherscan.io/tx/${txHash}`
           }
         >
-          [see details]
+          <LinkSVG />
+          <p>visit transaction details page</p>
         </Link>
       )}
     </div>

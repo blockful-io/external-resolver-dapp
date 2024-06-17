@@ -6,18 +6,17 @@ export const awaitBlockchainTxReceipt = async (
 ): Promise<TransactionReceipt> => {
   let txReceipt = {} as TransactionReceipt;
 
-  while (txReceipt.blockHash === undefined) {
-    /*
+  /*
       Since the transaction takes some time to be registered in the blockchain, 
       our code waits for this to happen in order to retrieve a valid TransactionReceipt.
     */
-    const receipt = await publicClient.waitForTransactionReceipt({
-      hash: txHash,
-    });
+  const receipt = await publicClient.waitForTransactionReceipt({
+    pollingInterval: 1_000,
+    hash: txHash,
+  });
 
-    if (receipt.blockHash) {
-      txReceipt = receipt;
-    }
+  if (receipt.blockHash) {
+    txReceipt = receipt;
   }
 
   return txReceipt;

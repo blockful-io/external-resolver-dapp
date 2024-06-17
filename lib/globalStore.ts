@@ -19,6 +19,7 @@ const nameRegistrationStore = configureStore({
           "estimatedNetworkFee",
           "registrationPrice",
           "registerTxReceipt",
+          "commitTxReceipt",
           "namePrice",
         ],
       },

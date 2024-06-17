@@ -115,7 +115,7 @@ export const RegistrationSummary = () => {
             <InfoCircleIcon />
             <div>
               <p className="text-gray-400 text-sm font-semibold">
-                {gasPriceInGWei} gwei
+                {gasPriceInGWei.slice(0, 5)} gwei
               </p>
             </div>
           </div>
