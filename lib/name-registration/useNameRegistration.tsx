@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from "../globalStore";
 import { nameRegistrationInitialState } from "./reducers";
 import {
+  updateCommitSubmitTimestamp,
   updateCommitTxReceipt,
   updateCurrentRegistrationStep,
   updateEnsResolver,
@@ -18,6 +19,7 @@ import { TransactionReceipt } from "viem";
 
 interface NameRegistrationData {
   nameRegistrationData: {
+    commitSubmitTimestamp: Date | null;
     registerTxReceipt: TransactionReceipt | null;
     commitTxReceipt: TransactionReceipt | null;
     currentRegistrationStep: RegistrationStep;
@@ -35,6 +37,7 @@ interface NameRegistrationData {
   setCurrentRegistrationStep: (
     currentRegistrationStep: RegistrationStep
   ) => void;
+  setCommitSubmitTimestamp: (timestamp: Date) => void;
   setRegisterTxReceipt: (txReceipt: TransactionReceipt) => void;
   setCommitTxReceipt: (txReceipt: TransactionReceipt) => void;
   setRegistrationYears: (registrationYears: number) => void;
@@ -52,6 +55,9 @@ export const useNameRegistration = (): NameRegistrationData => {
   );
   const registrationYears = useAppSelector((state) => state.registrationYears);
   const registrationPrice = useAppSelector((state) => state.registrationPrice);
+  const commitSubmitTimestamp = useAppSelector(
+    (state) => state.commitSubmitTimestamp
+  );
   const registerTxReceipt = useAppSelector((state) => state.registerTxReceipt);
   const commitTxReceipt = useAppSelector((state) => state.commitTxReceipt);
   const asPrimaryName = useAppSelector((state) => state.asPrimaryName);
@@ -87,6 +93,10 @@ export const useNameRegistration = (): NameRegistrationData => {
     dispatch(updateCommitTxReceipt(txReceipt));
   };
 
+  const setCommitSubmitTimestamp = (timestamp: Date) => {
+    dispatch(updateCommitSubmitTimestamp(timestamp));
+  }
+  
   const setRegisterTxReceipt = (txReceipt: TransactionReceipt) => {
     dispatch(updateRegisterTxReceipt(txReceipt));
   };
@@ -106,6 +116,7 @@ export const useNameRegistration = (): NameRegistrationData => {
   return {
     nameRegistrationData:
       {
+        commitSubmitTimestamp,
         currentRegistrationStep,
         estimatedNetworkFee,
         registrationYears,
@@ -118,6 +129,7 @@ export const useNameRegistration = (): NameRegistrationData => {
         name,
       } || nameRegistrationInitialState,
     setCurrentRegistrationStep,
+    setCommitSubmitTimestamp,
     setEstimatedNetworkFee,
     setRegistrationYears,
     setRegistrationPrice,

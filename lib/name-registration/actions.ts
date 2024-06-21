@@ -10,6 +10,7 @@ import { TransactionReceipt } from "viem";
 export enum NameRegistrationAction {
   "controller/namePrice" = "controller/namePrice",
   "controller/commitTxReceipt" = "controller/commitTxReceipt",
+  "controller/commitSubmitTimestamp" = "controller/commitSubmitTimestamp",
   "controller/registerTxReceipt" = "controller/registerTxReceipt",
   "controller/registrationPrice" = "controller/registrationPrice",
   "controller/estimatedNetworkFee" = "controller/estimatedNetworkFee",
@@ -75,6 +76,11 @@ export const updateEstimatedNetworkFee = (estimatedNetworkFee: bigint) => ({
 export const updateRegistrationPrice = (registrationPrice: bigint) => ({
   type: NameRegistrationAction["controller/registrationPrice"],
   payload: registrationPrice,
+});
+
+export const updateCommitSubmitTimestamp = (timestamp: Date) => ({
+  type: NameRegistrationAction["controller/commitSubmitTimestamp"],
+  payload: timestamp,
 });
 
 /*

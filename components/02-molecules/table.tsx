@@ -9,22 +9,27 @@ export const Table = () => {
 
   const data = [
     {
-      domain: "coolcats.eth",
+      domain: "alextnetto.eth",
       role: ["Owner", "Manager"],
       avatar: "/coolcat.avif",
     },
     {
-      domain: "gh0stlygh0st.eth",
+      domain: "frankind.eth",
       role: ["Owner", "ETH record"],
       avatar: "/coolcat.avif",
     },
     {
-      domain: "boredape.eth",
+      domain: "edulennert.eth",
       role: ["Owner", "Manager", "ETH record"],
       avatar: "/coolcat.avif",
     },
     {
-      domain: "theseklilies.eth",
+      domain: "pikonha.eth",
+      role: ["Manager", "ETH record"],
+      avatar: "/coolcat.avif",
+    },
+    {
+      domain: "leo.eth",
       role: ["Manager", "ETH record"],
       avatar: "/coolcat.avif",
     },

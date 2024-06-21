@@ -14,6 +14,7 @@ export interface NameRegistrationData {
   registrationPrice: bigint | null;
   estimatedNetworkFee: bigint | null;
   commitTxReceipt: null | TransactionReceipt;
+  commitSubmitTimestamp: null | Date;
   registerTxReceipt: null | TransactionReceipt;
 }
 
@@ -23,6 +24,7 @@ export const nameRegistrationInitialState: NameRegistrationData = {
   registrationPrice: null,
   registerTxReceipt: null,
   commitTxReceipt: null,
+  commitSubmitTimestamp: null,
   registrationYears: 1,
   asPrimaryName: false,
   ensResolver: null,
@@ -62,6 +64,11 @@ const nameRegistrationReducer = (
       return {
         ...state,
         commitTxReceipt: action.payload,
+      };
+    case NameRegistrationAction["controller/commitSubmitTimestamp"]:
+      return {
+        ...state,
+        commitSubmitTimestamp: action.payload,
       };
     case NameRegistrationAction["model/currentRegistrationStep"]:
       return {
