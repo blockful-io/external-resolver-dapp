@@ -75,7 +75,7 @@ export async function makeCommitment({
       args: [
         name,
         authenticatedAddress,
-        durationInYears * SECONDS_PER_YEAR,
+        durationInYears * SECONDS_PER_YEAR.seconds,
         secret,
         resolverAddress,
         data,
@@ -178,7 +178,7 @@ export const register = async ({
       args: [
         ensName.name,
         authenticatedAddress,
-        durationInYears * SECONDS_PER_YEAR,
+        durationInYears * SECONDS_PER_YEAR.seconds,
         getNameRegistrationSecret(),
         nameRegistrationContracts.ENS_PUBLIC_RESOLVER,
         [addrCalldata],
@@ -234,7 +234,7 @@ export const getNamePrice = async ({
 }) => {
   return publicClient
     .readContract({
-      args: [ensName.name, durationInYears * SECONDS_PER_YEAR],
+      args: [ensName.name, durationInYears * SECONDS_PER_YEAR.seconds],
       address: nameRegistrationContracts.ETH_REGISTRAR,
       functionName: "rentPrice",
       abi: ETHRegistrarABI,

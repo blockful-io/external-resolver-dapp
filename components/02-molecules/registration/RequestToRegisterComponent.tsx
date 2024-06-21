@@ -26,7 +26,8 @@ export const RequestToRegisterComponent = ({
     address: authedUser as `0x${string}`,
     chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
   });
-  const { nameRegistrationData } = useNameRegistration();
+  const { nameRegistrationData, setCommitSubmitTimestamp } =
+    useNameRegistration();
   const { openConnectModal } = useConnectModal();
 
   const commitToRegister = async (): Promise<
@@ -55,7 +56,7 @@ export const RequestToRegisterComponent = ({
       <BackButton onClick={handlePreviousStep} />
 
       <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
-        <h3 className="text-[72px]">📝</h3>
+        <h3 className="text-7xl">📝</h3>
         <h3 className="text-start text-[34px] font-medium">
           Start registration process
         </h3>
@@ -72,7 +73,11 @@ export const RequestToRegisterComponent = ({
         ) : !authedUser ? (
           <Button
             colorStyle="bluePrimary"
-            onClick={openConnectModal}
+            // onClick={openConnectModal}
+            onClick={() => {
+              setCommitSubmitTimestamp(new Date());
+              handleNextStep();
+            }}
             prefix={<WalletSVG />}
           >
             Open Wallet

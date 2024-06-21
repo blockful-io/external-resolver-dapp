@@ -8,13 +8,16 @@ import { WaitingRegistrationLocktimeComponent } from "./WaitingRegistrationLockt
 import { NameSecuredToBeRegisteredComponent } from "./NameSecuredToBeRegisteredComponent";
 import { RegisterComponent } from "./RegisterComponent";
 import { RegisteredComponent } from "./RegisteredComponent";
+import { SetTextRecordsComponent } from "./SetTextRecordsComponent";
+import { SetTextRecordsBasicInfoComponent } from "./SetTextRecordsBasicInfoComponent";
+import { SetTextRecordsSocialAccountsComponent } from "./SetTextRecordsSocialAccountsComponent";
+import { SetTextRecordsAddressesComponent } from "./SetTextRecordsAddressesComponent";
 
 export const RegistrationBody = () => {
   const { nameRegistrationData, setCurrentRegistrationStep } =
     useNameRegistration();
 
   const currentStep = nameRegistrationData.currentRegistrationStep;
-  const commitTxReceipt = nameRegistrationData.commitTxReceipt;
 
   const handleNextStep = () => {
     const stepKeys = Object.keys(RegistrationStep) as Array<
@@ -53,6 +56,13 @@ export const stepComponentMap = (): Record<RegistrationStep, React.FC<any>> => {
     [RegistrationStep.PrimaryName]: PrimaryNameComponent,
     [RegistrationStep.ENSResolver]: ENSResolverComponent,
     [RegistrationStep.RequestToRegister]: RequestToRegisterComponent,
+    [RegistrationStep.SetTextRecords]: SetTextRecordsComponent,
+    [RegistrationStep.SetTextRecordsBasicInfo]:
+      SetTextRecordsBasicInfoComponent,
+    [RegistrationStep.SetTextRecordsSocialAccounts]:
+      SetTextRecordsSocialAccountsComponent,
+    [RegistrationStep.SetTextRecordsAddresses]:
+      SetTextRecordsAddressesComponent,
     [RegistrationStep.WaitingRegistrationLocktime]:
       WaitingRegistrationLocktimeComponent,
     [RegistrationStep.NameSecuredToBeRegistered]:
