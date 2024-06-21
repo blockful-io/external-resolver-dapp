@@ -25,6 +25,7 @@ export const RegistrationBody = () => {
     >;
     const currentIndex = stepKeys.indexOf(currentStep);
     const nextStep = stepKeys[currentIndex + 1] || stepKeys[0];
+
     setCurrentRegistrationStep(RegistrationStep[nextStep]);
   };
 

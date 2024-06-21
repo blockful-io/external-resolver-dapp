@@ -72,6 +72,12 @@ export const RegistrationSummary = () => {
     setRegistrationPrice(estimatedNetworkFee + namePrice);
   }, [estimatedNetworkFee, namePrice]);
 
+  const displayPrice = (price: bigint) => {
+    const reducedLength = formatEther(price).slice(0, 5);
+    const isTooLow = reducedLength === "0.000";
+    return isTooLow ? "less than 0.001" : reducedLength;
+  };
+
   return (
     <div className="w-[474px] border border-gray-200 rounded-xl flex flex-col overflow-hidden">
       <div className="p-6 border-b border-gray-200 flex flex-col items-start gap-6">
@@ -109,7 +115,7 @@ export const RegistrationSummary = () => {
             <InfoCircleIcon />
             <div>
               <p className="text-gray-400 text-sm font-semibold">
-                {gasPriceInGWei} gwei
+                {gasPriceInGWei.slice(0, 5)} gwei
               </p>
             </div>
           </div>
@@ -121,7 +127,7 @@ export const RegistrationSummary = () => {
           </p>
           {namePrice ? (
             <div className="flex space-x-1 items-center">
-              <p>{formatEther(namePrice)}</p>
+              <p>{displayPrice(namePrice)}</p>
               <EthIcon className="h-4 w-4" />
             </div>
           ) : (
@@ -132,7 +138,7 @@ export const RegistrationSummary = () => {
           <p>Estimated network fee</p>
           {estimatedNetworkFee ? (
             <div className="flex space-x-1 items-center">
-              <p>{formatEther(estimatedNetworkFee)}</p>
+              <p>{displayPrice(estimatedNetworkFee)}</p>
               <EthIcon className="h-4 w-4" />
             </div>
           ) : (
@@ -146,7 +152,7 @@ export const RegistrationSummary = () => {
           {registrationPrice ? (
             <div className="flex space-x-1 items-center">
               <Typography fontVariant="bodyBold">
-                {formatEther(registrationPrice)}
+                {displayPrice(registrationPrice)}
               </Typography>
               <EthIcon className="h-4 w-4" />
             </div>

@@ -1,9 +1,11 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable import/named */
-import { publicClient } from "@/lib/wallet/wallet-config";
+import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
+  EnsResolver,
+  ensResolverAddress,
   nameRegistrationContracts,
 } from "./constants";
 
@@ -14,6 +16,9 @@ import {
   encodeFunctionData,
   createWalletClient,
   custom,
+  BaseError,
+  RawContractError,
+  PrivateKeyAccount,
 } from "viem";
 import { isTestnet } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
@@ -32,6 +37,44 @@ const walletConnectProjectId =
 if (!walletConnectProjectId) {
   throw new Error("No wallet connect project ID informed");
 }
+
+/**
+ * @notice Struct used to define the domain of the typed data signature, defined in EIP-712.
+ * @param name The user friendly name of the contract that the signature corresponds to.
+ * @param version The version of domain object being used.
+ * @param chainId The ID of the chain that the signature corresponds to (ie Ethereum mainnet: 1, Goerli testnet: 5, ...).
+ * @param verifyingContract The address of the contract that the signature pertains to.
+ */
+export type DomainData = {
+  name: string;
+  version: string;
+  chainId: number;
+  verifyingContract: `0x${string}`;
+};
+
+/**
+ * @notice Struct used to define a parameter for off-chain Database Handler deferral.
+ * @param name The variable name of the parameter.
+ * @param value The string encoded value representation of the parameter.
+ */
+export type Parameter = {
+  name: string;
+  value: string;
+};
+
+/**
+ * @notice Struct used to define the message context used to construct a typed data signature, defined in EIP-712,
+ * to authorize and define the deferred mutation being performed.
+ * @param functionSelector The function selector of the corresponding mutation.
+ * @param sender The address of the user performing the mutation (msg.sender).
+ * @param parameter[] A list of <key, value> pairs defining the inputs used to perform the deferred mutation.
+ */
+export type MessageData = {
+  functionSelector: `0x${string}`;
+  sender: `0x${string}`;
+  parameters: Parameter[];
+  expirationTimestamp: bigint;
+};
 
 const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
   return createWalletClient({
@@ -93,17 +136,48 @@ export async function makeCommitment({
     });
 }
 
+export async function handleDBStorage({
+  domain,
+  message,
+  authenticatedAddress,
+}: {
+  domain: DomainData;
+  message: MessageData;
+  authenticatedAddress: `0x${string}`;
+}): Promise<`0x${string}`> {
+  return await walletClient.signTypedData({
+    account: authenticatedAddress,
+    domain,
+    message,
+    types: {
+      Message: [
+        { name: "functionSelector", type: "bytes4" },
+        { name: "sender", type: "address" },
+        { name: "parameters", type: "Parameter[]" },
+        { name: "expirationTimestamp", type: "uint256" },
+      ],
+      Parameter: [
+        { name: "name", type: "string" },
+        { name: "value", type: "string" },
+      ],
+    },
+    primaryType: "Message",
+  });
+}
+
 /*
   1st step of a name registration
 */
 export const commit = async ({
   ensName,
+  domainResolver,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
   durationInYears: bigint;
+  domainResolver: EnsResolver;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -118,12 +192,12 @@ export const commit = async ({
 
     const commitmentWithConfigHash = await makeCommitment({
       name: ensName.name,
-      data: [addrCalldata],
+      data: [],
       authenticatedAddress,
       durationInYears: durationInYears,
       secret: getNameRegistrationSecret(),
       reverseRecord: registerAndSetAsPrimaryName,
-      resolverAddress: nameRegistrationContracts.ENS_PUBLIC_RESOLVER,
+      resolverAddress: ensResolverAddress[domainResolver],
       ownerControlledFuses: DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
     });
 
@@ -150,28 +224,29 @@ export const commit = async ({
   2nd step of a name registration
 */
 export const register = async ({
-  value,
   ensName,
-  walletClient,
+  domainResolver,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
-  value: bigint;
   ensName: ENSName;
   durationInYears: bigint;
-  walletClient: WalletClient;
+  domainResolver: EnsResolver;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
-  if (!walletClient) throw new Error("WalletClient not found");
+  try {
+    const walletClient = createCustomWalletClient(authenticatedAddress);
 
-  const client = walletClient.extend(publicActions);
+    const client = walletClient.extend(publicActions);
 
-  const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
+    if (!client) throw new Error("WalletClient not found");
 
-  return client
-    .writeContract({
+    const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
+    const namePrice = await getNamePrice({ ensName, durationInYears });
+
+    const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
       chain: isTestnet ? sepolia : mainnet,
       account: authenticatedAddress,
@@ -180,23 +255,41 @@ export const register = async ({
         authenticatedAddress,
         durationInYears * SECONDS_PER_YEAR.seconds,
         getNameRegistrationSecret(),
-        nameRegistrationContracts.ENS_PUBLIC_RESOLVER,
-        [addrCalldata],
+        ensResolverAddress[domainResolver],
+        [],
         registerAndSetAsPrimaryName,
         DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
       ],
+      value: namePrice,
       abi: ETHRegistrarABI,
       functionName: "register",
-      value: value,
-    })
-    .then((transactionHash) => {
-      return transactionHash;
-    })
-    .catch((error) => {
+    });
+
+    return txHash;
+  } catch (error: unknown) {
+    const data = getRevertErrorData(error);
+
+    if (data?.errorName === "StorageHandledByOffChainDatabase") {
+      const [domain, message] = data.args as [DomainData, MessageData];
+      const signedData = await handleDBStorage({
+        domain,
+        message,
+        authenticatedAddress,
+      });
+      return signedData;
+    } else {
+      console.error(error);
       const errorType = getBlockchainTransactionError(error);
       return errorType;
-    });
+    }
+  }
 };
+
+export function getRevertErrorData(err: unknown) {
+  if (!(err instanceof BaseError)) return undefined;
+  const error = err.walk() as RawContractError;
+  return error?.data as { errorName: string; args: unknown[] };
+}
 
 // Utils ⬇️
 

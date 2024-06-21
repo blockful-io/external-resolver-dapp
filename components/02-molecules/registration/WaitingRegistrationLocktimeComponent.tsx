@@ -8,8 +8,6 @@ interface WaitingRegistrationLocktimeComponentProps {
   handleNextStep: () => void;
 }
 
-const ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME = 60000;
-
 export const WaitingRegistrationLocktimeComponent = ({
   handlePreviousStep,
   handleNextStep,
@@ -37,12 +35,12 @@ export const WaitingRegistrationLocktimeComponent = ({
       setTimer(remainingTimer);
     }
   }, []);
-
+      
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
       <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
-        {timer !== null && <CountdownTimer duration={timer} />}
+        {timer !== null && <CountdownTimer onTimeEnd={() => setTimerDone(true)} duration={timer} />}
 
         <h3 className="text-start text-[34px] font-medium">
           {timer === 0
@@ -50,10 +48,10 @@ export const WaitingRegistrationLocktimeComponent = ({
             : "We are securing your domain"}
         </h3>
         <p className="text-gray-500 text-left text-base">
-          Please just wait a few seconds while we do this operation.
+          Please wait 60 seconds to confirm the registration commitment.
         </p>
       </div>
-      <NextButton onClick={handleNextStep} />
+      <NextButton disabled={!timerDone} onClick={handleNextStep} />
     </div>
   );
 };

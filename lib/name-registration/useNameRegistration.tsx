@@ -9,6 +9,7 @@ import {
   updateIsPrimaryName,
   updateNamePrice,
   updateNameToRegister,
+  updateRegisterTxReceipt,
   updateRegistrationPrice,
   updateRegistrationYears,
 } from "./actions";
@@ -19,6 +20,7 @@ import { TransactionReceipt } from "viem";
 interface NameRegistrationData {
   nameRegistrationData: {
     commitSubmitTimestamp: Date | null;
+    registerTxReceipt: TransactionReceipt | null;
     commitTxReceipt: TransactionReceipt | null;
     currentRegistrationStep: RegistrationStep;
     estimatedNetworkFee: bigint | null;
@@ -36,6 +38,7 @@ interface NameRegistrationData {
     currentRegistrationStep: RegistrationStep
   ) => void;
   setCommitSubmitTimestamp: (timestamp: Date) => void;
+  setRegisterTxReceipt: (txReceipt: TransactionReceipt) => void;
   setCommitTxReceipt: (txReceipt: TransactionReceipt) => void;
   setRegistrationYears: (registrationYears: number) => void;
   setNameToRegister: (nameToRegister: ENSName) => void;
@@ -55,6 +58,7 @@ export const useNameRegistration = (): NameRegistrationData => {
   const commitSubmitTimestamp = useAppSelector(
     (state) => state.commitSubmitTimestamp
   );
+  const registerTxReceipt = useAppSelector((state) => state.registerTxReceipt);
   const commitTxReceipt = useAppSelector((state) => state.commitTxReceipt);
   const asPrimaryName = useAppSelector((state) => state.asPrimaryName);
   const ensResolver = useAppSelector((state) => state.ensResolver);
@@ -91,6 +95,10 @@ export const useNameRegistration = (): NameRegistrationData => {
 
   const setCommitSubmitTimestamp = (timestamp: Date) => {
     dispatch(updateCommitSubmitTimestamp(timestamp));
+  }
+  
+  const setRegisterTxReceipt = (txReceipt: TransactionReceipt) => {
+    dispatch(updateRegisterTxReceipt(txReceipt));
   };
 
   const setNamePrice = (namePrice: bigint) => {
@@ -113,6 +121,7 @@ export const useNameRegistration = (): NameRegistrationData => {
         estimatedNetworkFee,
         registrationYears,
         registrationPrice,
+        registerTxReceipt,
         commitTxReceipt,
         asPrimaryName,
         ensResolver,
@@ -124,6 +133,7 @@ export const useNameRegistration = (): NameRegistrationData => {
     setEstimatedNetworkFee,
     setRegistrationYears,
     setRegistrationPrice,
+    setRegisterTxReceipt,
     setCommitTxReceipt,
     setNameToRegister,
     setAsPrimaryName,

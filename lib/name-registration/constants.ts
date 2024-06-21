@@ -51,6 +51,13 @@ export const nameRegistrationSCs: Record<
   },
 };
 
+export const ensResolverAddress: Record<EnsResolver, string> = {
+  [EnsResolver.Arbitrum]: "0xfE47e2f223e4D098B84E79AF5fC5faA33bf6Da4D",
+  [EnsResolver.Database]: "0x04270c4366010A52192bC8D3E29d9f0E21bBe969",
+  [EnsResolver.Optimism]: "0x55b00cD5e9Bd2Bb5eB001969E0BE7ac17b505c2f",
+  [EnsResolver.Mainnet]: "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63",
+};
+
 export const nameRegistrationContracts = nameRegistrationSCs[DEFAULT_CHAIN_ID];
 
 export const DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES = 0;
