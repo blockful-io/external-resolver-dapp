@@ -27,7 +27,7 @@ export const rpcHttpUrl = `https://eth-${
 export const publicClient = createPublicClient({
   chain: isTestnet ? sepolia : mainnet,
   batch: { multicall: true },
-  transport: http(),
+  transport: http(rpcHttpUrl),
 });
 
 // Create a wallet client for sending transactions to the blockchain

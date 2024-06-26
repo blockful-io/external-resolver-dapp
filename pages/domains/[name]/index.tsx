@@ -42,13 +42,6 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const tabComponents: Record<Tab, React.FC> = {
-  [Tab.Profile]: ProfileTab,
-  [Tab.Accounts]: AccountsTab,
-  [Tab.Addresses]: AddressesTab,
-  [Tab.Others]: OthersTab,
-};
-
 export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -74,8 +67,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   useEffect(() => {
     handleFetchENS();
-
-    writeEnsData("0x89F8e4020c0dd384F13c288bc5743F963F9D8fdF", "pikonha.eth");
+    writeEnsData("0x89F8e4020c0dd384F13c288bc5743F963F9D8fdF");
   }, []);
 
   const excludeKeys = [

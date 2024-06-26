@@ -7,6 +7,7 @@ import {
   BaseError,
   Hash,
   Hex,
+  PrivateKeyAccount,
   RawContractError,
   WalletClient,
   createWalletClient,
@@ -16,12 +17,12 @@ import {
   isAddress,
   namehash,
   toHex,
+  walletActions,
 } from "viem";
 
 import { abi as dbAbi } from "./DatabaseResolver.json";
 import { abi as uAbi } from "./UniversalResolver.json";
-import { mainnet, sepolia } from "viem/chains";
-import { isTestnet } from "../wallet/chains";
+import { mainnet } from "viem/chains";
 
 const ENS_ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
 
@@ -72,8 +73,6 @@ const fetchEnsDataRequest = async (domain: string) => {
   return json.data.domains[0];
 };
 
-const DOMAIN_NAME = normalize("eduardo.eth");
-
 export async function handleDBStorage({
   domain,
   url,
@@ -88,7 +87,6 @@ export async function handleDBStorage({
   signer: WalletClient;
   account: Hash;
 }) {
-  console.log("handleDBStorage data :", domain);
   const signature = await signer.signTypedData({
     account,
     domain,
@@ -148,48 +146,42 @@ export const writeEnsData = async (
   // domain: string, // domain on which the record is being executed
   // textRecords?: { key: string; value: string }[]
 ) => {
+  // console.log("public client ", publicClient);
+
   const resolver = getChainContractAddress({
-    chain: sepolia,
+    chain: mainnet,
     contract: "ensUniversalResolver",
   });
-
-  const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
-    return createWalletClient({
-      account,
-      chain: isTestnet ? sepolia : mainnet,
-      transport: custom(window.ethereum),
-    });
-  };
-
-  const walletClient = createCustomWalletClient(authedUser);
 
   const [resolverAddr] = (await publicClient.readContract({
     address: resolver,
     functionName: "findResolver",
     abi: uAbi,
-    args: [toHex(packetToBytes(DOMAIN_NAME))],
+    args: [toHex(packetToBytes("edulennert.eth"))],
   })) as Hash[];
 
   console.log("resolverAddr ", resolverAddr);
 
-  const publicAddress = normalize(DOMAIN_NAME);
-
   // REGISTER NEW DOMAIN
+  // QUESTION: Why do we need to register a new domain?
   try {
+    console.log("chegou 1");
     await publicClient.simulateContract({
       functionName: "register",
       abi: dbAbi,
-      args: [namehash(DOMAIN_NAME), 300],
+      args: [namehash("edulennert.eth"), 999999999n],
       account: authedUser as Hash,
       address: resolverAddr,
     });
   } catch (err) {
-    console.log("chegou 2", err);
+    console.log("chegou 2");
 
     const data = getRevertErrorData(err);
-    console.log("chegou 3 :", data);
-
-    const signer = walletClient;
+    const signer = createWalletClient({
+      chain: mainnet,
+      transport: custom(window.ethereum!),
+      account: authedUser as Hash,
+    });
 
     if (data?.errorName === "StorageHandledByOffChainDatabase") {
       const [domain, url, message] = data.args as [
@@ -197,8 +189,6 @@ export const writeEnsData = async (
         string,
         MessageData
       ];
-      domain.chainId = 11155111;
-      console.log("chegou 4");
 
       await handleDBStorage({
         domain,
@@ -207,53 +197,43 @@ export const writeEnsData = async (
         signer,
         account: authedUser as Hash,
       });
-      console.log("chegou 5");
     } else {
       console.error("writing failed: ", { err });
     }
   }
 
-  try {
-    console.log("chegou 7", resolverAddr, authedUser);
+  // for( )    console.log("chegou 1");
+  console.log("chegou 3");
 
-    console.log("publicClient ", publicClient);
+  // QUESTION: Each text record will need a separate request?
+  try {
+    console.log("chegou 4", resolverAddr, authedUser);
 
     await publicClient.simulateContract({
       functionName: "setText",
       abi: dbAbi,
-      args: [namehash(DOMAIN_NAME), "description", "@blockful.eth"],
+      args: [
+        namehash(normalize("edulennert.eth")),
+        "com.twitter",
+        "@blockful.eth",
+      ],
       address: resolverAddr, // contract to call
       account: authedUser as Hash, // conta do usuário logado
     });
   } catch (err) {
+    console.log("chegou 5");
     console.log("error :", err);
-    const data = getRevertErrorData(err);
-    console.log("chegou 9");
-
-    if (data?.errorName === "StorageHandledByOffChainDatabase") {
-      console.log("chegou 10");
-
-      const [domain, url, message] = data?.args as [
-        DomainData,
-        string,
-        MessageData
-      ];
-      domain.chainId = 11155111;
-      const signer = walletClient;
-      console.log("signer ", signer);
-
-      console.log("chegou 11");
-      await handleDBStorage({
-        domain,
-        url,
-        message,
-        signer,
-        account: authedUser as Hash,
-      });
-      console.log("chegou 12");
-    } else {
-      console.error("writing failed: ", { err });
-    }
+    // const data = getRevertErrorData(err)
+    // if (data?.errorName === "StorageHandledByOffChainDatabase’) {
+    //   const [domain, url, message] = data?.args as [
+    //     DomainData,
+    //     string,
+    //     MessageData,
+    //   ]
+    //   await handleDBStorage({ domain, url, message, signer })
+    // } else {
+    //   console.error(‘writing failed: ’, { err })
+    // }
   }
 };
 
@@ -321,6 +301,8 @@ const fetchAllEnsTextRecords = async (
     }
   });
   await Promise.all(promises);
+
+  // console.log("records: ", records);
 
   return records;
 };
