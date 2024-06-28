@@ -45,9 +45,7 @@ export const UserDropdown = () => {
             console.error("ENS name does not exist");
           }
         } else {
-          setAvatarUrl(
-            "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
-          );
+          setAvatarUrl("https://source.boringavatars.com/");
         }
       } catch (error) {
         console.error("Error fetching ENS avatar:", error);

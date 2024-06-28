@@ -3,8 +3,14 @@ import { publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
 import moment from "moment";
 import { isAddress } from "viem";
+import { isTestnet } from "../wallet/chains";
+import { defaultTextRecords } from "@/types/textRecords";
 
-const ENS_ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
+const ensKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
+
+const ENS_ENDPOINT = isTestnet
+  ? `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
+  : `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
 
 export interface ResolvedEnsData {
   ownerId: `0x${string}` | null;
@@ -37,6 +43,11 @@ const ENS_DOMAIN_TEXT_RECORDS_QUERY = `
 `;
 
 const fetchEnsDataRequest = async (domain: string) => {
+  const what = await publicClient.getEnsText({
+    name: normalize("eduardo.eth"),
+    key: "com.twitter",
+  });
+
   const res = await fetch(ENS_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -90,7 +101,7 @@ const fetchAllEnsTextRecords = async (
   return records;
 };
 
-export async function getENS(domain: string): Promise<ResolvedEnsData> {
+export async function getENS(domain: string): Promise<ResolvedEnsData | null> {
   if (!(ADDRESS_REGEX.test(domain) || domain?.endsWith(".eth")))
     throw new Error(`Invalid ENS domain or ethereum address: ${domain}`);
 
@@ -106,8 +117,12 @@ export async function getENS(domain: string): Promise<ResolvedEnsData> {
       textRecords: {},
     };
 
-    if (ens?.resolver?.texts) {
-      await fetchAllEnsTextRecords(domain, ens.resolver.texts).then(
+    const availableTextRecords = isTestnet
+      ? defaultTextRecords
+      : ens.resolver.texts;
+
+    if (!!availableTextRecords) {
+      await fetchAllEnsTextRecords(domain, availableTextRecords).then(
         (records) => {
           returnedData = {
             ...returnedData,
@@ -119,14 +134,7 @@ export async function getENS(domain: string): Promise<ResolvedEnsData> {
 
     return returnedData;
   } else {
-    return {
-      ownerId: null,
-      address: null,
-      expiryDate: null,
-      parentName: null,
-      coinTypes: null,
-      textRecords: {},
-    };
+    return null;
   }
 }
 
@@ -139,7 +147,7 @@ export function formatHexAddress(hexAddress: string): string {
   }
 
   // Validate input
-  if (isAddress(hexAddress)) {
+  if (!isAddress(hexAddress)) {
     throw new Error("Invalid Ethereum address");
   }
 
