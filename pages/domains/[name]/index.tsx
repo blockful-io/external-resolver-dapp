@@ -97,7 +97,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   if (!ensData && !isLoading) {
     return (
       <div className="w-full max-w-[1216px] m-auto flex items-center justify-center mt-[200px]">
-        <h1 className="p-4">No items found</h1>
+        <h1 className="p-4 text-black">No items found</h1>
       </div>
     );
   }

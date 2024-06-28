@@ -43,11 +43,6 @@ const ENS_DOMAIN_TEXT_RECORDS_QUERY = `
 `;
 
 const fetchEnsDataRequest = async (domain: string) => {
-  const what = await publicClient.getEnsText({
-    name: normalize("eduardo.eth"),
-    key: "com.twitter",
-  });
-
   const res = await fetch(ENS_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
