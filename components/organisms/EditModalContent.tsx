@@ -25,7 +25,7 @@ import {
 import { setDomainRecords } from "@/lib/utils/blockchain-txs";
 import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
-import { ensJsClient } from "@/lib/utils/ens";
+import { publicClient } from "@/lib/wallet/wallet-config";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -239,7 +239,7 @@ const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
 
     try {
       const ensName = buildENSName(router.query.name as string);
-      const resolverAdd = await getResolver(ensJsClient, {
+      const resolverAdd = await getResolver(publicClient, {
         name: ensName.name,
       });
 

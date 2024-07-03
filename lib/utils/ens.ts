@@ -14,7 +14,7 @@ if (!ensSubgraphApiKey) {
   throw new Error("ENS subgraph API key not found");
 }
 
-const ENS_ENDPOINT = isTestnet
+export const ENS_ENDPOINT = isTestnet
   ? `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
   : `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
 
@@ -26,22 +26,6 @@ export interface ResolvedEnsData {
   coinTypes: string[] | null;
   textRecords: ENSRecords | null;
 }
-
-const mainnetWithEns = addEnsContracts(mainnet);
-const sepoliaWithEns = addEnsContracts(sepolia);
-
-const chain = {
-  ...(isTestnet ? sepoliaWithEns : mainnetWithEns),
-  subgraphs: {
-    ens: {
-      url: ENS_ENDPOINT,
-    },
-  },
-};
-export const ensJsClient = createEnsPublicClient({
-  chain: chain,
-  transport: http(),
-});
 
 const ENS_DOMAIN_TEXT_RECORDS_QUERY = `
     query($domain: String!) {
