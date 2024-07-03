@@ -39,6 +39,7 @@ import {
   SkeletonGroup,
   Toggle,
 } from "@ensdomains/thorin";
+import Avatar from "boring-avatars";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -46,11 +47,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [ensData, setEnsData] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { authedUser } = useUser();
 
   const handleFetchENS = async () => {
+    setIsLoading(true);
     try {
       const data = await getENS(name);
       setEnsData(data);
@@ -63,6 +66,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
       }
       setEnsData(null);
     }
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -92,6 +97,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
       }, {});
   }
 
+  if (!ensData && !isLoading) {
+    return (
+      <div className="w-full max-w-[1216px] m-auto flex items-center justify-center mt-[200px]">
+        <h1 className="p-4 text-black">No items found</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
       <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
@@ -104,7 +117,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
           </Link>
         </div>
       </div>
-      <SkeletonGroup loading={!ensData}>
+      <SkeletonGroup loading={isLoading}>
         <div className="w-full p-[60px]">
           <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
             <div className="w-full flex gap-[60px]">
@@ -119,11 +132,28 @@ export function ManageNamePageContent({ name }: { name: string }) {
                           alt="avatar image"
                           width={100}
                           height={100}
-                          src={ensData?.textRecords?.avatar}
+                          src={
+                            !!ensData?.textRecords?.avatar
+                              ? ensData?.textRecords?.avatar
+                              : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
+                          }
                           className="w-[100px] h-[100px] border-4 border-white rounded-[10px]"
                         />
                       ) : (
-                        <div className="w-[100px] h-[100px] border-4 bg-gradient-ens border-white rounded-[10px]" />
+                        <div className="w-[100px] h-[100px] border-4 bg-gradient-ens border-white rounded-[10px] overflow-hidden">
+                          <Avatar
+                            size={100}
+                            square
+                            name="Margaret Bourke"
+                            variant="beam"
+                            colors={[
+                              "#AAAAAA",
+                              "#3DDE74",
+                              "#000000",
+                              "#FFFFFF",
+                            ]}
+                          />
+                        </div>
                       )}
 
                       <div>

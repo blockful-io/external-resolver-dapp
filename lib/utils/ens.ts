@@ -17,13 +17,17 @@ import {
   namehash,
   toHex,
 } from "viem";
-
 import { abi as dbAbi } from "./DatabaseResolver.json";
 import { abi as uAbi } from "./UniversalResolver.json";
 import { mainnet, sepolia } from "viem/chains";
 import { isTestnet } from "../wallet/chains";
+import { defaultTextRecords } from "@/types/textRecords";
 
-const ENS_ENDPOINT = "https://api.thegraph.com/subgraphs/name/ensdomains/ens";
+const ensKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
+
+const ENS_ENDPOINT = isTestnet
+  ? `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
+  : `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
 
 export interface ResolvedEnsData {
   ownerId: `0x${string}` | null;
@@ -325,7 +329,7 @@ const fetchAllEnsTextRecords = async (
   return records;
 };
 
-export async function getENS(domain: string): Promise<ResolvedEnsData> {
+export async function getENS(domain: string): Promise<ResolvedEnsData | null> {
   if (!(ADDRESS_REGEX.test(domain) || domain?.endsWith(".eth")))
     throw new Error(`Invalid ENS domain or ethereum address: ${domain}`);
 
@@ -341,8 +345,12 @@ export async function getENS(domain: string): Promise<ResolvedEnsData> {
       textRecords: {},
     };
 
-    if (ens?.resolver?.texts) {
-      await fetchAllEnsTextRecords(domain, ens.resolver.texts).then(
+    const availableTextRecords = isTestnet
+      ? defaultTextRecords
+      : ens.resolver.texts;
+
+    if (!!availableTextRecords) {
+      await fetchAllEnsTextRecords(domain, availableTextRecords).then(
         (records) => {
           returnedData = {
             ...returnedData,
@@ -354,14 +362,7 @@ export async function getENS(domain: string): Promise<ResolvedEnsData> {
 
     return returnedData;
   } else {
-    return {
-      ownerId: null,
-      address: null,
-      expiryDate: null,
-      parentName: null,
-      coinTypes: null,
-      textRecords: {},
-    };
+    return null;
   }
 }
 

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ensdomains/ensjs": "^4.0.0",
     "@ensdomains/thorin": "^0.6.50",
     "@namehash/ens-utils": "1.8.6",
     "@rainbow-me/rainbowkit": "2.0.4",
