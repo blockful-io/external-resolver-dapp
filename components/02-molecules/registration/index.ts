@@ -3,7 +3,6 @@ export * from "./RegistrationBody";
 export * from "./ENSResolverComponent";
 export * from "./NameSecuredToBeRegisteredComponent";
 export * from "./PrimaryNameComponent";
-export * from "./RegisterComponent";
 export * from "./RegisteredComponent";
 export * from "./RegistrationYearsComponent";
 export * from "./RequestToRegisterComponent";

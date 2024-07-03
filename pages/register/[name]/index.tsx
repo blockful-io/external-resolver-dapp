@@ -12,6 +12,7 @@ import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { normalize } from "viem/ens";
 
 export async function getServerSideProps({
   params,
@@ -30,10 +31,20 @@ export default function RegisterNamePage({ name }: { name: string }) {
   const router = useRouter();
 
   useEffect(() => {
+    try {
+      normalize(name);
+    } catch {
+      router.push("/");
+      toast.error("Invalid name");
+    }
+
     let ensName: null | ENSName;
 
     try {
-      ensName = buildENSName(name);
+      const nameToRegister = name.includes(".eth") ? name : `${name}.eth`;
+
+      ensName = buildENSName(nameToRegister);
+
       setNameToRegister(ensName);
 
       isNameAvailable(ensName).then((isAvailable) => {

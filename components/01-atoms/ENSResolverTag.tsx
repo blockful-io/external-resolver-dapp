@@ -8,18 +8,22 @@ const ensResolverConfig = {
   [EnsResolver.Mainnet]: {
     icon: EthIcon,
     label: "Mainnet",
+    enabled: true,
   },
   [EnsResolver.Database]: {
     icon: DatabaseIcon,
-    label: "Centralized Database",
+    label: "Off-chain",
+    enabled: true,
   },
   [EnsResolver.Arbitrum]: {
     icon: ArbitrumIcon,
     label: "Arbitrum",
+    enabled: false,
   },
   [EnsResolver.Optimism]: {
     icon: OptimismIcon,
     label: "Optimism",
+    enabled: false,
   },
 };
 

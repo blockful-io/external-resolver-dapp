@@ -33,9 +33,9 @@ if (!isTestnet && alchemyApiKey == undefined) {
 }
 
 // Define the RPC URL for the blockchain in use
-export const rpcHttpUrl = `https://eth-${
-  isTestnet ? "sepolia" : "mainnet"
-}.g.alchemy.com/v2/${isTestnet ? alchemyApiTestnetKey : alchemyApiKey}`;
+export const rpcHttpUrl = isTestnet
+  ? "https://public.stackup.sh/api/v1/node/ethereum-sepolia"
+  : `https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`;
 
 // Create a public client for fetching data from the blockchain
 export const publicClient = createPublicClient({
