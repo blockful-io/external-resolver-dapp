@@ -12,7 +12,6 @@ export enum RegistrationStep {
   WaitingRegistrationLocktime = "WaitingRegistrationLocktime",
   NameSecuredToBeRegistered = "NameSecuredToBeRegistered",
   NameRegisteredAwaitingRecordsSetting = "NameRegisteredAwaitingRecordsSetting",
-  Register = "Register",
   Registered = "Registered",
 }
 

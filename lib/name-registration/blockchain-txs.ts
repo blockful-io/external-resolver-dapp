@@ -162,23 +162,25 @@ export async function ccipRequest({
   body,
   url,
 }: CcipRequestParameters): Promise<Response> {
-  return fetch(url.replace("/{sender}/{data}.json", ""), {
-    body: JSON.stringify(body, (_, value) =>
-      typeof value === "bigint" ? value.toString() : value
-    ),
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => {
-      return res.json();
+  return new Promise((resolve, reject) => {
+    return fetch(url.replace("/{sender}/{data}.json", ""), {
+      body: JSON.stringify(body, (_, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      ),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
-    .then((res) => res)
-    .catch((err) => {
-      console.error(err);
-      return err;
-    });
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => resolve(res))
+      .catch((err) => {
+        console.error(err);
+        reject(err);
+      });
+  });
 }
 
 export async function handleDBStorage({
@@ -281,7 +283,6 @@ export const commit = async ({
     });
 
     const { request } = await client.simulateContract({
-      chain: isTestnet ? sepolia : mainnet,
       account: parseAccount(authenticatedAddress),
       address: nameRegistrationContracts.ETH_REGISTRAR,
       args: [commitmentWithConfigHash],

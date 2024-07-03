@@ -1,10 +1,16 @@
-import { TransactionReceipt } from "viem";
-import { publicClient } from "./wallet-config";
+import { TransactionReceipt, createPublicClient, custom } from "viem";
+import { isTestnet } from "./chains";
+import { mainnet, sepolia } from "viem/chains";
 
 export const awaitBlockchainTxReceipt = async (
   txHash: `0x${string}`
 ): Promise<TransactionReceipt> => {
   let txReceipt = {} as TransactionReceipt;
+
+  const publicClient = createPublicClient({
+    chain: isTestnet ? sepolia : mainnet,
+    transport: custom(window.ethereum),
+  });
 
   /*
       Since the transaction takes some time to be registered in the blockchain, 

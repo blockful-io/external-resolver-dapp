@@ -22,7 +22,7 @@ export interface NameRegistrationData {
 }
 
 export const nameRegistrationInitialState: NameRegistrationData = {
-  currentRegistrationStep: RegistrationStep.Registered,
+  currentRegistrationStep: RegistrationStep.RegistrationYears,
   estimatedNetworkFee: null,
   registrationPrice: null,
   registerTxReceipt: null,
@@ -34,7 +34,7 @@ export const nameRegistrationInitialState: NameRegistrationData = {
   asPrimaryName: false,
   ensResolver: EnsResolver.Database,
   namePrice: null,
-  name: buildENSName("heyyo.eth"),
+  name: null,
 };
 
 const nameRegistrationReducer = (

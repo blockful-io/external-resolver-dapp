@@ -6,7 +6,6 @@ import { ENSResolverComponent } from "./ENSResolverComponent";
 import { RequestToRegisterComponent } from "./RequestToRegisterComponent";
 import { WaitingRegistrationLocktimeComponent } from "./WaitingRegistrationLocktimeComponent";
 import { NameSecuredToBeRegisteredComponent } from "./NameSecuredToBeRegisteredComponent";
-import { RegisterComponent } from "./RegisterComponent";
 import { RegisteredComponent } from "./RegisteredComponent";
 import { SetTextRecordsComponent } from "./SetTextRecordsComponent";
 import { SetTextRecordsBasicInfoComponent } from "./SetTextRecordsBasicInfoComponent";
@@ -15,7 +14,6 @@ import { SetTextRecordsAddressesComponent } from "./SetTextRecordsAddressesCompo
 import { NameRegisteredAwaitingRecordsSettingComponent } from "./NameRegisteredAwaitingRecordsSettingComponent";
 import { useEffect } from "react";
 import {
-  getNameRegistrationSecret,
   getOpenNameRegistrationsOfNameByWallet,
   setNameRegistrationSecret,
 } from "@/lib/name-registration/localStorage";
@@ -101,7 +99,6 @@ export const stepComponentMap = (): Record<RegistrationStep, React.FC<any>> => {
       WaitingRegistrationLocktimeComponent,
     [RegistrationStep.NameSecuredToBeRegistered]:
       NameSecuredToBeRegisteredComponent,
-    [RegistrationStep.Register]: RegisterComponent,
     [RegistrationStep.Registered]: RegisteredComponent,
     [RegistrationStep.NameRegisteredAwaitingRecordsSetting]:
       NameRegisteredAwaitingRecordsSettingComponent,

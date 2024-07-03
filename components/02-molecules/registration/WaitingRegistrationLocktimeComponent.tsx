@@ -76,7 +76,9 @@ export const WaitingRegistrationLocktimeComponent = ({
             : "We are securing your domain"}
         </h3>
         <p className="text-gray-500 text-left text-base">
-          Please wait {timeLeft} seconds to confirm the registration commitment.
+          {timer === 0
+            ? "Your domain is prepared to be registered now!"
+            : `Please wait ${timeLeft} seconds to confirm the registration commitment.`}
         </p>
       </div>
       <NextButton disabled={!timerDone} onClick={handleNextStep} />

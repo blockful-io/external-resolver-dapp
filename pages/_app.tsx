@@ -27,6 +27,17 @@ import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
+// Below declaration helps the application on JSON serialization of BigInt
+declare global {
+  interface BigInt {
+    toJSON: () => string;
+  }
+}
+
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 export default function App({
   Component,
   pageProps,
