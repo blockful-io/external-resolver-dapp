@@ -4,7 +4,7 @@ import {
   BlockchainCTA,
   TransactionConfirmedInBlockchainCTA,
 } from "@/components/01-atoms";
-import { commit } from "@/lib/name-registration/blockchain-txs";
+import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useUser } from "@/lib/wallet/useUser";
 import { useConnectModal } from "@rainbow-me/rainbowkit";

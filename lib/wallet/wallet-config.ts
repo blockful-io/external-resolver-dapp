@@ -10,7 +10,6 @@ import { ENS_ENDPOINT } from "../utils/ens";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
-const ensKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
 
 const mainnetWithEns = addEnsContracts(mainnet);
 const sepoliaWithEns = addEnsContracts(sepolia);
@@ -41,7 +40,7 @@ export const rpcHttpUrl = isTestnet
 export const publicClient = createPublicClient({
   chain: addEnsContracts(isTestnet ? sepolia : mainnet),
   batch: { multicall: true },
-  transport: http(),
+  transport: http(rpcHttpUrl),
 });
 
 export const client = createClient({

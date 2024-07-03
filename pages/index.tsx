@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { CrossCircleSVG, Spinner, Tag } from "@ensdomains/thorin";
 import { HomepageBg } from "@/components/01-atoms";
-import { isNameAvailable } from "@/lib/name-registration/blockchain-txs";
+import { isNameAvailable } from "@/lib/utils/blockchain-txs";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { DebounceInput } from "react-debounce-input";
 import { useRouter } from "next/router";

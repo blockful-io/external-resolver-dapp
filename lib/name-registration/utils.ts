@@ -21,9 +21,6 @@ export const getRegistrationStepBlock = (
     case RegistrationStep.NameRegisteredAwaitingRecordsSetting:
       return RegistrationBlock.RequestToRegister;
 
-    case RegistrationStep.Register:
-      return RegistrationBlock.RegisterDomain;
-
     case RegistrationStep.Registered:
       return RegistrationBlock.Registered;
 

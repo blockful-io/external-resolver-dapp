@@ -1,6 +1,5 @@
 import { BackButton, BlockchainCTA } from "@/components/01-atoms";
-import { setDomainRecords } from "@/lib/name-registration/blockchain-txs";
-import { ENSResolverToNetwork } from "@/lib/name-registration/constants";
+import { setDomainRecords } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import {
   TransactionErrorType,
@@ -39,6 +38,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
         "Impossible to set the text records of a name without a name"
       );
     }
+
     if (
       !Object.entries(nameRegistrationData.textRecords).length &&
       !Object.entries(nameRegistrationData.domainAddresses).length

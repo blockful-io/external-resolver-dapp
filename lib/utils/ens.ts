@@ -1,20 +1,22 @@
-import assert from "assert";
-import { ensPublicClient, publicClient } from "../wallet/wallet-config";
+import { publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
+import assert from "assert";
 import moment from "moment";
-import { isAddress } from "viem";
+import { http, isAddress } from "viem";
 import { isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
-import { createPublicClient, http } from "viem";
-import { mainnet, sepolia } from "viem/chains";
 import { addEnsContracts, createEnsPublicClient } from "@ensdomains/ensjs";
-import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
+import { mainnet, sepolia } from "viem/chains";
 
-const ensKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
+const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
+
+if (!ensSubgraphApiKey) {
+  throw new Error("ENS subgraph API key not found");
+}
 
 export const ENS_ENDPOINT = isTestnet
-  ? `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
-  : `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
+  ? `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
+  : `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
 
 export interface ResolvedEnsData {
   ownerId: `0x${string}` | null;
@@ -88,7 +90,7 @@ const fetchAllEnsTextRecords = async (
           name: normalize(domain),
           key,
         });
-        records[key] = ensText ?? "";
+        ensText && (records[key] = ensText);
       }
     } catch (error) {
       console.error(`Error fetching text record for key ${key}:`, error);

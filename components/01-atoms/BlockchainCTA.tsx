@@ -42,7 +42,6 @@ export const BlockchainCTA = ({
 
     const txHashOrError: `0x${string}` | TransactionErrorType | null =
       await transactionRequest();
-    console.log("txHashOrError", txHashOrError);
 
     const transactionReverted =
       txHashOrError === TransactionErrorType.REVERTED ||

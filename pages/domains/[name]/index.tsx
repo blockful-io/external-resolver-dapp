@@ -5,15 +5,7 @@ import {
   PencilIcon,
   TwitterIcon,
 } from "@/components/01-atoms";
-import {
-  AccountsTab,
-  AddressesTab,
-  OthersTab,
-  ProfileTab,
-  FieldsProvider,
-  Tab,
-  ProfileRecordItem,
-} from "@/components/02-molecules";
+import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { formatDate, formatHexAddress, getENS } from "@/lib/utils/ens";
@@ -24,6 +16,7 @@ import {
   CogSVG,
   CopySVG,
   EthTransparentSVG,
+  Heading,
   HeartSVG,
   InfoCircleSVG,
   LeftChevronSVG,
@@ -35,13 +28,6 @@ import {
 import Avatar from "boring-avatars";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-const tabComponents: Record<Tab, React.FC> = {
-  [Tab.Profile]: ProfileTab,
-  [Tab.Accounts]: AccountsTab,
-  [Tab.Addresses]: AddressesTab,
-  [Tab.Others]: OthersTab,
-};
 
 export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,8 +82,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   if (!ensData && !isLoading) {
     return (
-      <div className="w-full max-w-[1216px] m-auto flex items-center justify-center mt-[200px]">
-        <h1 className="p-4 text-black">No items found</h1>
+      <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
+        <Heading level="2" as="h3" className="p-4 text-black text-center">
+          👀
+          <br /> This domain is not yet registered
+        </Heading>
+        <Link href={`/register/${name}`} className="mt-5">
+          <Button colorStyle="blueSecondary">Want to register it?</Button>
+        </Link>
       </div>
     );
   }
@@ -188,13 +180,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         {ensData?.textRecords?.description}
                       </p>
                     </Skeleton>
-                    <Skeleton>
+                    {/* <Skeleton>
                       <div className="flex items-center justify-center gap-2 p-3 rounded-md border border-gray-200">
                         <Toggle />
                         <p>Primary name</p>
                         <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
                       </div>
-                    </Skeleton>
+                    </Skeleton> */}
                     <div className="flex flex-col items-start justify-center gap-1">
                       {ensData?.textRecords?.["email"] && (
                         <Link

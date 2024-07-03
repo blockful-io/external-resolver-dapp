@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { isNameAvailable } from "@/lib/name-registration/blockchain-txs";
+import { isNameAvailable } from "@/lib/utils/blockchain-txs";
 import { ProgressBar } from "@/components/01-atoms";
 import {
   ProgressBlock,

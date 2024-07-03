@@ -1,5 +1,6 @@
-import { Field, Tab } from "@/types/editFieldsTypes";
+import { Field, FieldType, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { isAddress } from "viem";
 
 interface FieldsContextType {
   fields: Record<Tab, Field[]>;
@@ -19,49 +20,129 @@ const FieldsContext = createContext<FieldsContextType | undefined>(undefined);
 const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   const [fields, setFieldsState] = useState<Record<Tab, Field[]>>({
     [Tab.Profile]: [
-      { label: "Website", placeholder: "https://coolcats.com", value: "" },
+      {
+        label: "url",
+        placeholder: "https://coolcats.com",
+        value: "",
+        fieldType: FieldType.Text,
+      } as Field,
     ],
     [Tab.Accounts]: [
-      { label: "Email", placeholder: "mail@mail.com", value: "" },
-      { label: "Twitter", placeholder: "@twitter", value: "" },
-      { label: "Linkedin", placeholder: "/linkedin", value: "" },
+      {
+        label: "email",
+        placeholder: "mail@mail.com",
+        value: "",
+        fieldType: FieldType.Text,
+      } as Field,
+      {
+        label: "com.twitter",
+        placeholder: "@twitter",
+        value: "",
+        fieldType: FieldType.Text,
+      } as Field,
+      {
+        label: "com.linkedin",
+        placeholder: "/linkedin",
+        value: "",
+        fieldType: FieldType.Text,
+      } as Field,
     ],
     [Tab.Addresses]: [
-      { label: "ETH", placeholder: "mail@mail.com", value: "" },
+      {
+        label: "ETH",
+        placeholder: "0x0000000000000000000000000000000000000000",
+        fieldType: FieldType.Address,
+        value: "",
+        validationFn: () => {
+          const fieldValue: undefined | string = fields[Tab.Addresses].find(
+            (add: Field) => add.label === "ETH"
+          )?.value;
+          const fieldIsEmpty: boolean = !fieldValue;
+          const isAddressValid: boolean =
+            typeof fieldValue === "string" && !!isAddress(fieldValue);
+
+          return fieldIsEmpty || isAddressValid;
+        },
+      } as Field,
     ],
-    [Tab.Others]: [
-      { label: "Content hash", placeholder: "", value: "" },
-      { label: "ABI", placeholder: "", value: "" },
-    ],
-  });
+    // [Tab.Others]: [
+    //   {
+    //     label: "Content hash",
+    //     placeholder: "",
+    //     value: "",
+    //     fieldType: FieldType.Text,
+    //   },
+    //   { label: "ABI", placeholder: "", value: "", fieldType: FieldType.Text },
+    // ],
+  } as Record<Tab, Field[]>);
 
   const [initialFields, setInitialFieldsState] = useState<Record<Tab, Field[]>>(
     {
       [Tab.Profile]: [
-        { label: "Website", placeholder: "https://coolcats.com", value: "" },
+        {
+          label: "url",
+          placeholder: "https://coolcats.com",
+          value: "",
+          fieldType: FieldType.Text,
+        },
       ],
       [Tab.Accounts]: [
-        { label: "Email", placeholder: "mail@mail.com", value: "" },
-        { label: "Twitter", placeholder: "@twitter", value: "" },
-        { label: "Linkedin", placeholder: "/linkedin", value: "" },
+        {
+          label: "email",
+          placeholder: "mail@mail.com",
+          value: "",
+          fieldType: FieldType.Text,
+        },
+        {
+          label: "com.twitter",
+          placeholder: "@twitter",
+          value: "",
+          fieldType: FieldType.Text,
+        },
+        {
+          label: "com.linkedin",
+          placeholder: "/linkedin",
+          value: "",
+          fieldType: FieldType.Text,
+        },
       ],
       [Tab.Addresses]: [
-        { label: "ETH", placeholder: "mail@mail.com", value: "" },
+        {
+          label: "ETH",
+          placeholder: "0x0000000000000000000000000000000000000000",
+          value: "",
+          fieldType: FieldType.Address,
+          validationFn: () => {
+            const fieldValue: undefined | string = fields[Tab.Addresses].find(
+              (add: Field) => add.label === "ETH"
+            )?.value;
+            const fieldIsEmpty: boolean = !fieldValue;
+            const isAddressValid: boolean =
+              typeof fieldValue === "string" && !!isAddress(fieldValue);
+
+            return fieldIsEmpty || isAddressValid;
+          },
+        },
       ],
-      [Tab.Others]: [
-        { label: "Content hash", placeholder: "", value: "" },
-        { label: "ABI", placeholder: "", value: "" },
-      ],
+      // [Tab.Others]: [
+      //   {
+      //     label: "Content hash",
+      //     placeholder: "",
+      //     value: "",
+      //     fieldType: FieldType.Text,
+      //   },
+      //   { label: "ABI", placeholder: "", value: "", fieldType: FieldType.Text },
+      // ],
     }
   );
 
   const setInitialFields = (fields: Record<Tab, Field[]>) => {
-    const deepCopiedFields = structuredClone(fields);
+    const deepCopiedFields = Object.assign({}, fields);
     setInitialFieldsState(deepCopiedFields);
   };
 
   const setFields = (fields: Record<Tab, Field[]>) => {
-    const deepCopiedFields = structuredClone(fields);
+    const deepCopiedFields = Object.assign({}, fields);
     setFieldsState(deepCopiedFields);
   };
 
@@ -70,6 +151,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       label: fieldName,
       placeholder: "",
       value: "",
+      fieldType: FieldType.Text,
     };
     setFieldsState((prevFields) => ({
       ...prevFields,

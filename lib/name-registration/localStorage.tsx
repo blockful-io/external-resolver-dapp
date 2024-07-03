@@ -3,7 +3,7 @@ import {
   ENS_REGISTRATIONS_SECRET_KEY,
   OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY,
 } from "@/lib/name-registration/constants";
-import { createNameRegistrationSecret } from "@/lib/name-registration/blockchain-txs";
+import { createNameRegistrationSecret } from "@/lib/utils/blockchain-txs";
 
 // GET
 export const getOpenNameRegistrations = (): Record<string, any> => {

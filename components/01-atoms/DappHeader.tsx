@@ -6,7 +6,7 @@ import { UserDropdown } from "@/components/02-molecules/UserDropdown";
 export const DappHeader = () => {
   return (
     <div className="w-full h-20 py-5 bg-white px-6 flex justify-between items-center shadow z-50">
-      <div className="w-full max-w-[1216px] flex justify-between items-center ">
+      <div className="w-full max-w-[1216px] flex justify-between items-center mx-auto">
         <Link
           href="/"
           className="flex items-center justify-center gap-2.5 shadow-2xl"
@@ -47,6 +47,8 @@ export const DappHeader = () => {
                 );
               }
 
+              const unsupportedChainClassName = `inline-flex w-auto flex-shrink-0 appearance-none items-center justify-center space-x-2 rounded-md px-5 py-2.5`;
+
               if (chain.unsupported) {
                 return (
                   <button
@@ -55,7 +57,7 @@ export const DappHeader = () => {
                       e.preventDefault();
                     }}
                     type="button"
-                    className="inline-flex w-auto flex-shrink-0 appearance-none items-center justify-center space-x-2 rounded-md px-5 py-2.5"
+                    className={unsupportedChainClassName}
                   >
                     <span className="flex-shrink-0 text-sm font-medium">
                       Unsupported network
