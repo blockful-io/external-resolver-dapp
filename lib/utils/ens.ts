@@ -2,9 +2,11 @@ import { publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
 import assert from "assert";
 import moment from "moment";
-import { isAddress } from "viem";
+import { http, isAddress } from "viem";
 import { isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
+import { addEnsContracts, createEnsPublicClient } from "@ensdomains/ensjs";
+import { mainnet, sepolia } from "viem/chains";
 
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
 
@@ -24,6 +26,22 @@ export interface ResolvedEnsData {
   coinTypes: string[] | null;
   textRecords: ENSRecords | null;
 }
+
+const mainnetWithEns = addEnsContracts(mainnet);
+const sepoliaWithEns = addEnsContracts(sepolia);
+
+const chain = {
+  ...(isTestnet ? sepoliaWithEns : mainnetWithEns),
+  subgraphs: {
+    ens: {
+      url: ENS_ENDPOINT,
+    },
+  },
+};
+export const ensJsClient = createEnsPublicClient({
+  chain: chain,
+  transport: http(),
+});
 
 const ENS_DOMAIN_TEXT_RECORDS_QUERY = `
     query($domain: String!) {

@@ -22,7 +22,7 @@ import {
   Hex,
   Address,
 } from "viem";
-import { SupportedNetwork, isTestnet } from "../wallet/chains";
+import { isTestnet } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
 import PublicResolverABI from "@/lib/abi/public-resolver.json";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
@@ -31,7 +31,7 @@ import {
   getBlockchainTransactionError,
 } from "../wallet/txError";
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
-import { extractChain, parseAccount } from "viem/utils";
+import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
 
@@ -212,7 +212,6 @@ export async function handleDBStorage({
     },
     primaryType: "Message",
   });
-  debugger;
 
   let callData;
   if (multicall) {
@@ -370,12 +369,14 @@ export const register = async ({
 export const setDomainRecords = async ({
   ensName,
   domainResolver,
+  domainResolverAddress,
   authenticatedAddress,
   textRecords,
   addresses,
 }: {
   ensName: ENSName;
-  domainResolver: EnsResolver;
+  domainResolver?: EnsResolver;
+  domainResolverAddress?: `0x${string}`;
   authenticatedAddress: `0x${string}`;
   textRecords: Record<string, string>;
   addresses: Record<string, string>;
@@ -394,13 +395,13 @@ export const setDomainRecords = async ({
       const value = textRecords[key];
 
       if (value) {
-        calls.push(
-          encodeFunctionData({
-            functionName: "setText",
-            abi: DomainResolverABI,
-            args: [namehash(publicAddress), key, value],
-          })
-        );
+        const callData = encodeFunctionData({
+          functionName: "setText",
+          abi: DomainResolverABI,
+          args: [namehash(publicAddress), key, value],
+        });
+
+        calls.push(callData);
       }
     }
 
@@ -410,22 +411,31 @@ export const setDomainRecords = async ({
       // To be replaced when multiple coin types are supported
       const DEFAULT_ETH_COIN_TYPE = 60n;
 
-      calls.push(
-        encodeFunctionData({
-          functionName: "setAddr",
-          abi: DomainResolverABI,
-          args: [namehash(publicAddress), DEFAULT_ETH_COIN_TYPE, value],
-        })
-      );
+      const callData = encodeFunctionData({
+        functionName: "setAddr",
+        abi: DomainResolverABI,
+        args: [namehash(publicAddress), DEFAULT_ETH_COIN_TYPE, value],
+      });
+
+      calls.push(callData);
     }
 
     try {
+      let resolverAddress;
+      if (domainResolver) {
+        resolverAddress = ensResolverAddress[domainResolver];
+      } else if (domainResolverAddress) {
+        resolverAddress = domainResolverAddress;
+      } else {
+        throw new Error("No domain resolver informed");
+      }
+
       await client.simulateContract({
         functionName: "multicall",
         abi: DomainResolverABI,
         args: [calls],
         account: authenticatedAddress,
-        address: ensResolverAddress[domainResolver],
+        address: resolverAddress,
       });
     } catch (err) {
       const data = getRevertErrorData(err);
@@ -447,8 +457,9 @@ export const setDomainRecords = async ({
 
           return dbRecordsSavingResponse.status;
         } catch (error) {
-          console.error(error);
-          return error;
+          console.error("writing failed: ", { err });
+          const errorType = getBlockchainTransactionError(err);
+          return errorType;
         }
       } else {
         console.error("writing failed: ", { err });
