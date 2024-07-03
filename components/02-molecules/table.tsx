@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import React from "react";
-import { normalize } from "viem/ens";
 import { TableItem } from "./TableItem";
 
 interface TableProps {

@@ -5,13 +5,9 @@ import { normalize } from "viem/ens";
 
 import CustomImage from "./CustomImage";
 import Avatar from "boring-avatars";
-import {
-  ensPublicClient,
-  publicClient,
-  walletClient,
-} from "@/lib/wallet/wallet-config";
+import { publicClient } from "@/lib/wallet/wallet-config";
 import { Skeleton } from "@ensdomains/thorin";
-import { walletActions } from "viem";
+import cc from "classcat";
 
 interface TableItemProps {
   domain: string;
@@ -23,14 +19,12 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
   const [avatar, setAvatar] = useState("");
   const [isLoadingImage, setIsLoadingImage] = useState(true);
 
-  // console.log(domain);
-
   const handleRowClick = (href: string) => {
     router.push(href);
   };
 
   useEffect(() => {
-    const geteEnsAvatar = async () => {
+    const getEnsAvatar = async () => {
       setIsLoadingImage(true);
       let ensAvatar = await publicClient.getEnsAvatar({
         name: normalize(domain),
@@ -39,7 +33,7 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
       setIsLoadingImage(false);
     };
 
-    geteEnsAvatar();
+    getEnsAvatar();
   }, []);
 
   return (
@@ -60,10 +54,10 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
                     ? avatar
                     : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
                 }
-                className="w-[40px] h-[40px] border-4 border-white rounded-[10px]"
+                className="w-10 h-10 border-4 border-white rounded-[10px]"
               />
             ) : (
-              <div className="w-[40px] h-[40px] border-4 bg-gradient-ens border-white rounded-[10px] overflow-hidden">
+              <div className="w-10 h-10 border-4 bg-gradient-ens border-white rounded-[10px] overflow-hidden">
                 <Avatar
                   size={40}
                   square
@@ -81,13 +75,14 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
         {roles.map((role, index) => (
           <span
             key={index}
-            className={`inline-block px-2 py-1 mr-2 rounded ${
-              role === "owner"
-                ? "bg-yellow-100 text-yellow-800"
-                : role === "manager"
-                ? "bg-green-100 text-green-800"
-                : "bg-blue-100 text-blue-800"
-            }`}
+            className={cc([
+              "inline-block px-2 py-1 mr-2 rounded",
+              {
+                "bg-yellow-100 text-yellow-800": role === "owner",
+                "bg-green-100 text-green-800": role === "manager",
+                "bg-blue-100 text-blue-800": role === "admin",
+              },
+            ])}
           >
             {role}
           </span>

@@ -37,7 +37,7 @@ export default function RegisterNamePage() {
         <Skeleton className="w-full" loading={isLoading}>
           {!authedUser ? (
             <div className="w-full flex flex-col gap-4 items-center justify-center">
-              <Heading level={"2"} className="text-start text-[26px]">
+              <Heading level="2" className="text-start text-[26px]">
                 You have to connect your wallet to see your domains 😉
               </Heading>
               <div>
