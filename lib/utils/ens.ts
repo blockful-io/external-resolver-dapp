@@ -88,7 +88,7 @@ const fetchAllEnsTextRecords = async (
           name: normalize(domain),
           key,
         });
-        records[key] = ensText ?? "";
+        ensText && (records[key] = ensText);
       }
     } catch (error) {
       console.error(`Error fetching text record for key ${key}:`, error);

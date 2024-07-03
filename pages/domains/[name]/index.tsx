@@ -180,13 +180,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         {ensData?.textRecords?.description}
                       </p>
                     </Skeleton>
-                    <Skeleton>
+                    {/* <Skeleton>
                       <div className="flex items-center justify-center gap-2 p-3 rounded-md border border-gray-200">
                         <Toggle />
                         <p>Primary name</p>
                         <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
                       </div>
-                    </Skeleton>
+                    </Skeleton> */}
                     <div className="flex flex-col items-start justify-center gap-1">
                       {ensData?.textRecords?.["email"] && (
                         <Link
