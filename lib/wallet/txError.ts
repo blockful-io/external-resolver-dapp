@@ -5,6 +5,7 @@ export enum TransactionErrorType {
   REVERTED = "reverted",
   DECLINED = "declined",
   NO_MATCHING_KEY = "no_matching_key",
+  INSUFFICIENT_BALANCE = "insuficcient_balance",
 }
 
 const namesForRevertedTxStatus = ["reverted"];
@@ -34,6 +35,11 @@ export const getBlockchainTransactionError = (
     })
   ) {
     return TransactionErrorType.DECLINED;
+  } else if (
+    (error as BaseError).details &&
+    (error as BaseError).details.includes("insufficient")
+  ) {
+    return TransactionErrorType.INSUFFICIENT_BALANCE;
   } else {
     return TransactionErrorType.UNKNOWN;
   }

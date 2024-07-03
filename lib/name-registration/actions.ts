@@ -10,6 +10,10 @@ import { TransactionReceipt } from "viem";
 export enum NameRegistrationAction {
   "controller/namePrice" = "controller/namePrice",
   "controller/commitTxReceipt" = "controller/commitTxReceipt",
+  "controller/domainAddresses" = "controller/domainAddresses",
+  "controller/textRecords" = "controller/textRecords",
+  "controller/commitSubmitTimestamp" = "controller/commitSubmitTimestamp",
+  "controller/registerTxReceipt" = "controller/registerTxReceipt",
   "controller/registrationPrice" = "controller/registrationPrice",
   "controller/estimatedNetworkFee" = "controller/estimatedNetworkFee",
   "model/currentRegistrationStep" = "model/currentRegistrationStep",
@@ -54,6 +58,13 @@ export const updateCommitTxReceipt = (
   payload: txReceipt,
 });
 
+export const updateRegisterTxReceipt = (
+  txReceipt: TransactionReceipt | null
+) => ({
+  type: NameRegistrationAction["controller/registerTxReceipt"],
+  payload: txReceipt,
+});
+
 export const updateNamePrice = (namePrice: bigint) => ({
   type: NameRegistrationAction["controller/namePrice"],
   payload: namePrice,
@@ -67,6 +78,23 @@ export const updateEstimatedNetworkFee = (estimatedNetworkFee: bigint) => ({
 export const updateRegistrationPrice = (registrationPrice: bigint) => ({
   type: NameRegistrationAction["controller/registrationPrice"],
   payload: registrationPrice,
+});
+
+export const updateCommitSubmitTimestamp = (timestamp: Date) => ({
+  type: NameRegistrationAction["controller/commitSubmitTimestamp"],
+  payload: timestamp,
+});
+
+export const updateTextRecords = (textRecords: Record<string, string>) => ({
+  type: NameRegistrationAction["controller/textRecords"],
+  payload: textRecords,
+});
+
+export const updateDomainAddresses = (
+  domainAddresses: Record<string, string>
+) => ({
+  type: NameRegistrationAction["controller/domainAddresses"],
+  payload: domainAddresses,
 });
 
 /*

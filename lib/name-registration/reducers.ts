@@ -1,10 +1,13 @@
 /* eslint-disable import/named */
-import { ENSName } from "@namehash/ens-utils";
+import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { NameRegistrationAction } from "./actions";
 import { EnsResolver, RegistrationStep } from "./constants";
 import { TransactionReceipt } from "viem";
+import { endNameRegistrationPreviouslyOpen } from "./localStorage";
 
 export interface NameRegistrationData {
+  textRecords: Record<string, string>;
+  domainAddresses: Record<string, string>;
   currentRegistrationStep: RegistrationStep;
   registrationYears: number;
   name: ENSName | null;
@@ -14,16 +17,22 @@ export interface NameRegistrationData {
   registrationPrice: bigint | null;
   estimatedNetworkFee: bigint | null;
   commitTxReceipt: null | TransactionReceipt;
+  commitSubmitTimestamp: null | Date;
+  registerTxReceipt: null | TransactionReceipt;
 }
 
 export const nameRegistrationInitialState: NameRegistrationData = {
   currentRegistrationStep: RegistrationStep.RegistrationYears,
   estimatedNetworkFee: null,
   registrationPrice: null,
+  registerTxReceipt: null,
   commitTxReceipt: null,
+  textRecords: {},
+  domainAddresses: {},
+  commitSubmitTimestamp: null,
   registrationYears: 1,
   asPrimaryName: false,
-  ensResolver: null,
+  ensResolver: EnsResolver.Database,
   namePrice: null,
   name: null,
 };
@@ -41,6 +50,16 @@ const nameRegistrationReducer = (
         ...state,
         registrationPrice: action.payload,
       };
+    case NameRegistrationAction["controller/textRecords"]:
+      return {
+        ...state,
+        textRecords: action.payload,
+      };
+    case NameRegistrationAction["controller/domainAddresses"]:
+      return {
+        ...state,
+        domainAddresses: action.payload,
+      };
     case NameRegistrationAction["controller/estimatedNetworkFee"]:
       return {
         ...state,
@@ -51,10 +70,20 @@ const nameRegistrationReducer = (
         ...state,
         namePrice: action.payload,
       };
+    case NameRegistrationAction["controller/registerTxReceipt"]:
+      return {
+        ...state,
+        registerTxReceipt: action.payload,
+      };
     case NameRegistrationAction["controller/commitTxReceipt"]:
       return {
         ...state,
         commitTxReceipt: action.payload,
+      };
+    case NameRegistrationAction["controller/commitSubmitTimestamp"]:
+      return {
+        ...state,
+        commitSubmitTimestamp: action.payload,
       };
     case NameRegistrationAction["model/currentRegistrationStep"]:
       return {
@@ -78,7 +107,7 @@ const nameRegistrationReducer = (
       };
     case NameRegistrationAction["model/name"]:
       return {
-        ...state,
+        ...nameRegistrationInitialState,
         name: action.payload,
       };
     default:
