@@ -1,4 +1,4 @@
-import { NextButton } from "@/components/01-atoms";
+import { BackButton, NextButton } from "@/components/01-atoms";
 import { MinusSVG, PlusSVG } from "@ensdomains/thorin";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 
@@ -23,6 +23,7 @@ export const RegistrationYearsComponent = ({
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
+      <BackButton onClick={() => {}} disabled={true} />
       <div className="max-w-[500px] w-full flex flex-col gap-7">
         <h3 className="text-start text-[34px] font-medium">
           How many years do you want to register this domain?

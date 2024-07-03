@@ -21,7 +21,9 @@ enum BlockchainCTAState {
 }
 
 interface BlockchainCTAProps {
-  transactionRequest: () => Promise<`0x${string}` | TransactionErrorType>;
+  transactionRequest: () => Promise<
+    `0x${string}` | TransactionErrorType | null
+  >;
   onSuccess: (txReceipt: TransactionReceipt) => void;
 }
 
@@ -38,8 +40,9 @@ export const BlockchainCTA = ({
   const sendBlockchainTx = async () => {
     setBlockchainCtaStatus(BlockchainCTAState.APPROVING_IN_WALLET);
 
-    const txHashOrError: `0x${string}` | TransactionErrorType =
+    const txHashOrError: `0x${string}` | TransactionErrorType | null =
       await transactionRequest();
+    console.log("txHashOrError", txHashOrError);
 
     const transactionReverted =
       txHashOrError === TransactionErrorType.REVERTED ||
@@ -48,6 +51,7 @@ export const BlockchainCTA = ({
     const transactionFailedDueToInsufficientBalance =
       txHashOrError === TransactionErrorType.INSUFFICIENT_BALANCE;
     const transactionFailed = txHashOrError === TransactionErrorType.UNKNOWN;
+    const transactionSucceededInDBResolver = txHashOrError === null;
 
     if (transactionReverted) {
       console.error(txHashOrError);
@@ -65,6 +69,10 @@ export const BlockchainCTA = ({
       console.error(txHashOrError);
       toast.error(`Insufficient wallet balance: add funds and try again`);
       setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+    } else if (transactionSucceededInDBResolver) {
+      setBlockchainCtaStatus(BlockchainCTAState.CONFIRMED);
+
+      onSuccess({} as TransactionReceipt);
     } else {
       setTxHashOrError(txHashOrError);
 

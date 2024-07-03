@@ -1,26 +1,25 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
-import { useState } from "react";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { useEffect, useState } from "react";
 
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-interface Address {
-  key: string;
-  value: string;
-}
-
-const DEFAULT_ADDRESS: Address = {
-  key: "ETH",
-  value: "",
-};
-
 export const SetTextRecordsAddressesComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: SetTextRecordsAddressesComponentProps) => {
-  const [addresses, setAddresses] = useState<Address[]>([DEFAULT_ADDRESS]);
+  const [addresses, setAddresses] = useState({
+    ETH: "",
+  });
+
+  const { setDomainAddresses } = useNameRegistration();
+
+  useEffect(() => {
+    setDomainAddresses(addresses);
+  }, [addresses]);
 
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
@@ -36,17 +35,14 @@ export const SetTextRecordsAddressesComponent = ({
           onSubmit={(e) => e.preventDefault()}
           className="flex flex-col space-y-[22px] mb-[10px] w-full"
         >
-          {addresses.map((socialAccount) => (
+          {Object.keys(addresses).map((address) => (
             <div
-              key={socialAccount.key}
+              key={address}
               className="flex flex-col items-start space-y-2 w-full"
             >
               <div className="flex w-full items-center text-gray-400 justify-between">
-                <label
-                  htmlFor={socialAccount.key}
-                  className="text-[#1E2122] text-sm"
-                >
-                  {socialAccount.key}
+                <label htmlFor={address} className="text-[#1E2122] text-sm">
+                  {address}
                 </label>
                 {/* <button
                   className="flex items-center space-x-1 group"
@@ -67,7 +63,13 @@ export const SetTextRecordsAddressesComponent = ({
               </div>
               <input
                 type="text"
-                id={socialAccount.key}
+                onChange={(e) =>
+                  setAddresses({
+                    ...addresses,
+                    [address]: e.target.value,
+                  })
+                }
+                id={address}
                 className="w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2"
               />
             </div>

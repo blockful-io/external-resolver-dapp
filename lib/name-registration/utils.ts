@@ -18,6 +18,7 @@ export const getRegistrationStepBlock = (
     case RegistrationStep.SetTextRecordsSocialAccounts:
     case RegistrationStep.WaitingRegistrationLocktime:
     case RegistrationStep.NameSecuredToBeRegistered:
+    case RegistrationStep.NameRegisteredAwaitingRecordsSetting:
       return RegistrationBlock.RequestToRegister;
 
     case RegistrationStep.Register:

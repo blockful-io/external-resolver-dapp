@@ -13,6 +13,7 @@ const nameRegistrationStore = configureStore({
           "controller/commitTxReceipt",
           "controller/registerTxReceipt",
           "controller/registrationPrice",
+          "controller/commitSubmitTimestamp",
           "controller/estimatedNetworkFee",
         ],
         ignoredPaths: [
@@ -20,6 +21,7 @@ const nameRegistrationStore = configureStore({
           "registrationPrice",
           "registerTxReceipt",
           "commitTxReceipt",
+          "commitSubmitTimestamp",
           "namePrice",
         ],
       },

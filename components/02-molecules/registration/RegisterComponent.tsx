@@ -13,7 +13,7 @@ export const RegisterComponent = ({
   const { nameRegistrationData } = useNameRegistration();
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col gap-[44px] justify-start items-start my-16">
       <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
         <h3 className="text-7xl">🎉</h3>
         <h3 className="text-start text-[34px] font-medium">

@@ -18,9 +18,11 @@ import {
   custom,
   BaseError,
   RawContractError,
-  PrivateKeyAccount,
+  Hash,
+  Hex,
+  Address,
 } from "viem";
-import { isTestnet } from "../wallet/chains";
+import { SupportedNetwork, isTestnet } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
 import PublicResolverABI from "@/lib/abi/public-resolver.json";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
@@ -28,8 +30,17 @@ import {
   TransactionErrorType,
   getBlockchainTransactionError,
 } from "../wallet/txError";
-import { getNameRegistrationSecret } from "@/lib/browser/localStorage";
-import { parseAccount } from "viem/utils";
+import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
+import { extractChain, parseAccount } from "viem/utils";
+import DomainResolverABI from "../abi/resolver.json";
+import { normalize } from "viem/ens";
+
+const getChain = (chainId: SupportedNetwork) => {
+  return extractChain({
+    chains: [mainnet, sepolia],
+    id: chainId,
+  });
+};
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -136,17 +147,60 @@ export async function makeCommitment({
     });
 }
 
-export async function handleDBStorage({
-  domain,
-  message,
-  authenticatedAddress,
-}: {
+export type TypedSignature = {
+  signature: `0x${string}`;
   domain: DomainData;
   message: MessageData;
+};
+
+export type CcipRequestParameters = {
+  body: { data: Hex; signature: TypedSignature; sender: Address };
+  url: string;
+};
+
+export async function ccipRequest({
+  body,
+  url,
+}: CcipRequestParameters): Promise<Response> {
+  return fetch(url.replace("/{sender}/{data}.json", ""), {
+    body: JSON.stringify(body, (_, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    ),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((res) => res)
+    .catch((err) => {
+      console.error(err);
+      return err;
+    });
+}
+
+export async function handleDBStorage({
+  domain,
+  url,
+  message,
+  authenticatedAddress,
+  multicall,
+}: {
+  domain: DomainData;
+  url: string;
+  message: MessageData;
   authenticatedAddress: `0x${string}`;
-}): Promise<`0x${string}`> {
-  return await walletClient.signTypedData({
+  multicall?: boolean;
+}): Promise<Response> {
+  const client = createWalletClient({
     account: authenticatedAddress,
+    chain: isTestnet ? sepolia : mainnet,
+    transport: custom(window.ethereum),
+  });
+
+  const signature = await client.signTypedData({
     domain,
     message,
     types: {
@@ -163,6 +217,33 @@ export async function handleDBStorage({
     },
     primaryType: "Message",
   });
+  debugger;
+
+  let callData;
+  if (multicall) {
+    callData = message.parameters[0].value as `0x${string}`;
+  } else {
+    callData = encodeFunctionData({
+      abi: DomainResolverABI,
+      functionName: message.functionSelector,
+      args: message.parameters.map((arg) => arg.value),
+    });
+  }
+
+  console.log("calldata", callData);
+
+  const dbRecordsSavingResponse = await ccipRequest({
+    body: {
+      data: callData,
+      signature: { message, domain, signature },
+      sender: message.sender,
+    },
+    url,
+  });
+
+  console.log("dbRecordsSavingResponse", dbRecordsSavingResponse);
+
+  return dbRecordsSavingResponse;
 }
 
 /*
@@ -187,8 +268,6 @@ export const commit = async ({
     const client = walletClient.extend(publicActions);
 
     if (!client) throw new Error("WalletClient not found");
-
-    const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
 
     const commitmentWithConfigHash = await makeCommitment({
       name: ensName.name,
@@ -243,7 +322,6 @@ export const register = async ({
 
     if (!client) throw new Error("WalletClient not found");
 
-    const addrCalldata = getAddrCalldata(ensName.name, authenticatedAddress);
     const namePrice = await getNamePrice({ ensName, durationInYears });
 
     const txHash = await client.writeContract({
@@ -270,18 +348,124 @@ export const register = async ({
     const data = getRevertErrorData(error);
 
     if (data?.errorName === "StorageHandledByOffChainDatabase") {
-      const [domain, message] = data.args as [DomainData, MessageData];
+      const [domain, url, message] = data.args as [
+        DomainData,
+        string,
+        MessageData
+      ];
       const signedData = await handleDBStorage({
         domain,
+        url,
         message,
         authenticatedAddress,
       });
-      return signedData;
+
+      if (typeof signedData === "string") {
+        return signedData as `0x${string}`;
+      } else {
+        throw new Error("Error handling off-chain storage");
+      }
     } else {
       console.error(error);
       const errorType = getBlockchainTransactionError(error);
       return errorType;
     }
+  }
+};
+
+/*
+  3rd step of a name registration - set text records
+*/
+export const setDomainRecords = async ({
+  ensName,
+  domainResolver,
+  authenticatedAddress,
+  textRecords,
+  addresses,
+}: {
+  ensName: ENSName;
+  domainResolver: EnsResolver;
+  authenticatedAddress: `0x${string}`;
+  textRecords: Record<string, string>;
+  addresses: Record<string, string>;
+}) => {
+  try {
+    const publicAddress = normalize(ensName.name);
+
+    const client = walletClient.extend(publicActions);
+
+    if (!client) throw new Error("WalletClient not found");
+
+    const calls: Hash[] = [];
+
+    for (let i = 0; i < Object.keys(textRecords).length; i++) {
+      const key = Object.keys(textRecords)[i];
+      const value = textRecords[key];
+
+      if (value) {
+        calls.push(
+          encodeFunctionData({
+            functionName: "setText",
+            abi: DomainResolverABI,
+            args: [namehash(publicAddress), key, value],
+          })
+        );
+      }
+    }
+
+    for (let i = 0; i < Object.keys(addresses).length; i++) {
+      const value = Object.values(addresses)[i];
+
+      calls.push(
+        encodeFunctionData({
+          functionName: "setAddr",
+          abi: DomainResolverABI,
+          args: [namehash(publicAddress), value],
+        })
+      );
+    }
+
+    try {
+      await client.simulateContract({
+        functionName: "multicall",
+        abi: DomainResolverABI,
+        args: [calls],
+        account: authenticatedAddress,
+        address: ensResolverAddress[domainResolver],
+      });
+    } catch (err) {
+      const data = getRevertErrorData(err);
+      if (data?.errorName === "StorageHandledByOffChainDatabase") {
+        const [domain, url, message] = data.args as [
+          DomainData,
+          string,
+          MessageData
+        ];
+
+        try {
+          const dbRecordsSavingResponse = await handleDBStorage({
+            domain,
+            url,
+            message,
+            authenticatedAddress,
+            multicall: true,
+          });
+
+          return dbRecordsSavingResponse.status;
+        } catch (error) {
+          console.error(error);
+          return error;
+        }
+      } else {
+        console.error("writing failed: ", { err });
+        const errorType = getBlockchainTransactionError(err);
+        return errorType;
+      }
+    }
+  } catch (error: unknown) {
+    console.error(error);
+    const errorType = getBlockchainTransactionError(error);
+    return errorType;
   }
 };
 

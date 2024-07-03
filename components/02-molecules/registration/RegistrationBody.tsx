@@ -12,6 +12,14 @@ import { SetTextRecordsComponent } from "./SetTextRecordsComponent";
 import { SetTextRecordsBasicInfoComponent } from "./SetTextRecordsBasicInfoComponent";
 import { SetTextRecordsSocialAccountsComponent } from "./SetTextRecordsSocialAccountsComponent";
 import { SetTextRecordsAddressesComponent } from "./SetTextRecordsAddressesComponent";
+import { NameRegisteredAwaitingRecordsSettingComponent } from "./NameRegisteredAwaitingRecordsSettingComponent";
+import { useEffect } from "react";
+import {
+  getNameRegistrationSecret,
+  getOpenNameRegistrationsOfNameByWallet,
+  setNameRegistrationSecret,
+} from "@/lib/name-registration/localStorage";
+import { useUser } from "@/lib/wallet/useUser";
 
 export const RegistrationBody = () => {
   const { nameRegistrationData, setCurrentRegistrationStep } =
@@ -43,6 +51,31 @@ export const RegistrationBody = () => {
 
   const CurrentComponent = stepComponentMap()[currentStep];
 
+  const { authedUser } = useUser();
+
+  useEffect(() => {
+    if (authedUser && nameRegistrationData.name) {
+      const openRegistration = getOpenNameRegistrationsOfNameByWallet(
+        authedUser,
+        nameRegistrationData.name
+      );
+
+      const hasOpenRegistrationForSearchedName = !!openRegistration;
+      const hasDoneCommitmentForSearchedName =
+        openRegistration?.commitTxReceipt;
+      const secretFromPastNameRegistrationCommitment = openRegistration?.secret;
+
+      if (
+        hasOpenRegistrationForSearchedName &&
+        hasDoneCommitmentForSearchedName &&
+        secretFromPastNameRegistrationCommitment
+      ) {
+        setNameRegistrationSecret(secretFromPastNameRegistrationCommitment);
+        setCurrentRegistrationStep(RegistrationStep.SetTextRecords);
+      }
+    }
+  }, []);
+
   return (
     <CurrentComponent
       handleNextStep={handleNextStep}
@@ -70,5 +103,7 @@ export const stepComponentMap = (): Record<RegistrationStep, React.FC<any>> => {
       NameSecuredToBeRegisteredComponent,
     [RegistrationStep.Register]: RegisterComponent,
     [RegistrationStep.Registered]: RegisteredComponent,
+    [RegistrationStep.NameRegisteredAwaitingRecordsSetting]:
+      NameRegisteredAwaitingRecordsSettingComponent,
   };
 };

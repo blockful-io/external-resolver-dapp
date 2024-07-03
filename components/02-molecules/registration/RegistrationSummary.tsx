@@ -97,7 +97,9 @@ export const RegistrationSummary = () => {
                     (asPrimaryName ? "max-w-[240px]" : "max-w-[340px]")
                   }
                 >
-                  {name?.displayName}
+                  {name?.displayName.includes(".eth")
+                    ? name.displayName
+                    : `${name?.displayName}.eth`}
                 </Typography>
                 {asPrimaryName && (
                   <Tag colorStyle="greenSecondary">Primary name</Tag>

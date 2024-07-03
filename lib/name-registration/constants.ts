@@ -11,6 +11,7 @@ export enum RegistrationStep {
   SetTextRecordsAddresses = "SetTextRecordsAddresses",
   WaitingRegistrationLocktime = "WaitingRegistrationLocktime",
   NameSecuredToBeRegistered = "NameSecuredToBeRegistered",
+  NameRegisteredAwaitingRecordsSetting = "NameRegisteredAwaitingRecordsSetting",
   Register = "Register",
   Registered = "Registered",
 }
@@ -35,7 +36,15 @@ export enum EnsResolver {
   Optimism = "Optimism",
 }
 
+export const ENSResolverToNetwork = {
+  [EnsResolver.Mainnet]: SupportedNetwork.MAINNET,
+  [EnsResolver.Database]: SupportedNetwork.TESTNET,
+  [EnsResolver.Arbitrum]: SupportedNetwork.TESTNET,
+  [EnsResolver.Optimism]: SupportedNetwork.TESTNET,
+};
+
 export const ENS_REGISTRATIONS_SECRET_KEY = "nameRegistrationSecret";
+export const OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY = "openENSNameRegistrations";
 
 export const nameRegistrationSCs: Record<
   number,
@@ -51,9 +60,9 @@ export const nameRegistrationSCs: Record<
   },
 };
 
-export const ensResolverAddress: Record<EnsResolver, string> = {
+export const ensResolverAddress: Record<EnsResolver, `0x${string}`> = {
   [EnsResolver.Arbitrum]: "0xfE47e2f223e4D098B84E79AF5fC5faA33bf6Da4D",
-  [EnsResolver.Database]: "0x04270c4366010A52192bC8D3E29d9f0E21bBe969",
+  [EnsResolver.Database]: "0x66E8aEEfc472B378A03C6F7e3a3A06254D98f402",
   [EnsResolver.Optimism]: "0x55b00cD5e9Bd2Bb5eB001969E0BE7ac17b505c2f",
   [EnsResolver.Mainnet]: "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63",
 };

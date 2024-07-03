@@ -1,29 +1,24 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
-import { useState } from "react";
-import { Button, CrossSVG, FieldSet, Input, PlusSVG } from "@ensdomains/thorin";
+import { useEffect, useState } from "react";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 
 interface SetTextRecordsSocialAccountsComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-interface SocialAccount {
-  key: string;
-  value: string;
-}
-
-const DEFAULT_SOCIAL_ACCOUNT: SocialAccount = {
-  key: "Email",
-  value: "",
-};
-
 export const SetTextRecordsSocialAccountsComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: SetTextRecordsSocialAccountsComponentProps) => {
-  const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>([
-    DEFAULT_SOCIAL_ACCOUNT,
-  ]);
+  const { setTextRecords, nameRegistrationData } = useNameRegistration();
+  const [socialAccounts, setSocialAccounts] = useState({
+    email: "",
+  });
+
+  useEffect(() => {
+    setTextRecords({ ...nameRegistrationData.textRecords, ...socialAccounts });
+  }, [socialAccounts]);
 
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
@@ -41,17 +36,17 @@ export const SetTextRecordsSocialAccountsComponent = ({
           onSubmit={(e) => e.preventDefault()}
           className="flex flex-col space-y-[22px] mb-[10px] w-full"
         >
-          {socialAccounts.map((socialAccount) => (
+          {Object.keys(socialAccounts).map((socialAccount) => (
             <div
-              key={socialAccount.key}
+              key={socialAccount}
               className="flex flex-col items-start space-y-2 w-full"
             >
               <div className="flex w-full items-center text-gray-400 justify-between">
                 <label
-                  htmlFor={socialAccount.key}
+                  htmlFor={socialAccount}
                   className="text-[#1E2122] text-sm"
                 >
-                  {socialAccount.key}
+                  {socialAccount}
                 </label>
                 {/* <button
                   className="flex items-center space-x-1 group"
@@ -72,7 +67,13 @@ export const SetTextRecordsSocialAccountsComponent = ({
               </div>
               <input
                 type="text"
-                id={socialAccount.key}
+                id={socialAccount}
+                onChange={(e) =>
+                  setSocialAccounts({
+                    ...socialAccounts,
+                    [socialAccount]: e.target.value,
+                  })
+                }
                 className="w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2"
               />
             </div>

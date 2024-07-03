@@ -11,7 +11,7 @@ export const DappHeader = () => {
         className="flex items-center justify-center gap-2.5 shadow-2xl"
       >
         <div className="h-6 w-6 bg-gradient-ens rounded-full" />
-        <p className="text-base font-bold text-black">DomainResolver</p>
+        <p className="text-xl font-bold text-black">DomainResolver</p>
       </Link>
       <div>
         <ConnectButton.Custom>
@@ -37,7 +37,7 @@ export const DappHeader = () => {
                     openConnectModal();
                     e.preventDefault();
                   }}
-                  size="small"
+                  size="medium"
                   colorStyle="blueSecondary"
                   prefix={<WalletSVG />}
                 >

@@ -8,11 +8,14 @@ interface WaitingRegistrationLocktimeComponentProps {
   handleNextStep: () => void;
 }
 
+const ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME = 60000;
+
 export const WaitingRegistrationLocktimeComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: WaitingRegistrationLocktimeComponentProps) => {
   const { nameRegistrationData } = useNameRegistration();
+  const [timerDone, setTimerDone] = useState(false);
   const [timer, setTimer] = useState<number | null>(null);
 
   useEffect(() => {
@@ -34,13 +37,38 @@ export const WaitingRegistrationLocktimeComponent = ({
     } else {
       setTimer(remainingTimer);
     }
-  }, []);
-      
+  }, [nameRegistrationData.commitSubmitTimestamp]);
+
+  useEffect(() => {
+    if (timer !== null && !timer) {
+      setTimerDone(true);
+    }
+  }, [timer]);
+
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  useEffect(() => {
+    if (timer !== null) {
+      setTimeLeft(timer);
+
+      setInterval(() => {
+        setTimeLeft((prevTimeLeft) => {
+          if (!prevTimeLeft) return 0;
+          return prevTimeLeft - 1;
+        });
+      }, 1000);
+    }
+  }, [timer]);
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
       <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
-        {timer !== null && <CountdownTimer onTimeEnd={() => setTimerDone(true)} duration={timer} />}
+        {timer !== null && (
+          <CountdownTimer
+            onTimeEnd={() => setTimerDone(true)}
+            duration={timer}
+          />
+        )}
 
         <h3 className="text-start text-[34px] font-medium">
           {timer === 0
@@ -48,7 +76,7 @@ export const WaitingRegistrationLocktimeComponent = ({
             : "We are securing your domain"}
         </h3>
         <p className="text-gray-500 text-left text-base">
-          Please wait 60 seconds to confirm the registration commitment.
+          Please wait {timeLeft} seconds to confirm the registration commitment.
         </p>
       </div>
       <NextButton disabled={!timerDone} onClick={handleNextStep} />

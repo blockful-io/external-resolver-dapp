@@ -4,6 +4,7 @@ import {
   updateCommitSubmitTimestamp,
   updateCommitTxReceipt,
   updateCurrentRegistrationStep,
+  updateDomainAddresses,
   updateEnsResolver,
   updateEstimatedNetworkFee,
   updateIsPrimaryName,
@@ -12,13 +13,22 @@ import {
   updateRegisterTxReceipt,
   updateRegistrationPrice,
   updateRegistrationYears,
+  updateTextRecords,
 } from "./actions";
 import { EnsResolver, RegistrationStep } from "./constants";
 import { ENSName } from "@namehash/ens-utils";
 import { TransactionReceipt } from "viem";
+import {
+  endNameRegistrationPreviouslyOpen,
+  getNameRegistrationSecret,
+  setNameRegistrationInLocalStorage,
+} from "./localStorage";
+import { useUser } from "../wallet/useUser";
 
 interface NameRegistrationData {
   nameRegistrationData: {
+    textRecords: Record<string, string>;
+    domainAddresses: Record<string, string>;
     commitSubmitTimestamp: Date | null;
     registerTxReceipt: TransactionReceipt | null;
     commitTxReceipt: TransactionReceipt | null;
@@ -44,9 +54,13 @@ interface NameRegistrationData {
   setNameToRegister: (nameToRegister: ENSName) => void;
   setAsPrimaryName: (asPrimaryName: boolean) => void;
   setEnsResolver: (ensResolver: EnsResolver) => void;
+  setTextRecords: (textRecords: Record<string, string>) => void;
+  setDomainAddresses: (domainAddresses: Record<string, string>) => void;
 }
 
 export const useNameRegistration = (): NameRegistrationData => {
+  const { authedUser } = useUser();
+
   const currentRegistrationStep = useAppSelector(
     (state) => state.currentRegistrationStep
   );
@@ -64,6 +78,8 @@ export const useNameRegistration = (): NameRegistrationData => {
   const ensResolver = useAppSelector((state) => state.ensResolver);
   const namePrice = useAppSelector((state) => state.namePrice);
   const name = useAppSelector((state) => state.name);
+  const textRecords = useAppSelector((state) => state.textRecords);
+  const domainAddresses = useAppSelector((state) => state.domainAddresses);
 
   const dispatch = useAppDispatch();
 
@@ -90,14 +106,25 @@ export const useNameRegistration = (): NameRegistrationData => {
   };
 
   const setCommitTxReceipt = (txReceipt: TransactionReceipt) => {
+    if (authedUser) {
+      setNameRegistrationInLocalStorage(authedUser, name, {
+        commitTxReceipt: txReceipt,
+        secret: getNameRegistrationSecret(),
+      });
+    }
+
     dispatch(updateCommitTxReceipt(txReceipt));
   };
 
   const setCommitSubmitTimestamp = (timestamp: Date) => {
     dispatch(updateCommitSubmitTimestamp(timestamp));
-  }
-  
+  };
+
   const setRegisterTxReceipt = (txReceipt: TransactionReceipt) => {
+    if (txReceipt.status === "success" && authedUser) {
+      endNameRegistrationPreviouslyOpen(authedUser, name);
+    }
+
     dispatch(updateRegisterTxReceipt(txReceipt));
   };
 
@@ -113,6 +140,14 @@ export const useNameRegistration = (): NameRegistrationData => {
     dispatch(updateRegistrationPrice(registrationPrice));
   };
 
+  const setTextRecords = (textRecords: Record<string, string>) => {
+    dispatch(updateTextRecords(textRecords));
+  };
+
+  const setDomainAddresses = (domainAddresses: Record<string, string>) => {
+    dispatch(updateDomainAddresses(domainAddresses));
+  };
+
   return {
     nameRegistrationData:
       {
@@ -122,6 +157,8 @@ export const useNameRegistration = (): NameRegistrationData => {
         registrationYears,
         registrationPrice,
         registerTxReceipt,
+        textRecords,
+        domainAddresses,
         commitTxReceipt,
         asPrimaryName,
         ensResolver,
@@ -137,6 +174,8 @@ export const useNameRegistration = (): NameRegistrationData => {
     setCommitTxReceipt,
     setNameToRegister,
     setAsPrimaryName,
+    setTextRecords,
+    setDomainAddresses,
     setEnsResolver,
     setNamePrice,
   };

@@ -13,7 +13,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   const [timeLeft, setTimeLeft] = useState(duration);
   const [remainingCircumference, setRemainingCircumference] = useState("283");
 
-  const timerDone = timeLeft === 0;
+  const [timerDone, setTimerDone] = useState(timeLeft === 0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -26,6 +26,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   useEffect(() => {
     if (timeLeft === 0) {
       onTimeEnd?.();
+      setTimerDone(true);
     }
   }, [timeLeft]);
 
