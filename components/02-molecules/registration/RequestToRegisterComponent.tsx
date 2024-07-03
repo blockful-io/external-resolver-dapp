@@ -26,7 +26,8 @@ export const RequestToRegisterComponent = ({
     address: authedUser as `0x${string}`,
     chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
   });
-  const { nameRegistrationData } = useNameRegistration();
+  const { nameRegistrationData, setCommitSubmitTimestamp } =
+    useNameRegistration();
   const { openConnectModal } = useConnectModal();
 
   const commitToRegister = async (): Promise<
@@ -45,6 +46,7 @@ export const RequestToRegisterComponent = ({
     return await commit({
       authenticatedAddress: authedUser,
       ensName: nameRegistrationData.name,
+      domainResolver: nameRegistrationData.ensResolver,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });
@@ -52,17 +54,19 @@ export const RequestToRegisterComponent = ({
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
-      <BackButton onClick={handlePreviousStep} />
+      <BackButton
+        onClick={handlePreviousStep}
+        disabled={!!nameRegistrationData.commitTxReceipt}
+      />
 
       <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
-        <h3 className="text-[72px]">📝</h3>
+        <h3 className="text-7xl">📝</h3>
         <h3 className="text-start text-[34px] font-medium">
-          Start registration process
+          Start name registration
         </h3>
         <p className="text-gray-500 text-left text-base">
-          First, a 0 ETH transaction is performed where your name is hashed with
-          a secret key so that no one else can view the name you&apos;re trying
-          to register.
+          First, a transaction is performed so that no one else can view the
+          name you&apos;re trying to register.
         </p>
       </div>
 
@@ -88,7 +92,10 @@ export const RequestToRegisterComponent = ({
           </Button>
         ) : (
           <BlockchainCTA
-            onSuccess={handleNextStep}
+            onSuccess={() => {
+              setCommitSubmitTimestamp(new Date());
+              handleNextStep();
+            }}
             transactionRequest={commitToRegister}
           />
         )}

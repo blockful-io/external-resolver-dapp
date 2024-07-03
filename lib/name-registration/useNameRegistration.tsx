@@ -1,22 +1,36 @@
 import { useAppDispatch, useAppSelector } from "../globalStore";
 import { nameRegistrationInitialState } from "./reducers";
 import {
+  updateCommitSubmitTimestamp,
   updateCommitTxReceipt,
   updateCurrentRegistrationStep,
+  updateDomainAddresses,
   updateEnsResolver,
   updateEstimatedNetworkFee,
   updateIsPrimaryName,
   updateNamePrice,
   updateNameToRegister,
+  updateRegisterTxReceipt,
   updateRegistrationPrice,
   updateRegistrationYears,
+  updateTextRecords,
 } from "./actions";
 import { EnsResolver, RegistrationStep } from "./constants";
 import { ENSName } from "@namehash/ens-utils";
 import { TransactionReceipt } from "viem";
+import {
+  endNameRegistrationPreviouslyOpen,
+  getNameRegistrationSecret,
+  setNameRegistrationInLocalStorage,
+} from "./localStorage";
+import { useUser } from "../wallet/useUser";
 
 interface NameRegistrationData {
   nameRegistrationData: {
+    textRecords: Record<string, string>;
+    domainAddresses: Record<string, string>;
+    commitSubmitTimestamp: Date | null;
+    registerTxReceipt: TransactionReceipt | null;
     commitTxReceipt: TransactionReceipt | null;
     currentRegistrationStep: RegistrationStep;
     estimatedNetworkFee: bigint | null;
@@ -33,14 +47,20 @@ interface NameRegistrationData {
   setCurrentRegistrationStep: (
     currentRegistrationStep: RegistrationStep
   ) => void;
+  setCommitSubmitTimestamp: (timestamp: Date) => void;
+  setRegisterTxReceipt: (txReceipt: TransactionReceipt) => void;
   setCommitTxReceipt: (txReceipt: TransactionReceipt) => void;
   setRegistrationYears: (registrationYears: number) => void;
   setNameToRegister: (nameToRegister: ENSName) => void;
   setAsPrimaryName: (asPrimaryName: boolean) => void;
   setEnsResolver: (ensResolver: EnsResolver) => void;
+  setTextRecords: (textRecords: Record<string, string>) => void;
+  setDomainAddresses: (domainAddresses: Record<string, string>) => void;
 }
 
 export const useNameRegistration = (): NameRegistrationData => {
+  const { authedUser } = useUser();
+
   const currentRegistrationStep = useAppSelector(
     (state) => state.currentRegistrationStep
   );
@@ -49,11 +69,17 @@ export const useNameRegistration = (): NameRegistrationData => {
   );
   const registrationYears = useAppSelector((state) => state.registrationYears);
   const registrationPrice = useAppSelector((state) => state.registrationPrice);
+  const commitSubmitTimestamp = useAppSelector(
+    (state) => state.commitSubmitTimestamp
+  );
+  const registerTxReceipt = useAppSelector((state) => state.registerTxReceipt);
   const commitTxReceipt = useAppSelector((state) => state.commitTxReceipt);
   const asPrimaryName = useAppSelector((state) => state.asPrimaryName);
   const ensResolver = useAppSelector((state) => state.ensResolver);
   const namePrice = useAppSelector((state) => state.namePrice);
   const name = useAppSelector((state) => state.name);
+  const textRecords = useAppSelector((state) => state.textRecords);
+  const domainAddresses = useAppSelector((state) => state.domainAddresses);
 
   const dispatch = useAppDispatch();
 
@@ -80,7 +106,26 @@ export const useNameRegistration = (): NameRegistrationData => {
   };
 
   const setCommitTxReceipt = (txReceipt: TransactionReceipt) => {
+    if (authedUser) {
+      setNameRegistrationInLocalStorage(authedUser, name, {
+        commitTxReceipt: txReceipt,
+        secret: getNameRegistrationSecret(),
+      });
+    }
+
     dispatch(updateCommitTxReceipt(txReceipt));
+  };
+
+  const setCommitSubmitTimestamp = (timestamp: Date) => {
+    dispatch(updateCommitSubmitTimestamp(timestamp));
+  };
+
+  const setRegisterTxReceipt = (txReceipt: TransactionReceipt) => {
+    if (txReceipt.status === "success" && authedUser) {
+      endNameRegistrationPreviouslyOpen(authedUser, name);
+    }
+
+    dispatch(updateRegisterTxReceipt(txReceipt));
   };
 
   const setNamePrice = (namePrice: bigint) => {
@@ -95,13 +140,25 @@ export const useNameRegistration = (): NameRegistrationData => {
     dispatch(updateRegistrationPrice(registrationPrice));
   };
 
+  const setTextRecords = (textRecords: Record<string, string>) => {
+    dispatch(updateTextRecords(textRecords));
+  };
+
+  const setDomainAddresses = (domainAddresses: Record<string, string>) => {
+    dispatch(updateDomainAddresses(domainAddresses));
+  };
+
   return {
     nameRegistrationData:
       {
+        commitSubmitTimestamp,
         currentRegistrationStep,
         estimatedNetworkFee,
         registrationYears,
         registrationPrice,
+        registerTxReceipt,
+        textRecords,
+        domainAddresses,
         commitTxReceipt,
         asPrimaryName,
         ensResolver,
@@ -109,12 +166,16 @@ export const useNameRegistration = (): NameRegistrationData => {
         name,
       } || nameRegistrationInitialState,
     setCurrentRegistrationStep,
+    setCommitSubmitTimestamp,
     setEstimatedNetworkFee,
     setRegistrationYears,
     setRegistrationPrice,
+    setRegisterTxReceipt,
     setCommitTxReceipt,
     setNameToRegister,
     setAsPrimaryName,
+    setTextRecords,
+    setDomainAddresses,
     setEnsResolver,
     setNamePrice,
   };

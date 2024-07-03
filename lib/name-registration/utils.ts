@@ -12,8 +12,13 @@ export const getRegistrationStepBlock = (
       return RegistrationBlock.DomainSettings;
 
     case RegistrationStep.RequestToRegister:
+    case RegistrationStep.SetTextRecords:
+    case RegistrationStep.SetTextRecordsBasicInfo:
+    case RegistrationStep.SetTextRecordsAddresses:
+    case RegistrationStep.SetTextRecordsSocialAccounts:
     case RegistrationStep.WaitingRegistrationLocktime:
     case RegistrationStep.NameSecuredToBeRegistered:
+    case RegistrationStep.NameRegisteredAwaitingRecordsSetting:
       return RegistrationBlock.RequestToRegister;
 
     case RegistrationStep.Register:

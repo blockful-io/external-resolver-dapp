@@ -10,10 +10,20 @@ const nameRegistrationStore = configureStore({
       serializableCheck: {
         ignoredActions: [
           "controller/namePrice",
+          "controller/commitTxReceipt",
+          "controller/registerTxReceipt",
           "controller/registrationPrice",
+          "controller/commitSubmitTimestamp",
           "controller/estimatedNetworkFee",
         ],
-        ignoredPaths: ["estimatedNetworkFee", "registrationPrice", "namePrice"],
+        ignoredPaths: [
+          "estimatedNetworkFee",
+          "registrationPrice",
+          "registerTxReceipt",
+          "commitTxReceipt",
+          "commitSubmitTimestamp",
+          "namePrice",
+        ],
       },
     }),
 });
