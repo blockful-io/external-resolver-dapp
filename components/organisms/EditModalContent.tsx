@@ -60,7 +60,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   return (
     <div className="w-[480px] border rounded-xl overflow-hidden">
       <div className="border-b border-gray-200">
-        <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold">
+        <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
           Edit Records
         </div>
         <div className="flex justify-around w-full bg-white">
@@ -151,7 +151,7 @@ interface SaveModalEditsProps {
 const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
   return (
     <div className="w-[480px] border rounded-xl overflow-hidden bg-white">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold">
+      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
         Edit Records
       </div>
 
@@ -220,7 +220,7 @@ interface RecordsEditedProps {
 const RecordsEdited = ({ back }: RecordsEditedProps) => {
   return (
     <div className="w-[480px] border rounded-xl overflow-hidden bg-white">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold">
+      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
         Edit Records
       </div>
 

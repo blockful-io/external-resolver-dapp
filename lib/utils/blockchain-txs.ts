@@ -343,6 +343,7 @@ export const register = async ({
         string,
         MessageData
       ];
+
       const signedData = await handleDBStorage({
         domain,
         url,
@@ -406,11 +407,14 @@ export const setDomainRecords = async ({
     for (let i = 0; i < Object.keys(addresses).length; i++) {
       const value = Object.values(addresses)[i];
 
+      // To be replaced when multiple coin types are supported
+      const DEFAULT_ETH_COIN_TYPE = 60n;
+
       calls.push(
         encodeFunctionData({
           functionName: "setAddr",
           abi: DomainResolverABI,
-          args: [namehash(publicAddress), value],
+          args: [namehash(publicAddress), DEFAULT_ETH_COIN_TYPE, value],
         })
       );
     }

@@ -1,10 +1,16 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useEffect, useState } from "react";
-
+import { isAddress } from "viem";
+import cc from "classcat";
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
+}
+
+interface ValidatedAddress {
+  addressKey: string;
+  isValidated: boolean;
 }
 
 export const SetTextRecordsAddressesComponent = ({
@@ -15,11 +21,43 @@ export const SetTextRecordsAddressesComponent = ({
     ETH: "",
   });
 
-  const { setDomainAddresses } = useNameRegistration();
+  const { setDomainAddresses, nameRegistrationData } = useNameRegistration();
+
+  const [validatedAddresses, setValidatedAddresses] = useState<
+    Array<ValidatedAddress>
+  >([]);
 
   useEffect(() => {
     setDomainAddresses(addresses);
+
+    const invalidatedAddresses = Object.keys(addresses).map((key) => {
+      return {
+        addressKey: key,
+        isValidated: false,
+      };
+    });
+
+    setValidatedAddresses(invalidatedAddresses);
   }, [addresses]);
+
+  const validateAddressesInputs = () => {
+    const mimicOfValidatedAddresses = [];
+
+    for (const addressKey in nameRegistrationData.domainAddresses) {
+      mimicOfValidatedAddresses.push({
+        addressKey,
+        isValidated:
+          isAddress(nameRegistrationData.domainAddresses[addressKey]) ||
+          !nameRegistrationData.domainAddresses[addressKey],
+      });
+    }
+
+    setValidatedAddresses(mimicOfValidatedAddresses);
+  };
+
+  useEffect(() => {
+    validateAddressesInputs();
+  }, []);
 
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
@@ -70,7 +108,14 @@ export const SetTextRecordsAddressesComponent = ({
                   })
                 }
                 id={address}
-                className="w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2"
+                className={cc([
+                  "w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2",
+                  {
+                    "border-red-500": validatedAddresses.find(
+                      (add) => add.addressKey === address && !add.isValidated
+                    ),
+                  },
+                ])}
               />
             </div>
           ))}
@@ -79,7 +124,13 @@ export const SetTextRecordsAddressesComponent = ({
           </Button> */}
         </form>
       </div>
-      <NextButton onClick={handleNextStep} />
+      <NextButton
+        onClick={
+          validatedAddresses.some((add) => !add.isValidated)
+            ? validateAddressesInputs
+            : handleNextStep
+        }
+      />
     </div>
   );
 };
