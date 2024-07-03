@@ -1,14 +1,28 @@
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { createPublicClient, createWalletClient } from "viem";
+import { createClient, createPublicClient, createWalletClient } from "viem";
 import { mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { isTestnet } from "./chains";
 import { QueryClient } from "@tanstack/react-query";
+import { addEnsContracts, createEnsPublicClient } from "@ensdomains/ensjs";
+import { ENS_ENDPOINT } from "../utils/ens";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
-
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
+const ensKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
+
+const mainnetWithEns = addEnsContracts(mainnet);
+const sepoliaWithEns = addEnsContracts(sepolia);
+
+const chain = {
+  ...(isTestnet ? sepoliaWithEns : mainnetWithEns),
+  subgraphs: {
+    ens: {
+      url: ENS_ENDPOINT,
+    },
+  },
+};
 
 if (isTestnet && alchemyApiTestnetKey == undefined) {
   throw new Error("Missing API key for testnet environment");
@@ -25,8 +39,13 @@ export const rpcHttpUrl = `https://eth-${
 
 // Create a public client for fetching data from the blockchain
 export const publicClient = createPublicClient({
-  chain: isTestnet ? sepolia : mainnet,
+  chain: addEnsContracts(isTestnet ? sepolia : mainnet),
   batch: { multicall: true },
+  transport: http(),
+});
+
+export const client = createClient({
+  chain: chain,
   transport: http(),
 });
 
@@ -34,6 +53,11 @@ export const publicClient = createPublicClient({
 export const walletClient = createWalletClient({
   chain: isTestnet ? sepolia : mainnet,
   transport: http(rpcHttpUrl),
+});
+
+export const ensPublicClient = createEnsPublicClient({
+  chain: chain,
+  transport: http(),
 });
 
 // Create a app config for Wagmi

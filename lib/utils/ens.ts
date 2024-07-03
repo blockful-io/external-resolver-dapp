@@ -1,14 +1,18 @@
 import assert from "assert";
-import { publicClient } from "../wallet/wallet-config";
+import { ensPublicClient, publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
 import moment from "moment";
 import { isAddress } from "viem";
 import { isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
+import { createPublicClient, http } from "viem";
+import { mainnet, sepolia } from "viem/chains";
+import { addEnsContracts, createEnsPublicClient } from "@ensdomains/ensjs";
+import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
 
 const ensKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
 
-const ENS_ENDPOINT = isTestnet
+export const ENS_ENDPOINT = isTestnet
   ? `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
   : `https://gateway-arbitrum.network.thegraph.com/api/${ensKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
 
