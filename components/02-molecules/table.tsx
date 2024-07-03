@@ -58,7 +58,7 @@ export const Table = () => {
           {data.map((item, index) => (
             <tr
               key={index}
-              onClick={() => handleRowClick(`/manage/${item.domain}`)}
+              onClick={() => handleRowClick(`/domains/${item.domain}`)}
               className="hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
             >
               <td className="py-2 px-4 border-b align-middle">
