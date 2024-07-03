@@ -7,7 +7,7 @@ import {
   EnsResolver,
   ensResolverAddress,
   nameRegistrationContracts,
-} from "./constants";
+} from "../name-registration/constants";
 
 import {
   namehash,
@@ -34,13 +34,6 @@ import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage"
 import { extractChain, parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
-
-const getChain = (chainId: SupportedNetwork) => {
-  return extractChain({
-    chains: [mainnet, sepolia],
-    id: chainId,
-  });
-};
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -232,8 +225,6 @@ export async function handleDBStorage({
     });
   }
 
-  console.log("calldata", callData);
-
   const dbRecordsSavingResponse = await ccipRequest({
     body: {
       data: callData,
@@ -242,8 +233,6 @@ export async function handleDBStorage({
     },
     url,
   });
-
-  console.log("dbRecordsSavingResponse", dbRecordsSavingResponse);
 
   return dbRecordsSavingResponse;
 }
@@ -272,7 +261,7 @@ export const commit = async ({
     if (!client) throw new Error("WalletClient not found");
 
     const commitmentWithConfigHash = await makeCommitment({
-      name: ensName.name,
+      name: ensName.name.replace(".eth", ""),
       data: [],
       authenticatedAddress,
       durationInYears: durationInYears,
@@ -330,7 +319,7 @@ export const register = async ({
       chain: isTestnet ? sepolia : mainnet,
       account: authenticatedAddress,
       args: [
-        ensName.name,
+        ensName.name.replace(".eth", ""),
         authenticatedAddress,
         durationInYears * SECONDS_PER_YEAR.seconds,
         getNameRegistrationSecret(),

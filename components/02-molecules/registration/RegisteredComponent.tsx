@@ -1,6 +1,7 @@
 import { BackButton } from "@/components/01-atoms";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { Button } from "@ensdomains/thorin";
-import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface RegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -11,7 +12,7 @@ export const RegisteredComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: RegisteredComponentProps) => {
-  const router = useRouter();
+  const { nameRegistrationData } = useNameRegistration();
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
@@ -23,14 +24,12 @@ export const RegisteredComponent = ({
           Your name was successfully registered: you can now view its details,
           manage its records and use it across the web3 space.
         </p>
-        <div>
-          <Button
-            onClick={() => router.push("/manage")}
-            colorStyle="blueSecondary"
-            prefix={<>⚙️</>}
-          >
-            Manage my domain
-          </Button>
+        <div className="mt-5">
+          <Link href={`/domains/${nameRegistrationData.name?.displayName}`}>
+            <Button colorStyle="blueSecondary" prefix={<>⚙️</>}>
+              Manage my domain
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

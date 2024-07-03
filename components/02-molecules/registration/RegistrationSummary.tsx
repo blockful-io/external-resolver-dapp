@@ -11,7 +11,7 @@ import {
   getGasPrice,
   getNamePrice,
   getNameRegistrationGasEstimate,
-} from "@/lib/name-registration/blockchain-txs";
+} from "@/lib/utils/blockchain-txs";
 import { useEffect, useState } from "react";
 import { formatEther } from "viem";
 
