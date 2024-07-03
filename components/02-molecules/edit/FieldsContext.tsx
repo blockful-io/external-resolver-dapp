@@ -25,7 +25,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         placeholder: "https://coolcats.com",
         value: "",
         fieldType: FieldType.Text,
-      },
+      } as Field,
     ],
     [Tab.Accounts]: [
       {
@@ -33,19 +33,19 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         placeholder: "mail@mail.com",
         value: "",
         fieldType: FieldType.Text,
-      },
+      } as Field,
       {
         label: "com.twitter",
         placeholder: "@twitter",
         value: "",
         fieldType: FieldType.Text,
-      },
+      } as Field,
       {
         label: "com.linkedin",
         placeholder: "/linkedin",
         value: "",
         fieldType: FieldType.Text,
-      },
+      } as Field,
     ],
     [Tab.Addresses]: [
       {
@@ -63,7 +63,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
 
           return fieldIsEmpty || isAddressValid;
         },
-      },
+      } as Field,
     ],
     // [Tab.Others]: [
     //   {
@@ -74,7 +74,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     //   },
     //   { label: "ABI", placeholder: "", value: "", fieldType: FieldType.Text },
     // ],
-  });
+  } as Record<Tab, Field[]>);
 
   const [initialFields, setInitialFieldsState] = useState<Record<Tab, Field[]>>(
     {
