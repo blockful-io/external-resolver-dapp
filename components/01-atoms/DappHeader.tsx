@@ -47,8 +47,6 @@ export const DappHeader = () => {
                 );
               }
 
-              const unsupportedChainClassName = `inline-flex w-auto flex-shrink-0 appearance-none items-center justify-center space-x-2 rounded-md px-5 py-2.5`;
-
               if (chain.unsupported) {
                 return (
                   <button
@@ -57,7 +55,7 @@ export const DappHeader = () => {
                       e.preventDefault();
                     }}
                     type="button"
-                    className={unsupportedChainClassName}
+                    className={`inline-flex w-auto flex-shrink-0 appearance-none items-center justify-center space-x-2 rounded-md px-5 py-2.5`}
                   >
                     <span className="flex-shrink-0 text-sm font-medium">
                       Unsupported network
