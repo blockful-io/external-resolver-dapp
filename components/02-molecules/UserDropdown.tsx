@@ -2,7 +2,7 @@ import { useUser } from "@/lib/wallet/useUser";
 import {
   Dropdown,
   ExitSVG,
-  PersonActiveSVG,
+  PersonSVG,
   Skeleton,
   SkeletonGroup,
 } from "@ensdomains/thorin";
@@ -65,7 +65,7 @@ export const UserDropdown = () => {
           label: "Settings",
           onClick: () => router.push(`/domains/${authedUserDomain}`),
           color: "text",
-          icon: <PersonActiveSVG />,
+          icon: <PersonSVG />,
         },
         {
           label: "Disconnect",
