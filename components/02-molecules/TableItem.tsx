@@ -24,16 +24,23 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
   };
 
   useEffect(() => {
-    const getEnsAvatar = async () => {
-      setIsLoadingImage(true);
-      let ensAvatar = await publicClient.getEnsAvatar({
-        name: normalize(domain),
-      });
-      ensAvatar && setAvatar(ensAvatar);
-      setIsLoadingImage(false);
-    };
+    let normalizedName = "";
+    try {
+      normalizedName = normalize(domain);
 
-    getEnsAvatar();
+      const getEnsAvatar = async () => {
+        setIsLoadingImage(true);
+        const ensAvatar = await publicClient.getEnsAvatar({
+          name: normalizedName,
+        });
+        ensAvatar && setAvatar(ensAvatar);
+        setIsLoadingImage(false);
+      };
+
+      getEnsAvatar();
+    } catch (e) {
+      setIsLoadingImage(false);
+    }
   }, []);
 
   return (

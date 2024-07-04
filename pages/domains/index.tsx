@@ -32,9 +32,9 @@ export default function RegisterNamePage() {
   }, [authedUser]);
 
   return (
-    <div className="text-black px-5 flex h-full flex-col items-center justify-start bg-white">
+    <div className="w-full text-black px-5 flex h-full flex-col items-center justify-start bg-white">
       <div className="w-full flex-col gap-8 py-10 flex justify-start max-w-[1216px]">
-        <Skeleton className="w-full" loading={isLoading}>
+        <Skeleton className="!w-full min-h-screen" loading={isLoading}>
           {!authedUser ? (
             <div className="w-full flex flex-col gap-4 items-center justify-center">
               <Heading level="2" className="text-start text-[26px]">
