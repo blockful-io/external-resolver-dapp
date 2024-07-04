@@ -62,9 +62,10 @@ export const UserDropdown = () => {
       width={200}
       items={[
         {
-          label: "Settings",
+          disabled: true,
+          label: "Manage",
           onClick: () => router.push(`/domains/${authedUserDomain}`),
-          color: "text",
+          color: "grey",
           icon: <PersonSVG />,
         },
         {

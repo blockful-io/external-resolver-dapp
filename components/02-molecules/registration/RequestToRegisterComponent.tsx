@@ -54,10 +54,7 @@ export const RequestToRegisterComponent = ({
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
-      <BackButton
-        onClick={handlePreviousStep}
-        disabled={!!nameRegistrationData.commitTxReceipt}
-      />
+      <BackButton onClick={handlePreviousStep} disabled={true} />
 
       <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
         <h3 className="text-7xl">📝</h3>

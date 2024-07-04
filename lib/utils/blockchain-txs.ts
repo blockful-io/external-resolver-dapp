@@ -446,7 +446,7 @@ export const setDomainRecords = async ({
         ];
 
         try {
-          const dbRecordsSavingResponse = await handleDBStorage({
+          await handleDBStorage({
             domain,
             url,
             message,
@@ -454,7 +454,7 @@ export const setDomainRecords = async ({
             multicall: true,
           });
 
-          return dbRecordsSavingResponse.status;
+          return 200;
         } catch (error) {
           console.error("writing failed: ", { err });
           const errorType = getBlockchainTransactionError(err);

@@ -47,7 +47,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
     }
 
     try {
-      await setDomainRecords({
+      const setDomainRecordsRes = await setDomainRecords({
         authenticatedAddress: authedUser,
         ensName: nameRegistrationData.name,
         textRecords: nameRegistrationData.textRecords,
@@ -55,7 +55,14 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
         addresses: nameRegistrationData.domainAddresses,
       });
 
-      return null;
+      if (
+        setDomainRecordsRes === null ||
+        typeof setDomainRecordsRes === "number"
+      ) {
+        return null;
+      } else {
+        throw new Error(setDomainRecordsRes);
+      }
     } catch (error) {
       console.error(error);
       const errorType = getBlockchainTransactionError(error);
@@ -78,9 +85,9 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
           Now let&apos;s set the text records
         </h3>
         <p className="text-gray-500 text-left text-base">
-          The domain is already yours and will now be customized! Each text
-          record set in the previous step will trigger one blockchain
-          transaction that should be accepted by you!
+          The domain is already yours and will now be customized! The records
+          set in the previous steps will be registered, please sign a message to
+          confirm this action.
         </p>
       </div>
       <div>

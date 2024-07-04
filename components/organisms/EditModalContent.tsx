@@ -69,11 +69,11 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       });
     });
 
-    setInvalidFieldsKeys(invalidFields);
+    // setInvalidFieldsKeys(invalidFields);
 
-    if (invalidFields.length === 0 && fieldsToChange.length > 0) {
-      setIsSaving(true);
-    }
+    // if (invalidFields.length === 0 && fieldsToChange.length > 0) {
+    setIsSaving(true);
+    // }
   };
 
   if (recordsEdited) {
@@ -161,7 +161,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
         </div>
       </div>
       <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
-        {!!invalidFieldsKeys.length && (
+        {/* {!!invalidFieldsKeys.length && (
           <div className="flex flex-col text-sm mr-auto">
             <p className="text-red-400 font-semibold">
               Invalid values for fields:
@@ -175,7 +175,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
               ))}
             </ul>
           </div>
-        )}
+        )} */}
 
         <div>
           <Button

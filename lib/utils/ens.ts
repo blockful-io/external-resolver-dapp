@@ -1,8 +1,8 @@
 import { publicClient } from "../wallet/wallet-config";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
 import assert from "assert";
 import moment from "moment";
-import { isAddress, namehash } from "viem";
+import { Hash, isAddress, namehash, toHex } from "viem";
 import { SupportedNetwork, isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
 import {
@@ -10,6 +10,7 @@ import {
   nameRegistrationSCs,
 } from "../name-registration/constants";
 import PublicResolverAbi from "@/lib/abi/public-resolver.json";
+import UniversalResolverAbi from "@/lib/abi/universal-resolver.json";
 
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
 
@@ -115,29 +116,38 @@ export async function getENS(domain: string): Promise<ResolvedEnsData | null> {
   try {
     const domainWithEth = domain.includes(".eth") ? domain : `${domain}.eth`;
 
-    const ethereumAddress = await publicClient.readContract({
-      address:
-        nameRegistrationSCs[
-          isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET
-        ].ENS_PUBLIC_RESOLVER,
-      functionName: "addr",
-      args: [namehash(domainWithEth), DEFAULT_ETH_COIN_TYPE],
-      abi: PublicResolverAbi,
-    });
+    // const [resolverAddr] = (await publicClient.readContract({
+    //   address:
+    //     nameRegistrationSCs[
+    //       isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET
+    //     ].UNIVERSAL_RESOLVER,
+    //   functionName: "findResolver",
+    //   abi: UniversalResolverAbi,
+    //   args: [toHex(packetToBytes(domainWithEth))],
+    // })) as Hash[];
 
-    if (typeof ethereumAddress === "string" && isAddress(ethereumAddress)) {
-      ethAddress = ethereumAddress;
-    } else {
-      ethAddress = null;
-    }
+    // const ethereumAddress = await publicClient.readContract({
+    //   address: resolverAddr,
+    //   functionName: "addr",
+    //   args: [namehash(domainWithEth), DEFAULT_ETH_COIN_TYPE],
+    //   abi: PublicResolverAbi,
+    // });
+
+    // if (typeof ethereumAddress === "string" && isAddress(ethereumAddress)) {
+    //   ethAddress = ethereumAddress;
+    // } else {
+    //   ethAddress = null;
+    // }
   } catch (error) {
     ethAddress = null;
   }
 
+  alert(ethAddress);
   if (!!ens) {
     let returnedData: ResolvedEnsData = {
       ownerId: ens?.owner?.id,
-      address: ethAddress,
+      //address: ethAddress,
+      address: null,
       expiryDate: ens?.expiryDate,
       parentName: ens?.parent?.name,
       coinTypes: ens?.resolver?.coinTypes,

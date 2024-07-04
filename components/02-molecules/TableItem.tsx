@@ -61,10 +61,10 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
                     ? avatar
                     : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
                 }
-                className="w-10 h-10 border-4 border-white rounded-[10px]"
+                className="w-10 h-10 rounded-[10px]"
               />
             ) : (
-              <div className="w-10 h-10 border-4 bg-gradient-ens border-white rounded-[10px] overflow-hidden">
+              <div className="w-10 h-10 bg-gradient-ens rounded-[10px] overflow-hidden">
                 <Avatar
                   size={40}
                   square
