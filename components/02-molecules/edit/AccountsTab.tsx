@@ -8,7 +8,7 @@ export const AccountsTab: React.FC = () => {
   const accountsFields = fields[Tab.Accounts];
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col">
       <div className="flex flex-col gap-4">
         {accountsFields.map((field, index) => (
           <Input
