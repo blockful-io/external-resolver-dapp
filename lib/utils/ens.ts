@@ -2,11 +2,14 @@ import { publicClient } from "../wallet/wallet-config";
 import { normalize } from "viem/ens";
 import assert from "assert";
 import moment from "moment";
-import { http, isAddress } from "viem";
-import { isTestnet } from "../wallet/chains";
+import { isAddress, namehash } from "viem";
+import { SupportedNetwork, isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
-import { addEnsContracts, createEnsPublicClient } from "@ensdomains/ensjs";
-import { mainnet, sepolia } from "viem/chains";
+import {
+  DEFAULT_ETH_COIN_TYPE,
+  nameRegistrationSCs,
+} from "../name-registration/constants";
+import PublicResolverAbi from "@/lib/abi/public-resolver.json";
 
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
 
@@ -108,10 +111,33 @@ export async function getENS(domain: string): Promise<ResolvedEnsData | null> {
 
   const ens = await fetchEnsDataRequest(domain);
 
+  let ethAddress;
+  try {
+    const domainWithEth = domain.includes(".eth") ? domain : `${domain}.eth`;
+
+    const ethereumAddress = await publicClient.readContract({
+      address:
+        nameRegistrationSCs[
+          isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET
+        ].ENS_PUBLIC_RESOLVER,
+      functionName: "addr",
+      args: [namehash(domainWithEth), DEFAULT_ETH_COIN_TYPE],
+      abi: PublicResolverAbi,
+    });
+
+    if (typeof ethereumAddress === "string" && isAddress(ethereumAddress)) {
+      ethAddress = ethereumAddress;
+    } else {
+      ethAddress = null;
+    }
+  } catch (error) {
+    ethAddress = null;
+  }
+
   if (!!ens) {
     let returnedData: ResolvedEnsData = {
       ownerId: ens?.owner?.id,
-      address: ens?.resolvedAddress?.id,
+      address: ethAddress,
       expiryDate: ens?.expiryDate,
       parentName: ens?.parent?.name,
       coinTypes: ens?.resolver?.coinTypes,

@@ -63,7 +63,7 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
                   square
                   name="Margaret Bourke"
                   variant="beam"
-                  colors={["#AAAAAA", "#3DDE74", "#000000", "#FFFFFF"]}
+                  colors={["#44BCF0", "#7298F8", "#A099FF", "#FFFFFF"]}
                 />
               </div>
             )}

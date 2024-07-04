@@ -3,6 +3,7 @@
 import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
+  DEFAULT_ETH_COIN_TYPE,
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
   EnsResolver,
   ensResolverAddress,
@@ -408,12 +409,10 @@ export const setDomainRecords = async ({
     for (let i = 0; i < Object.keys(addresses).length; i++) {
       const value = Object.values(addresses)[i];
 
-      // To be replaced when multiple coin types are supported
-      const DEFAULT_ETH_COIN_TYPE = 60n;
-
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
+        // To be replaced when multiple coin types are supported
         args: [namehash(publicAddress), DEFAULT_ETH_COIN_TYPE, value],
       });
 
@@ -490,16 +489,6 @@ export const createNameRegistrationSecret = (): string => {
     .join("");
 
   return "0x" + platformHex + randomHex;
-};
-
-const getAddrCalldata = (name: string, address: string) => {
-  const calldata = encodeFunctionData({
-    abi: PublicResolverABI,
-    functionName: "setAddr",
-    args: [namehash(name.concat(".eth")), 60, address],
-  });
-
-  return calldata;
 };
 
 interface NamePrice {

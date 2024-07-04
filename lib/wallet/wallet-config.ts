@@ -5,7 +5,7 @@ import { mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { isTestnet } from "./chains";
 import { QueryClient } from "@tanstack/react-query";
-import { addEnsContracts, createEnsPublicClient } from "@ensdomains/ensjs";
+import { addEnsContracts } from "@ensdomains/ensjs";
 import { ENS_ENDPOINT } from "../utils/ens";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
@@ -38,7 +38,7 @@ export const rpcHttpUrl = isTestnet
 
 // Create a public client for fetching data from the blockchain
 export const publicClient = createPublicClient({
-  chain: addEnsContracts(isTestnet ? sepolia : mainnet),
+  chain: chain,
   batch: { multicall: true },
   transport: http(rpcHttpUrl),
 });
@@ -52,11 +52,6 @@ export const client = createClient({
 export const walletClient = createWalletClient({
   chain: isTestnet ? sepolia : mainnet,
   transport: http(rpcHttpUrl),
-});
-
-export const ensPublicClient = createEnsPublicClient({
-  chain: chain,
-  transport: http(),
 });
 
 // Create a app config for Wagmi

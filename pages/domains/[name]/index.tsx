@@ -162,7 +162,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
                       <Skeleton>
                         <div className="flex items-center gap-2">
                           <h3 className="text-[26px]">{name}</h3>
-                          <CopySVG className="text-gray-400 cursor-pointer hover:text-black transition-colors duration-300" />
                         </div>
                         {ensData?.textRecords?.url && (
                           <a

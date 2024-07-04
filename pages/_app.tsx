@@ -1,6 +1,7 @@
-import "@rainbow-me/rainbowkit/styles.css";
 import "tailwindcss/tailwind.css";
 import "@/pages/styles/globals.css";
+import "./fonts/css/satoshi.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import { ThemeProvider } from "styled-components";
 import { ThorinGlobalStyles, lightTheme } from "@ensdomains/thorin";
 
@@ -19,13 +20,37 @@ import { Provider } from "react-redux";
 import nameRegistrationStore from "@/lib/globalStore";
 
 import { type AppProps } from "next/app";
-import { Inter } from "next/font/google";
 
 import { DappHeader } from "@/components/01-atoms";
 import { Session } from "next-auth";
 import { Toaster } from "react-hot-toast";
+import localFont from "@next/font/local";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const satoshiFont = localFont({
+  src: [
+    {
+      path: "./fonts/fonts/Satoshi-Light.ttf",
+      weight: "400",
+    },
+    {
+      path: "./fonts/fonts/Satoshi-Regular.ttf",
+      weight: "500",
+    },
+    {
+      path: "./fonts/fonts/Satoshi-Medium.ttf",
+      weight: "600",
+    },
+    {
+      path: "./fonts/fonts/Satoshi-Bold.ttf",
+      weight: "700",
+    },
+    {
+      path: "./fonts/fonts/Satoshi-Black.ttf",
+      weight: "800",
+    },
+  ],
+  variable: "--font-satoshi",
+});
 
 // Below declaration helps the application on JSON serialization of BigInt
 declare global {
@@ -57,7 +82,7 @@ export default function App({
                 <RainbowKitProvider>
                   <div
                     style={{ background: "#fff" }}
-                    className={`${inter.className} h-screen flex flex-col`}
+                    className={`${satoshiFont.variable} h-screen flex flex-col`}
                   >
                     <DappHeader />
                     <main>
