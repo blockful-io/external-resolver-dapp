@@ -79,8 +79,8 @@ export default function Home() {
         </div>
 
         {/* Input  */}
-        <div className="w-full h-[52px] relative max-w-[470px] ">
-          <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl">
+        <div className="w-full h-[52px] relative max-w-[470px]">
+          <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl bg-white">
             <div className="flex w-full justify-center items-center p-2 pl-5">
               <DebounceInput
                 minLength={3}
@@ -142,6 +142,9 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <p className="text-sm text-gray-400">
+          Press &apos;Enter&apos; to visit register page
+        </p>
       </div>
       <div className="w-[85%] h-[243px] blur-[125px] bg-gradient-ens absolute bottom-[-200px] rounded-ellipse"></div>
     </div>
