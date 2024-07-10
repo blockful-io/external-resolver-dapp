@@ -6,6 +6,13 @@ export const AddressesTab = () => {
   const { fields, updateField } = useFields();
   const addressesFields = fields[Tab.Addresses];
 
+  console.log(
+    "hole",
+    !!addressesFields[0]?.validationFunction,
+    addressesFields[0]?.validationFunction &&
+      addressesFields[0]?.validationFunction(addressesFields[0].value)
+  );
+
   return (
     <div className="w-full">
       <div className="flex flex-col gap-4">

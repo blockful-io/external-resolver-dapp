@@ -1,6 +1,7 @@
 import { Field, FieldType, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
+import _ from "lodash";
 
 interface FieldsContextType {
   fields: Record<Tab, Field[]>;
@@ -53,11 +54,8 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         placeholder: "0x0000000000000000000000000000000000000000",
         fieldType: FieldType.Address,
         value: "",
-        validationFunction: () => {
-          const fieldValue: undefined | string = fields[Tab.Addresses].find(
-            (add: Field) => add.label === "ETH"
-          )?.value;
-          const fieldIsEmpty: boolean = !fieldValue;
+        validationFunction: (fieldValue: string) => {
+          const fieldIsEmpty: boolean = fieldValue === "";
           const isAddressValid: boolean =
             typeof fieldValue === "string" && !!isAddress(fieldValue);
 
@@ -134,12 +132,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   );
 
   const setInitialFields = (fields: Record<Tab, Field[]>) => {
-    const deepCopiedFields = Object.assign({}, fields);
+    const deepCopiedFields = _.cloneDeep(fields);
     setInitialFieldsState(deepCopiedFields);
   };
 
   const setFields = (fields: Record<Tab, Field[]>) => {
-    const deepCopiedFields = Object.assign({}, fields);
+    const deepCopiedFields = _.cloneDeep(fields);
     setFieldsState(deepCopiedFields);
   };
 

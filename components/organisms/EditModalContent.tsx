@@ -169,7 +169,14 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
           </Button>
         </div>
         <div>
-          <Button disabled={hasAnyInvalidField()}>Save</Button>
+          <Button
+            disabled={hasAnyInvalidField()}
+            onClick={() => {
+              setIsSaving(true);
+            }}
+          >
+            Save
+          </Button>
         </div>
       </div>
     </div>
