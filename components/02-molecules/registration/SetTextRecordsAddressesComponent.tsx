@@ -33,7 +33,7 @@ export const SetTextRecordsAddressesComponent = ({
     const invalidatedAddresses = Object.keys(addresses).map((key) => {
       return {
         addressKey: key,
-        isValidated: false,
+        isValidated: true,
       };
     });
 
@@ -41,7 +41,7 @@ export const SetTextRecordsAddressesComponent = ({
   }, [addresses]);
 
   const validateAddressesInputs = () => {
-    const mimicOfValidatedAddresses = [];
+    let mimicOfValidatedAddresses = [];
 
     for (const addressKey in nameRegistrationData.domainAddresses) {
       mimicOfValidatedAddresses.push({
@@ -125,11 +125,13 @@ export const SetTextRecordsAddressesComponent = ({
         </form>
       </div>
       <NextButton
-        onClick={
-          validatedAddresses.some((add) => !add.isValidated)
-            ? validateAddressesInputs
-            : handleNextStep
-        }
+        onClick={() => {
+          if (isAddress(addresses.ETH) || addresses.ETH === "") {
+            handleNextStep();
+          } else {
+            validateAddressesInputs();
+          }
+        }}
       />
     </div>
   );
