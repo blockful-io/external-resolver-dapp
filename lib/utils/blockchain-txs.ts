@@ -3,7 +3,6 @@
 import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
-  DEFAULT_ETH_COIN_TYPE,
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
   EnsResolver,
   ensResolverAddress,
@@ -35,6 +34,7 @@ import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage"
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
+import { CoinType } from "./ensData";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -413,7 +413,7 @@ export const setDomainRecords = async ({
         functionName: "setAddr",
         abi: DomainResolverABI,
         // To be replaced when multiple coin types are supported
-        args: [namehash(publicAddress), DEFAULT_ETH_COIN_TYPE, value],
+        args: [namehash(publicAddress), CoinType.ETH, value],
       });
 
       calls.push(callData);

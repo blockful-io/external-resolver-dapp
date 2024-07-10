@@ -72,4 +72,4 @@ export const nameRegistrationContracts = nameRegistrationSCs[DEFAULT_CHAIN_ID];
 export const DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES = 0;
 export const DEFAULT_REGISTRATION_YEARS = 1n;
 
-export const DEFAULT_ETH_COIN_TYPE = 60n;
+export const ETHEREUM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;

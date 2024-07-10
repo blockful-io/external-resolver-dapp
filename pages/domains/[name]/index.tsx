@@ -8,22 +8,20 @@ import {
 import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
-import { formatDate, formatHexAddress, getENS } from "@/lib/utils/ens";
+import { getENSData } from "@/lib/utils/ensData";
+import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {
   Button,
   CalendarSVG,
   CogSVG,
-  CopySVG,
   EthTransparentSVG,
   Heading,
   HeartSVG,
-  InfoCircleSVG,
   LeftChevronSVG,
   Modal,
   Skeleton,
   SkeletonGroup,
-  Toggle,
 } from "@ensdomains/thorin";
 import Avatar from "boring-avatars";
 import Link from "next/link";
@@ -36,10 +34,11 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFetchENS = async () => {
+  const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
-      const data = await getENS(name);
+      const data = await getENSData(name);
+      console.log(data);
       setEnsData(data);
       setError(null);
     } catch (err) {
@@ -55,7 +54,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   };
 
   useEffect(() => {
-    handleFetchENS();
+    handleFetchENSDomainData();
   }, []);
 
   const excludeKeys = [

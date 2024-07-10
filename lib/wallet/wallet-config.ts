@@ -1,12 +1,17 @@
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { createClient, createPublicClient, createWalletClient } from "viem";
+import {
+  createClient,
+  createPublicClient,
+  createWalletClient,
+  custom,
+} from "viem";
 import { mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { isTestnet } from "./chains";
 import { QueryClient } from "@tanstack/react-query";
 import { addEnsContracts } from "@ensdomains/ensjs";
-import { ENS_ENDPOINT } from "../utils/ens";
+import { ENS_SUBGRAPH_ENDPOINT } from "../utils/ensData";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
@@ -18,7 +23,7 @@ const chain = {
   ...(isTestnet ? sepoliaWithEns : mainnetWithEns),
   subgraphs: {
     ens: {
-      url: ENS_ENDPOINT,
+      url: ENS_SUBGRAPH_ENDPOINT,
     },
   },
 };
