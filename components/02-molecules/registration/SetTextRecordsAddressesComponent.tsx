@@ -73,13 +73,10 @@ export const SetTextRecordsAddressesComponent = ({
           {Object.keys(addresses).map((address) => (
             <div
               key={address}
-              className="flex flex-col items-start space-y-2 w-full"
+              className="flex flex-col items-start space-y-2 w-full text-start"
             >
-              <div className="flex w-full items-center text-gray-400 justify-between">
-                {/* <label htmlFor={address} className="text-[#1E2122] text-sm">
-                  {address}
-                </label> */}
-                {/* <button
+              {/* <div className="flex w-full items-center text-gray-400 justify-between">
+                <button
                   className="flex items-center space-x-1 group"
                   onClick={() =>
                     setSocialAccountsAdded(
@@ -94,28 +91,26 @@ export const SetTextRecordsAddressesComponent = ({
                   <p className="font-semibold text-sm group-hover:text-gray-500 transition">
                     Remove
                   </p>
-                </button> */}
-              </div>
-              <div className="w-full flex items-start justify-start text-start">
-                <Input
-                  clearable
-                  label={address}
-                  placeholder={"Your address"}
-                  type="text"
-                  id={address}
-                  value={addresses[address].address}
-                  onChange={(e) =>
-                    setAddresses((prevAddresses) => ({
-                      ...prevAddresses,
-                      [address]: {
-                        isValid: true,
-                        address: e.target.value,
-                      },
-                    }))
-                  }
-                  error={!addresses[address].isValid && "Invalid address"}
-                />
-              </div>
+                </button>
+              </div> */}
+              <Input
+                clearable
+                label={address}
+                placeholder={"Your address"}
+                type="text"
+                id={address}
+                value={addresses[address].address}
+                onChange={(e) =>
+                  setAddresses((prevAddresses) => ({
+                    ...prevAddresses,
+                    [address]: {
+                      isValid: true,
+                      address: e.target.value,
+                    },
+                  }))
+                }
+                error={!addresses[address].isValid && "Invalid address"}
+              />
             </div>
           ))}
           {/* <Button prefix={<PlusSVG />} colorStyle="blueSecondary" onClick={}>
