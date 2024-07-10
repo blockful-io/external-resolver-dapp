@@ -3,6 +3,7 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import { useEffect, useState } from "react";
 import { isAddress } from "viem";
 import cc from "classcat";
+import { Input } from "@ensdomains/thorin";
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
@@ -79,9 +80,9 @@ export const SetTextRecordsAddressesComponent = ({
               className="flex flex-col items-start space-y-2 w-full"
             >
               <div className="flex w-full items-center text-gray-400 justify-between">
-                <label htmlFor={address} className="text-[#1E2122] text-sm">
+                {/* <label htmlFor={address} className="text-[#1E2122] text-sm">
                   {address}
-                </label>
+                </label> */}
                 {/* <button
                   className="flex items-center space-x-1 group"
                   onClick={() =>
@@ -99,24 +100,27 @@ export const SetTextRecordsAddressesComponent = ({
                   </p>
                 </button> */}
               </div>
-              <input
-                type="text"
-                onChange={(e) =>
-                  setAddresses({
-                    ...addresses,
-                    [address]: e.target.value,
-                  })
-                }
-                id={address}
-                className={cc([
-                  "w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2",
-                  {
-                    "border-red-500": validatedAddresses.find(
+              <div className="w-full flex items-start justify-start text-start">
+                <Input
+                  clearable
+                  label={address}
+                  // placeholder={field.placeholder}
+                  type="text"
+                  id={address}
+                  // value={field.value}
+                  onChange={(e) =>
+                    setAddresses({
+                      ...addresses,
+                      [address]: e.target.value,
+                    })
+                  }
+                  error={
+                    validatedAddresses.find(
                       (add) => add.addressKey === address && !add.isValidated
-                    ),
-                  },
-                ])}
-              />
+                    ) && "Invalid address"
+                  }
+                />
+              </div>
             </div>
           ))}
           {/* <Button prefix={<PlusSVG />} colorStyle="blueSecondary" onClick={}>
