@@ -53,7 +53,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         placeholder: "0x0000000000000000000000000000000000000000",
         fieldType: FieldType.Address,
         value: "",
-        validationFn: () => {
+        validationFunction: () => {
           const fieldValue: undefined | string = fields[Tab.Addresses].find(
             (add: Field) => add.label === "ETH"
           )?.value;
@@ -112,9 +112,9 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
           placeholder: "0x0000000000000000000000000000000000000000",
           value: "",
           fieldType: FieldType.Address,
-          validationFn: () => {
+          validationFunction: () => {
             const fieldValue: undefined | string = fields[Tab.Addresses].find(
-              (add: Field) => add.label === "ETH"
+              (address: Field) => address.label === "ETH"
             )?.value;
             const fieldIsEmpty: boolean = !fieldValue;
             const isAddressValid: boolean =

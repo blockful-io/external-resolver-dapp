@@ -3,7 +3,7 @@ export type Field = {
   value: string;
   fieldType: FieldType;
   placeholder?: string;
-  validationFn?: () => boolean;
+  validationFunction?: () => boolean;
 };
 
 export enum FieldType {

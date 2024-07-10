@@ -57,8 +57,8 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       const tabFields = fields[tabKey];
 
       tabFields.forEach((field) => {
-        if (field.validationFn) {
-          if (!field.validationFn()) {
+        if (field.validationFunction) {
+          if (!field.validationFunction()) {
             invalidFields.push(field.label);
           }
         }
