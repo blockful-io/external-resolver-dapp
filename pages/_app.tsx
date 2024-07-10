@@ -57,6 +57,9 @@ declare global {
   interface BigInt {
     toJSON: () => string;
   }
+  interface window {
+    ethereum: any;
+  }
 }
 
 BigInt.prototype.toJSON = function () {

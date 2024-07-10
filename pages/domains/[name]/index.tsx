@@ -8,22 +8,20 @@ import {
 import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
-import { formatDate, formatHexAddress, getENS } from "@/lib/utils/ens";
+import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
+import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {
   Button,
   CalendarSVG,
   CogSVG,
-  CopySVG,
   EthTransparentSVG,
   Heading,
   HeartSVG,
-  InfoCircleSVG,
   LeftChevronSVG,
   Modal,
   Skeleton,
   SkeletonGroup,
-  Toggle,
 } from "@ensdomains/thorin";
 import Avatar from "boring-avatars";
 import Link from "next/link";
@@ -36,10 +34,11 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFetchENS = async () => {
+  const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
-      const data = await getENS(name);
+      const data = await getENSDomainData(name);
+
       setEnsData(data);
       setError(null);
     } catch (err) {
@@ -55,7 +54,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   };
 
   useEffect(() => {
-    handleFetchENS();
+    handleFetchENSDomainData();
   }, []);
 
   const excludeKeys = [
@@ -241,18 +240,24 @@ export function ManageNamePageContent({ name }: { name: string }) {
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {ensData?.address && (
+                {ensData?.coinTypes.length && (
                   <div className="flex flex-col gap-4">
                     <Skeleton>
                       <h3 className="font-semibold text-base">Addresses</h3>
                     </Skeleton>
                     <div className="grid grid-cols-2 gap-4">
-                      <Skeleton>
-                        <ProfileRecordItem
-                          icon={EthTransparentSVG}
-                          text={formatHexAddress(ensData?.address)}
-                        />
-                      </Skeleton>
+                      {ensData?.coinTypes.map((coinInfo: CoinInfo) => (
+                        <>
+                          {coinInfo.address && (
+                            <Skeleton key={coinInfo.coinName}>
+                              <ProfileRecordItem
+                                symbol={coinInfo.symbol}
+                                text={coinInfo.address}
+                              />
+                            </Skeleton>
+                          )}
+                        </>
+                      ))}
                     </div>
                   </div>
                 )}
