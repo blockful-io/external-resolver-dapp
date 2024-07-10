@@ -6,6 +6,7 @@ import { SupportedNetwork, isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
 import {
   ETHEREUM_ADDRESS_REGEX,
+  MULTICALL_3_CONTRACT_ADDRESS,
   nameRegistrationSCs,
 } from "../name-registration/constants";
 import ResolverABI from "@/lib/abi/resolver.json";
@@ -47,7 +48,8 @@ const ENS_DOMAIN_TEXT_RECORDS_QUERY = `
 interface TextRecords {
   [key: string]: string | undefined;
 }
-interface CoinInfo {
+export interface CoinInfo {
+  symbol: string;
   coinName: string;
   address: string;
 }
@@ -61,13 +63,29 @@ interface ResolvedEnsData {
 }
 
 // ENS Domain Coins utils
-export enum CoinType {
-  BTC = "0",
-  LTC = "2",
-  DOGE = "3",
-  ETH = "60",
-  BNB = "714",
+export enum DomainAddressesSupportedCryptocurrencies {
+  BTC = "BTC",
+  LTC = "LTC",
+  DOGE = "DOGE",
+  ETH = "ETH",
+  BNB = "BNB",
 }
+
+export const cryptocurrencyToCoinType = {
+  [DomainAddressesSupportedCryptocurrencies.BTC]: "0",
+  [DomainAddressesSupportedCryptocurrencies.LTC]: "2",
+  [DomainAddressesSupportedCryptocurrencies.DOGE]: "3",
+  [DomainAddressesSupportedCryptocurrencies.ETH]: "60",
+  [DomainAddressesSupportedCryptocurrencies.BNB]: "714",
+};
+
+export const cryptocurrenciesToSymbol = {
+  [DomainAddressesSupportedCryptocurrencies.BTC]: "₿",
+  [DomainAddressesSupportedCryptocurrencies.LTC]: "Ł",
+  [DomainAddressesSupportedCryptocurrencies.DOGE]: "Ð",
+  [DomainAddressesSupportedCryptocurrencies.ETH]: "Ξ",
+  [DomainAddressesSupportedCryptocurrencies.BNB]: "₿",
+};
 
 // ENS Data network requests
 const fetchEnsDataRequest = async (domain: string) => {
@@ -121,9 +139,11 @@ const fetchENSDomainTextRecords = async (
 const fetchENSDomainCoinsAddresses = async (
   domainName: string
 ): Promise<CoinInfo[]> => {
-  console.log("Object.values(CoinType)", Object.values(CoinType));
-  if (!Object.keys(CoinType)) return [];
-  const coinsMapping = Object.keys(CoinType).reduce(
+  if (!Object.keys(DomainAddressesSupportedCryptocurrencies)) return [];
+
+  const coinsMapping = Object.keys(
+    DomainAddressesSupportedCryptocurrencies
+  ).reduce(
     (prev: any, coin, idx) => ({
       ...prev,
       [idx]: coin,
@@ -141,7 +161,7 @@ const fetchENSDomainCoinsAddresses = async (
     abi: ResolverABI as Abi,
   });
 
-  const coinTypesAddressesGetters = Object.values(CoinType).map(
+  const coinTypesAddressesGetters = Object.values(cryptocurrencyToCoinType).map(
     (coin: string) => {
       return {
         ...ensResolverContract,
@@ -153,19 +173,22 @@ const fetchENSDomainCoinsAddresses = async (
 
   const multicallResult = await publicClient.multicall({
     contracts: coinTypesAddressesGetters,
-    multicallAddress: ensResolverAddr,
+    multicallAddress: MULTICALL_3_CONTRACT_ADDRESS,
   });
 
-  console.log(coinTypesAddressesGetters, multicallResult);
   const coinsNamesMappedToAddresses = multicallResult.map(
     ({ status, result }, idx) => {
       if (status !== "success") return { coinName: "", address: "" };
 
-      const coinAcronym = coinsMapping[idx];
-      console.log(coinAcronym);
-      let address = String(result);
+      const coinAcronym = coinsMapping[
+        idx
+      ] as DomainAddressesSupportedCryptocurrencies;
+      let address = String(result) !== "0x" ? String(result) : "";
 
-      if (coinAcronym !== CoinType.ETH) {
+      if (
+        coinAcronym !== DomainAddressesSupportedCryptocurrencies.ETH &&
+        result !== "0x"
+      ) {
         /*
           Below is needed because different coins have different address
           encoding formats. e.g. BTC -> P2PKH, ETH -> ChecksummedHex
@@ -174,30 +197,36 @@ const fetchENSDomainCoinsAddresses = async (
         const addrBuffer = Buffer.from(addrWithout0x, "hex");
 
         try {
-          address = formatsByCoinType[coinAcronym].encoder(addrBuffer);
+          address =
+            formatsByCoinType[
+              parseInt(cryptocurrencyToCoinType[coinAcronym])
+            ].encoder(addrBuffer);
         } catch (e: any) {
           console.error(
             "Error when decoding address of coin ID: ",
             coinAcronym
           );
           return {
-            coinName: Object.keys(CoinType)[coinsMapping[idx]],
+            symbol: cryptocurrenciesToSymbol[coinAcronym],
+            coinName: coinAcronym,
             address: "",
           };
         }
+      } else {
+        return {
+          symbol: cryptocurrenciesToSymbol[coinAcronym],
+          coinName: coinAcronym,
+          address,
+        };
       }
-
-      return {
-        coinName: Object.keys(CoinType)[coinsMapping[idx]],
-        address,
-      };
     }
   );
 
-  return coinsNamesMappedToAddresses;
+  // TODO: fix TS
+  return coinsNamesMappedToAddresses as CoinInfo[];
 };
 
-export async function getENSData(
+export async function getENSDomainData(
   domain: string
 ): Promise<ResolvedEnsData | null> {
   if (!(ETHEREUM_ADDRESS_REGEX.test(domain) || domain?.endsWith(".eth")))
@@ -219,19 +248,8 @@ export async function getENSData(
     try {
       const domainWithEth = domain.includes(".eth") ? domain : `${domain}.eth`;
 
-      console.log(
-        "contract",
-        nameRegistrationSCs[
-          isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET
-        ].UNIVERSAL_RESOLVER
-      );
-      console.log(
-        "toHex(packetToBytes(domainWithEth))",
-        toHex(packetToBytes(domainWithEth))
-      );
       const coinsAddresses = await fetchENSDomainCoinsAddresses(domainWithEth);
 
-      console.log("coinsAddresses", coinsAddresses);
       returnedData = {
         ...returnedData,
         coinTypes: coinsAddresses,
