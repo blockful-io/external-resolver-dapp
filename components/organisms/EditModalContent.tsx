@@ -46,34 +46,14 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
 
   const { fields, setFields, initialFields } = useFields();
 
-  const [invalidFieldsKeys, setInvalidFieldsKeys] = useState<string[]>([]);
-
-  const validateFields = () => {
-    const fieldsToChange: string[] = [];
-    const invalidFields: string[] = [];
-
-    Object.keys(fields).forEach((tab) => {
-      const tabKey = tab as unknown as Tab;
-      const tabFields = fields[tabKey];
-
-      tabFields.forEach((field) => {
-        if (field.validationFunction) {
-          if (!field.validationFunction()) {
-            invalidFields.push(field.label);
-          }
-        }
-
-        if (!!field.value) {
-          fieldsToChange.push(field.label);
-        }
-      });
-    });
-
-    // setInvalidFieldsKeys(invalidFields);
-
-    // if (invalidFields.length === 0 && fieldsToChange.length > 0) {
-    setIsSaving(true);
-    // }
+  const hasAnyInvalidField = () => {
+    return Object.values(fields)
+      .flatMap((fields) => fields)
+      .some(
+        (field) =>
+          field.validationFunction &&
+          field.validationFunction(field.value) === false
+      );
   };
 
   if (recordsEdited) {
@@ -189,7 +169,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
           </Button>
         </div>
         <div>
-          <Button onClick={validateFields}>Save</Button>
+          <Button disabled={hasAnyInvalidField()}>Save</Button>
         </div>
       </div>
     </div>

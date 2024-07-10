@@ -112,11 +112,8 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
           placeholder: "0x0000000000000000000000000000000000000000",
           value: "",
           fieldType: FieldType.Address,
-          validationFunction: () => {
-            const fieldValue: undefined | string = fields[Tab.Addresses].find(
-              (address: Field) => address.label === "ETH"
-            )?.value;
-            const fieldIsEmpty: boolean = !fieldValue;
+          validationFunction: (fieldValue: string) => {
+            const fieldIsEmpty: boolean = fieldValue === "";
             const isAddressValid: boolean =
               typeof fieldValue === "string" && !!isAddress(fieldValue);
 

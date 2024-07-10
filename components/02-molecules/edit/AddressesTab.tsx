@@ -18,6 +18,11 @@ export const AddressesTab = () => {
             type="text"
             value={field.value}
             onChange={(e) => updateField(Tab.Addresses, index, e.target.value)}
+            error={
+              field?.validationFunction &&
+              !field?.validationFunction(field.value) &&
+              "Invalid field"
+            }
           />
         ))}
       </div>
