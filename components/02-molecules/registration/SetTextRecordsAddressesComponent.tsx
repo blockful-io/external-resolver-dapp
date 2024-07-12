@@ -1,63 +1,60 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { isAddress } from "viem";
-import cc from "classcat";
+import { Input } from "@ensdomains/thorin";
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-interface ValidatedAddress {
-  addressKey: string;
-  isValidated: boolean;
-}
+type Address = {
+  address: string;
+  isValid: boolean;
+};
+
+type Addresses = {
+  [key: string]: Address;
+};
+
+const convertAddressesToRecord = (
+  addresses: Addresses
+): Record<string, string> => {
+  return Object.keys(addresses).reduce((acc, key) => {
+    acc[key] = addresses[key].address;
+    return acc;
+  }, {} as Record<string, string>);
+};
 
 export const SetTextRecordsAddressesComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: SetTextRecordsAddressesComponentProps) => {
-  const [addresses, setAddresses] = useState({
-    ETH: "",
+  const { setDomainAddresses } = useNameRegistration();
+  const [addresses, setAddresses] = useState<Addresses>({
+    ETH: { address: "", isValid: true },
   });
 
-  const { setDomainAddresses, nameRegistrationData } = useNameRegistration();
-
-  const [validatedAddresses, setValidatedAddresses] = useState<
-    Array<ValidatedAddress>
-  >([]);
-
-  useEffect(() => {
-    setDomainAddresses(addresses);
-
-    const invalidatedAddresses = Object.keys(addresses).map((key) => {
-      return {
-        addressKey: key,
-        isValidated: false,
-      };
-    });
-
-    setValidatedAddresses(invalidatedAddresses);
-  }, [addresses]);
-
-  const validateAddressesInputs = () => {
-    const mimicOfValidatedAddresses = [];
-
-    for (const addressKey in nameRegistrationData.domainAddresses) {
-      mimicOfValidatedAddresses.push({
-        addressKey,
-        isValidated:
-          isAddress(nameRegistrationData.domainAddresses[addressKey]) ||
-          !nameRegistrationData.domainAddresses[addressKey],
-      });
-    }
-
-    setValidatedAddresses(mimicOfValidatedAddresses);
+  const anyInvalidAddresses = (): boolean => {
+    return Object.keys(addresses).some(
+      (key) =>
+        !isAddress(addresses[key].address) && addresses[key].address !== ""
+    );
   };
 
-  useEffect(() => {
-    validateAddressesInputs();
-  }, []);
+  // will only run when NextButton is pressed and there is some invalid address
+  const validateAddressesInputs = () => {
+    const updatedAddresses = Object.keys(addresses).reduce((acc, key) => {
+      const address = addresses[key].address;
+      acc[key] = {
+        ...addresses[key],
+        isValid: isAddress(address),
+      };
+      return acc;
+    }, {} as Addresses);
+
+    setAddresses(updatedAddresses);
+  };
 
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
@@ -76,13 +73,10 @@ export const SetTextRecordsAddressesComponent = ({
           {Object.keys(addresses).map((address) => (
             <div
               key={address}
-              className="flex flex-col items-start space-y-2 w-full"
+              className="flex flex-col items-start space-y-2 w-full text-start"
             >
-              <div className="flex w-full items-center text-gray-400 justify-between">
-                <label htmlFor={address} className="text-[#1E2122] text-sm">
-                  {address}
-                </label>
-                {/* <button
+              {/* <div className="flex w-full items-center text-gray-400 justify-between">
+                <button
                   className="flex items-center space-x-1 group"
                   onClick={() =>
                     setSocialAccountsAdded(
@@ -97,25 +91,25 @@ export const SetTextRecordsAddressesComponent = ({
                   <p className="font-semibold text-sm group-hover:text-gray-500 transition">
                     Remove
                   </p>
-                </button> */}
-              </div>
-              <input
+                </button>
+              </div> */}
+              <Input
+                clearable
+                label={address}
+                placeholder={"Your address"}
                 type="text"
-                onChange={(e) =>
-                  setAddresses({
-                    ...addresses,
-                    [address]: e.target.value,
-                  })
-                }
                 id={address}
-                className={cc([
-                  "w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2",
-                  {
-                    "border-red-500": validatedAddresses.find(
-                      (add) => add.addressKey === address && !add.isValidated
-                    ),
-                  },
-                ])}
+                value={addresses[address].address}
+                onChange={(e) =>
+                  setAddresses((prevAddresses) => ({
+                    ...prevAddresses,
+                    [address]: {
+                      isValid: true,
+                      address: e.target.value,
+                    },
+                  }))
+                }
+                error={!addresses[address].isValid && "Invalid address"}
               />
             </div>
           ))}
@@ -125,11 +119,14 @@ export const SetTextRecordsAddressesComponent = ({
         </form>
       </div>
       <NextButton
-        onClick={
-          validatedAddresses.some((add) => !add.isValidated)
-            ? validateAddressesInputs
-            : handleNextStep
-        }
+        onClick={() => {
+          if (!anyInvalidAddresses()) {
+            setDomainAddresses(convertAddressesToRecord(addresses));
+            handleNextStep();
+          } else {
+            validateAddressesInputs();
+          }
+        }}
       />
     </div>
   );
