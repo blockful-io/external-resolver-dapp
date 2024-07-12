@@ -240,7 +240,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {ensData?.coinTypes.length && (
+                {ensData?.coinTypes.some((coin: CoinInfo) => coin.address) && (
                   <div className="flex flex-col gap-4">
                     <Skeleton>
                       <h3 className="font-semibold text-base">Addresses</h3>
