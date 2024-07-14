@@ -44,7 +44,23 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   const [recordsEdited, setRecordsEdited] = useState(false);
   const CurrentComponent = tabComponents[selectedTab];
 
+  const [changedFields, setChangedFields] = useState<Field[]>([]);
+
   const { fields, setFields, initialFields } = useFields();
+
+  useEffect(() => {
+    const changedFieldsKeys: Field[] = [];
+
+    Object.values(fields).forEach((tabFields) => {
+      tabFields.forEach((field) => {
+        if (!!field.value) {
+          changedFieldsKeys.push(field);
+        }
+      });
+    });
+
+    setChangedFields(changedFieldsKeys);
+  }, [fields]);
 
   const hasAnyInvalidField = () => {
     return Object.values(fields)
@@ -70,6 +86,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   if (isSaving) {
     return (
       <SaveModalEdits
+        changedFields={changedFields}
         nextStep={() => {
           setRecordsEdited(true);
         }}
@@ -170,7 +187,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
         </div>
         <div>
           <Button
-            disabled={hasAnyInvalidField()}
+            disabled={hasAnyInvalidField() || !changedFields.length}
             onClick={() => {
               setIsSaving(true);
             }}
@@ -186,28 +203,17 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
 interface SaveModalEditsProps {
   back: () => void;
   nextStep: () => void;
+  changedFields: Field[];
 }
 
-const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
+const SaveModalEdits = ({
+  back,
+  nextStep,
+  changedFields,
+}: SaveModalEditsProps) => {
   const router = useRouter();
   const { fields } = useFields();
   const { authedUser } = useUser();
-
-  const [changedFields, setChangedFields] = useState<Field[]>([]);
-
-  useEffect(() => {
-    const changedFieldsKeys: Field[] = [];
-
-    Object.values(fields).forEach((tabFields) => {
-      tabFields.forEach((field) => {
-        if (!!field.value) {
-          changedFieldsKeys.push(field);
-        }
-      });
-    });
-
-    setChangedFields(changedFieldsKeys);
-  }, [fields]);
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
@@ -236,14 +242,6 @@ const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
 
       const changedTexts: Record<string, string> = {};
       const changedAddresses: Record<string, string> = {};
-
-      changedFields.forEach((field) => {
-        if (field.fieldType === FieldType.Text) {
-          changedTexts[field.label] = field.value;
-        } else if (field.fieldType === FieldType.Address) {
-          changedAddresses[field.label] = field.value;
-        }
-      });
 
       const setDomainRecordsRes = await setDomainRecords({
         ensName,
