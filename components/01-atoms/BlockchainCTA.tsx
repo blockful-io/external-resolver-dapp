@@ -162,7 +162,7 @@ const TransactionRequestSentCTA = ({
           onClick={onClick}
           shape="rounded"
         >
-          Sent
+          Check your wallet
         </Button>
       </div>
 

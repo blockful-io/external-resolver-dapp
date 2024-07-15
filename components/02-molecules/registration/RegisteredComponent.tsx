@@ -28,7 +28,7 @@ export const RegisteredComponent = ({
           <a
             href={`https://app.ens.domains/${nameRegistrationData.name?.displayName}`}
           >
-            <Button colorStyle="blueSecondary" prefix={<>📇</>}>
+            <Button colorStyle="blueSecondary" prefix={<>📇</>} target="_blank">
               View in app.ens.domains
             </Button>
           </a>
