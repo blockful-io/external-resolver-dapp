@@ -23,7 +23,7 @@ import {
   getNameRegistrationSecret,
   setNameRegistrationInLocalStorage,
 } from "./localStorage";
-import { useUser } from "../wallet/useUser";
+import { useAccount } from "wagmi";
 
 interface NameRegistrationData {
   nameRegistrationData: {
@@ -59,7 +59,7 @@ interface NameRegistrationData {
 }
 
 export const useNameRegistration = (): NameRegistrationData => {
-  const { authedUser } = useUser();
+  const { address } = useAccount();
 
   const currentRegistrationStep = useAppSelector(
     (state) => state.currentRegistrationStep
@@ -106,8 +106,8 @@ export const useNameRegistration = (): NameRegistrationData => {
   };
 
   const setCommitTxReceipt = (txReceipt: TransactionReceipt) => {
-    if (authedUser) {
-      setNameRegistrationInLocalStorage(authedUser, name, {
+    if (address) {
+      setNameRegistrationInLocalStorage(address, name, {
         commitTxReceipt: txReceipt,
         secret: getNameRegistrationSecret(),
       });
@@ -121,8 +121,8 @@ export const useNameRegistration = (): NameRegistrationData => {
   };
 
   const setRegisterTxReceipt = (txReceipt: TransactionReceipt) => {
-    if (txReceipt.status === "success" && authedUser) {
-      endNameRegistrationPreviouslyOpen(authedUser, name);
+    if (txReceipt.status === "success" && address) {
+      endNameRegistrationPreviouslyOpen(address, name);
     }
 
     dispatch(updateRegisterTxReceipt(txReceipt));

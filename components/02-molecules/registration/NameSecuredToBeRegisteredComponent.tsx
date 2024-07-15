@@ -2,10 +2,10 @@ import { BackButton, BlockchainCTA } from "@/components/01-atoms";
 import { register } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-import { useUser } from "@/lib/wallet/useUser";
 import { Button, WalletSVG } from "@ensdomains/thorin";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { TransactionReceipt } from "viem";
+import { useAccount } from "wagmi";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -16,14 +16,14 @@ export const NameSecuredToBeRegisteredComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) => {
-  const { authedUser } = useUser();
+  const { address } = useAccount();
   const { nameRegistrationData, setCommitTxReceipt } = useNameRegistration();
   const { openConnectModal } = useConnectModal();
 
   const registerName = async (): Promise<
     `0x${string}` | TransactionErrorType
   > => {
-    if (!authedUser) {
+    if (!address) {
       throw new Error(
         "Impossible to register a name without an authenticated user"
       );
@@ -34,7 +34,7 @@ export const NameSecuredToBeRegisteredComponent = ({
     }
 
     return await register({
-      authenticatedAddress: authedUser,
+      authenticatedAddress: address,
       ensName: nameRegistrationData.name,
       domainResolver: nameRegistrationData.ensResolver,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
@@ -56,7 +56,7 @@ export const NameSecuredToBeRegisteredComponent = ({
         </p>
       </div>
       <div>
-        {!authedUser ? (
+        {!address ? (
           <Button
             colorStyle="bluePrimary"
             onClick={openConnectModal}

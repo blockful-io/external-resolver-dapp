@@ -3,6 +3,7 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import { useState } from "react";
 import { isAddress } from "viem";
 import { Input } from "@ensdomains/thorin";
+import { useAccount } from "wagmi";
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
@@ -30,7 +31,8 @@ export const SetTextRecordsAddressesComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: SetTextRecordsAddressesComponentProps) => {
-  const { setDomainAddresses } = useNameRegistration();
+  const { address: authedAddress } = useAccount();
+  const { setDomainAddresses, nameRegistrationData } = useNameRegistration();
   const [addresses, setAddresses] = useState<Addresses>({
     ETH: { address: "", isValid: true },
   });
@@ -95,11 +97,16 @@ export const SetTextRecordsAddressesComponent = ({
               </div> */}
               <Input
                 clearable
-                label={address}
-                placeholder={"Your address"}
                 type="text"
                 id={address}
-                value={addresses[address].address}
+                label={address}
+                placeholder="Your address"
+                disabled={!!nameRegistrationData.asPrimaryName}
+                value={
+                  !!nameRegistrationData.asPrimaryName
+                    ? authedAddress
+                    : addresses[address].address
+                }
                 onChange={(e) =>
                   setAddresses((prevAddresses) => ({
                     ...prevAddresses,

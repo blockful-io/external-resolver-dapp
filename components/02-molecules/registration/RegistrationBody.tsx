@@ -17,7 +17,7 @@ import {
   getOpenNameRegistrationsOfNameByWallet,
   setNameRegistrationSecret,
 } from "@/lib/name-registration/localStorage";
-import { useUser } from "@/lib/wallet/useUser";
+import { useAccount } from "wagmi";
 
 export const RegistrationBody = () => {
   const { nameRegistrationData, setCurrentRegistrationStep } =
@@ -49,12 +49,12 @@ export const RegistrationBody = () => {
 
   const CurrentComponent = stepComponentMap()[currentStep];
 
-  const { authedUser } = useUser();
+  const { address } = useAccount();
 
   useEffect(() => {
-    if (authedUser && nameRegistrationData.name) {
+    if (address && nameRegistrationData.name) {
       const openRegistration = getOpenNameRegistrationsOfNameByWallet(
-        authedUser,
+        address,
         nameRegistrationData.name
       );
 

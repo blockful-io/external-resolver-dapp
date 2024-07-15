@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   AccountsTab,
   AddressesTab,
-  OthersTab,
   ProfileTab,
   Tab,
   useFields,
@@ -14,10 +13,9 @@ import {
   InfoCircleSVG,
 } from "@ensdomains/thorin";
 import { useRouter } from "next/router";
-import { Field, FieldType } from "@/types/editFieldsTypes";
+import { Field } from "@/types/editFieldsTypes";
 import { BlockchainCTA } from "../01-atoms";
 import { TransactionReceipt, isAddress } from "viem";
-import { useUser } from "@/lib/wallet/useUser";
 import {
   TransactionErrorType,
   getBlockchainTransactionError,
@@ -26,6 +24,7 @@ import { setDomainRecords } from "@/lib/utils/blockchain-txs";
 import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
 import { publicClient } from "@/lib/wallet/wallet-config";
+import { useAccount } from "wagmi";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -212,13 +211,12 @@ const SaveModalEdits = ({
   changedFields,
 }: SaveModalEditsProps) => {
   const router = useRouter();
-  const { fields } = useFields();
-  const { authedUser } = useUser();
+  const { address } = useAccount();
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
   > => {
-    if (!authedUser) {
+    if (!address) {
       throw new Error(
         "Impossible to set the text records of a name without an authenticated user"
       );
@@ -246,7 +244,7 @@ const SaveModalEdits = ({
       const setDomainRecordsRes = await setDomainRecords({
         ensName,
         textRecords: changedTexts,
-        authenticatedAddress: authedUser,
+        authenticatedAddress: address,
         domainResolverAddress: resolverAdd,
         addresses: changedAddresses,
       });

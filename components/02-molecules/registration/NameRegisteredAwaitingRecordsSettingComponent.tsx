@@ -5,11 +5,11 @@ import {
   TransactionErrorType,
   getBlockchainTransactionError,
 } from "@/lib/wallet/txError";
-import { useUser } from "@/lib/wallet/useUser";
 import { Button, WalletSVG } from "@ensdomains/thorin";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect } from "react";
 import { TransactionReceipt } from "viem";
+import { useAccount } from "wagmi";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;
@@ -20,14 +20,14 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameRegisteredAwaitingRecordsSettingComponentProps) => {
-  const { authedUser } = useUser();
+  const { address } = useAccount();
   const { nameRegistrationData } = useNameRegistration();
   const { openConnectModal } = useConnectModal();
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
   > => {
-    if (!authedUser) {
+    if (!address) {
       throw new Error(
         "Impossible to set the text records of a name without an authenticated user"
       );
@@ -48,7 +48,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
 
     try {
       const setDomainRecordsRes = await setDomainRecords({
-        authenticatedAddress: authedUser,
+        authenticatedAddress: address,
         ensName: nameRegistrationData.name,
         textRecords: nameRegistrationData.textRecords,
         domainResolver: nameRegistrationData.ensResolver,
@@ -91,7 +91,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
         </p>
       </div>
       <div>
-        {!authedUser ? (
+        {!address ? (
           <Button
             colorStyle="bluePrimary"
             onClick={openConnectModal}

@@ -11,7 +11,8 @@ import { useState } from "react";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { TransactionReceipt } from "viem";
 import Link from "next/link";
-import { isTestnet } from "@/lib/wallet/chains";
+import { DEFAULT_CHAIN_ID, isTestnet } from "@/lib/wallet/chains";
+import { useAccount } from "wagmi";
 
 enum BlockchainCTAState {
   OPEN_WALLET,
@@ -36,8 +37,14 @@ export const BlockchainCTA = ({
   const [txHashOrError, setTxHashOrError] = useState<
     `0x${string}` | undefined
   >();
+  const { chain } = useAccount();
 
   const sendBlockchainTx = async () => {
+    if (chain?.id !== DEFAULT_CHAIN_ID) {
+      toast.error(`Please switch to ${isTestnet ? "Sepolia" : "Ethereum"}.`);
+      return;
+    }
+
     setBlockchainCtaStatus(BlockchainCTAState.APPROVING_IN_WALLET);
 
     const txHashOrError: `0x${string}` | TransactionErrorType | null =

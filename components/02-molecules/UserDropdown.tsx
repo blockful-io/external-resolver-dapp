@@ -1,4 +1,3 @@
-import { useUser } from "@/lib/wallet/useUser";
 import {
   Dropdown,
   ExitSVG,
@@ -8,12 +7,12 @@ import {
 } from "@ensdomains/thorin";
 import { normalize } from "viem/ens";
 import { useEffect, useState } from "react";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { publicClient } from "@/lib/wallet/wallet-config";
 import { useRouter } from "next/router";
 
 export const UserDropdown = () => {
-  const { authedUser } = useUser();
+  const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const [avatarUrl, setAvatarUrl] = useState("");
   const [authedUserDomain, setAuthedUserDomain] = useState("");
@@ -25,9 +24,9 @@ export const UserDropdown = () => {
     const fetchEnsAvatar = async () => {
       setIsLoading(true);
       try {
-        if (authedUser) {
+        if (address) {
           const ensName = await publicClient.getEnsName({
-            address: authedUser,
+            address,
           });
 
           if (ensName) {
@@ -54,7 +53,7 @@ export const UserDropdown = () => {
     };
 
     fetchEnsAvatar();
-  }, [authedUser]);
+  }, [address]);
 
   return (
     <Dropdown
@@ -88,7 +87,7 @@ export const UserDropdown = () => {
               <p className="text-base font-bold text-white">
                 {authedUserDomain && !isLoading
                   ? authedUserDomain
-                  : authedUser?.slice(0, 6) + "..." + authedUser?.slice(-4)}
+                  : address?.slice(0, 6) + "..." + address?.slice(-4)}
               </p>
             </Skeleton>
           </div>

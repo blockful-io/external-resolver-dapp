@@ -6,9 +6,8 @@ import {
 } from "@/components/01-atoms";
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useUser } from "@/lib/wallet/useUser";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 
@@ -21,9 +20,9 @@ export const RequestToRegisterComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: RequestToRegisterComponentProps) => {
-  const { authedUser } = useUser();
+  const { address } = useAccount();
   const { data: ethBalance } = useBalance({
-    address: authedUser as `0x${string}`,
+    address,
     chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
   });
   const { nameRegistrationData, setCommitSubmitTimestamp } =
@@ -33,7 +32,7 @@ export const RequestToRegisterComponent = ({
   const commitToRegister = async (): Promise<
     `0x${string}` | TransactionErrorType
   > => {
-    if (!authedUser) {
+    if (!address) {
       throw new Error(
         "Impossible to register a name without an authenticated user"
       );
@@ -44,7 +43,7 @@ export const RequestToRegisterComponent = ({
     }
 
     return await commit({
-      authenticatedAddress: authedUser,
+      authenticatedAddress: address,
       ensName: nameRegistrationData.name,
       domainResolver: nameRegistrationData.ensResolver,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
@@ -70,7 +69,7 @@ export const RequestToRegisterComponent = ({
       <div>
         {nameRegistrationData.commitTxReceipt ? (
           <TransactionConfirmedInBlockchainCTA onClick={() => {}} />
-        ) : !authedUser ? (
+        ) : !address ? (
           <Button
             colorStyle="bluePrimary"
             onClick={openConnectModal}
