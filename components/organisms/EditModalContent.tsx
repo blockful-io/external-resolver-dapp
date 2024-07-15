@@ -44,36 +44,32 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   const [recordsEdited, setRecordsEdited] = useState(false);
   const CurrentComponent = tabComponents[selectedTab];
 
+  const [changedFields, setChangedFields] = useState<Field[]>([]);
+
   const { fields, setFields, initialFields } = useFields();
 
-  const [invalidFieldsKeys, setInvalidFieldsKeys] = useState<string[]>([]);
+  useEffect(() => {
+    const changedFieldsKeys: Field[] = [];
 
-  const validateFields = () => {
-    const fieldsToChange: string[] = [];
-    const invalidFields: string[] = [];
-
-    Object.keys(fields).forEach((tab) => {
-      const tabKey = tab as unknown as Tab;
-      const tabFields = fields[tabKey];
-
+    Object.values(fields).forEach((tabFields) => {
       tabFields.forEach((field) => {
-        if (field.validationFn) {
-          if (!field.validationFn()) {
-            invalidFields.push(field.label);
-          }
-        }
-
         if (!!field.value) {
-          fieldsToChange.push(field.label);
+          changedFieldsKeys.push(field);
         }
       });
     });
 
-    // setInvalidFieldsKeys(invalidFields);
+    setChangedFields(changedFieldsKeys);
+  }, [fields]);
 
-    // if (invalidFields.length === 0 && fieldsToChange.length > 0) {
-    setIsSaving(true);
-    // }
+  const hasAnyInvalidField = () => {
+    return Object.values(fields)
+      .flatMap((fields) => fields)
+      .some(
+        (field) =>
+          field.validationFunction &&
+          field.validationFunction(field.value) === false
+      );
   };
 
   if (recordsEdited) {
@@ -90,6 +86,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
   if (isSaving) {
     return (
       <SaveModalEdits
+        changedFields={changedFields}
         nextStep={() => {
           setRecordsEdited(true);
         }}
@@ -189,7 +186,14 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
           </Button>
         </div>
         <div>
-          <Button onClick={validateFields}>Save</Button>
+          <Button
+            disabled={hasAnyInvalidField() || !changedFields.length}
+            onClick={() => {
+              setIsSaving(true);
+            }}
+          >
+            Save
+          </Button>
         </div>
       </div>
     </div>
@@ -199,28 +203,17 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
 interface SaveModalEditsProps {
   back: () => void;
   nextStep: () => void;
+  changedFields: Field[];
 }
 
-const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
+const SaveModalEdits = ({
+  back,
+  nextStep,
+  changedFields,
+}: SaveModalEditsProps) => {
   const router = useRouter();
   const { fields } = useFields();
   const { authedUser } = useUser();
-
-  const [changedFields, setChangedFields] = useState<Field[]>([]);
-
-  useEffect(() => {
-    const changedFieldsKeys: Field[] = [];
-
-    Object.values(fields).forEach((tabFields) => {
-      tabFields.forEach((field) => {
-        if (!!field.value) {
-          changedFieldsKeys.push(field);
-        }
-      });
-    });
-
-    setChangedFields(changedFieldsKeys);
-  }, [fields]);
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
@@ -249,14 +242,6 @@ const SaveModalEdits = ({ back, nextStep }: SaveModalEditsProps) => {
 
       const changedTexts: Record<string, string> = {};
       const changedAddresses: Record<string, string> = {};
-
-      changedFields.forEach((field) => {
-        if (field.fieldType === FieldType.Text) {
-          changedTexts[field.label] = field.value;
-        } else if (field.fieldType === FieldType.Address) {
-          changedAddresses[field.label] = field.value;
-        }
-      });
 
       const setDomainRecordsRes = await setDomainRecords({
         ensName,

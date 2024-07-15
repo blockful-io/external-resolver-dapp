@@ -21,6 +21,7 @@
     "boring-avatars": "^1.10.2",
     "classcat": "^5.0.5",
     "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "next": "14.1.1-canary.52",
     "next-auth": "4.24.5",
@@ -37,6 +38,7 @@
     "wagmi": "2.5.7"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.6",
     "@types/node": "^20",
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.0",
