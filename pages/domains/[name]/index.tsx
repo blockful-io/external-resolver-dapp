@@ -70,6 +70,24 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   let filteredRecords: Record<string, string> = {};
 
+  if (!ensData && error) {
+    return (
+      <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
+        <Heading level="2" as="h3" className="p-4 text-black text-center">
+          😵
+          <br /> We had an error when loading this domain data
+        </Heading>
+        <Button
+          onClick={() => window.location.reload()}
+          colorStyle="blueSecondary"
+          className="mt-5"
+        >
+          Try again?
+        </Button>
+      </div>
+    );
+  }
+
   if (ensData) {
     filteredRecords = Object.keys(ensData.textRecords)
       .filter((key) => !excludeKeys.includes(key))
@@ -240,27 +258,32 @@ export function ManageNamePageContent({ name }: { name: string }) {
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {ensData?.coinTypes.length && (
-                  <div className="flex flex-col gap-4">
-                    <Skeleton>
-                      <h3 className="font-semibold text-base">Addresses</h3>
-                    </Skeleton>
-                    <div className="grid grid-cols-2 gap-4">
-                      {ensData?.coinTypes.map((coinInfo: CoinInfo) => (
-                        <>
-                          {coinInfo.address && (
-                            <Skeleton key={coinInfo.coinName}>
-                              <ProfileRecordItem
-                                symbol={coinInfo.symbol}
-                                text={coinInfo.address}
-                              />
-                            </Skeleton>
-                          )}
-                        </>
-                      ))}
+                {ensData?.coinTypes.length &&
+                  ensData?.coinTypes.some(
+                    (add: CoinInfo | undefined) => typeof add !== "undefined"
+                  ) && (
+                    <div className="flex flex-col gap-4">
+                      <Skeleton>
+                        <h3 className="font-semibold text-base">Addresses</h3>
+                      </Skeleton>
+                      <div className="grid grid-cols-2 gap-4">
+                        {ensData?.coinTypes.map(
+                          (coinInfo: CoinInfo | undefined) => (
+                            <>
+                              {coinInfo ? (
+                                <Skeleton key={coinInfo.coinName}>
+                                  <ProfileRecordItem
+                                    symbol={coinInfo.symbol}
+                                    text={coinInfo.address}
+                                  />
+                                </Skeleton>
+                              ) : null}
+                            </>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {Object.keys(filteredRecords).length !== 0 && (
                   <div className="flex flex-col gap-4">
