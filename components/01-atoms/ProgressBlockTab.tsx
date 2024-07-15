@@ -16,6 +16,7 @@ export const ProgressBlockTabComponent = ({
   currentRegistrationBlock,
 }: ProgressBlockTabComponentProps) => {
   const isActive = registrationBlock === currentRegistrationBlock;
+
   return (
     <div className="flex gap-3 items-center justify-center">
       <div

@@ -19,7 +19,9 @@ export enum RegistrationStep {
 export enum RegistrationBlock {
   DomainSettings = "DomainSettings",
   RequestToRegister = "RequestToRegister",
+  CustomizeProfile = "CustomizeProfile",
   RegisterDomain = "RegisterDomain",
+  RegisterProfile = "RegisterProfile",
   Registered = "Registered",
 }
 
