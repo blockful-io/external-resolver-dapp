@@ -178,7 +178,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                     <div className="flex flex-col">
                       <Skeleton>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-[26px]">{name}</h3>
+                          <h3 className="text-[26px] truncate">{name}</h3>
                         </div>
                         {ensData?.textRecords?.url && (
                           <a

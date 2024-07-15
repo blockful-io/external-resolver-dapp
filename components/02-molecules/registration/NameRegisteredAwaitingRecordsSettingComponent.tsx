@@ -5,7 +5,7 @@ import {
   TransactionErrorType,
   getBlockchainTransactionError,
 } from "@/lib/wallet/txError";
-import { Button, WalletSVG } from "@ensdomains/thorin";
+import { Button, RightArrowSVG, WalletSVG } from "@ensdomains/thorin";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect } from "react";
 import { TransactionReceipt } from "viem";
@@ -90,7 +90,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
           confirm this action.
         </p>
       </div>
-      <div>
+      <div className="flex flex-col space-y-4">
         {!address ? (
           <Button
             colorStyle="bluePrimary"
@@ -107,6 +107,13 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
             transactionRequest={setTextRecords}
           />
         )}
+        <Button
+          colorStyle="blueSecondary"
+          onClick={handleNextStep}
+          prefix={<RightArrowSVG />}
+        >
+          I don&apos;t want custom profile anymore
+        </Button>
       </div>
     </div>
   );
