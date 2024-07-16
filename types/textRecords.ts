@@ -1,9 +1,8 @@
 export const defaultTextRecords = [
-  "com.twitter",
-  "avatar",
   "website",
   "description",
   "com.linkedin",
+  "com.twitter",
   "email",
   "avatar",
   "com.github",

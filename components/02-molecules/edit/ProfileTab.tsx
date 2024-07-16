@@ -3,6 +3,7 @@ import { Input, Textarea } from "@ensdomains/thorin";
 import Image from "next/image";
 import React from "react";
 import { useFields } from "./FieldsContext";
+import Avatar from "boring-avatars";
 
 export const ProfileTab = () => {
   const { fields, updateField } = useFields();
@@ -11,13 +12,15 @@ export const ProfileTab = () => {
   return (
     <div className="w-full">
       <div className="w-full h-[120px] bg-gradient-ens rounded-xl flex items-end justify-center">
-        <Image
-          width={80}
-          height={80}
-          alt="user avatar"
-          src="/coolcat.avif"
-          className="rounded-lg translate-y-6 border-2 border-white"
-        />
+        <div className="rounded-lg translate-y-6 border-2 border-white overflow-hidden">
+          <Avatar
+            size={80}
+            square
+            name="Margaret Bourke"
+            variant="beam"
+            colors={["#44BCF0", "#7298F8", "#A099FF", "#FFFFFF"]}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <div className="h-6 w-full"></div>

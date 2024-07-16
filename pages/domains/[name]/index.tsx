@@ -1,6 +1,5 @@
 import {
   EmailIcon,
-  EthIcon,
   GithubIcon,
   LinkedInIcon,
   PencilIcon,
@@ -10,10 +9,7 @@ import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
-import { publicClient } from "@/lib/wallet/wallet-config";
-import { addEnsContracts } from "@ensdomains/ensjs";
-import { getName, getOwner, getRecords } from "@ensdomains/ensjs/public";
+import { formatDate } from "@/lib/utils/formats";
 
 import {
   Button,
@@ -28,11 +24,8 @@ import {
   SkeletonGroup,
 } from "@ensdomains/thorin";
 import Avatar from "boring-avatars";
-import moment from "moment";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { createPublicClient, http } from "viem";
-import { sepolia } from "viem/chains";
 
 export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,8 +38,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
     setIsLoading(true);
     try {
       const data = await getENSDomainData(name);
-
-      console.log("OKAY", data);
       setEnsData(data);
       setError(null);
     } catch (err) {
@@ -59,17 +50,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
       setEnsData(null);
     }
 
-    const result = await getRecords(publicClient, {
-      name: name,
-      texts: ["com.twitter", "com.github", "description", "url"],
-      coins: ["ETH"],
-      contentHash: true,
-    });
-
-    console.log("ensData ", ensData);
-
-    // console.log("OWNER ", ensData.owner);
-    console.log("result ", result);
     setIsLoading(false);
   };
 
@@ -87,6 +67,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
     "name",
     "url",
   ];
+
   interface TextRecord {
     key: string;
     value: string;
@@ -267,14 +248,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {ensData?.coins.length && (
+                {!!ensData?.coins.length && (
                   <div className="flex flex-col gap-4">
                     <Skeleton>
                       <h3 className="font-semibold text-base">Addresses</h3>
                     </Skeleton>
                     <div className="grid grid-cols-2 gap-4">
                       {ensData?.coins.map((coin: CoinInfo) => (
-                        <>
+                        <div key={coin.id}>
                           {!!coin && (
                             <Skeleton key={coin.name}>
                               <ProfileRecordItem
@@ -283,7 +264,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                               />
                             </Skeleton>
                           )}
-                        </>
+                        </div>
                       ))}
                     </div>
                   </div>
