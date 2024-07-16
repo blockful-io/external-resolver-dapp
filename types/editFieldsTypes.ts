@@ -9,6 +9,7 @@ export type Field = {
 export enum FieldType {
   Address = "Address",
   Text = "Text",
+  TextArea = "TextArea",
 }
 
 export enum Tab {
