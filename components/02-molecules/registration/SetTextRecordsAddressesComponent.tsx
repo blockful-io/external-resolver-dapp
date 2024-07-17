@@ -1,6 +1,6 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isAddress } from "viem";
 import { Input } from "@ensdomains/thorin";
 import { useAccount } from "wagmi";
@@ -48,6 +48,7 @@ export const SetTextRecordsAddressesComponent = ({
   const validateAddressesInputs = () => {
     const updatedAddresses = Object.keys(addresses).reduce((acc, key) => {
       const address = addresses[key].address;
+
       acc[key] = {
         ...addresses[key],
         isValid: isAddress(address),
@@ -57,6 +58,14 @@ export const SetTextRecordsAddressesComponent = ({
 
     setAddresses(updatedAddresses);
   };
+
+  useEffect(() => {
+    if (authedAddress && nameRegistrationData.asPrimaryName) {
+      setAddresses({
+        ETH: { address: authedAddress, isValid: true },
+      });
+    }
+  }, [authedAddress]);
 
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">

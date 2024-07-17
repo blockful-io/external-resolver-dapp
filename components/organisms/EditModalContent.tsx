@@ -212,6 +212,7 @@ const SaveModalEdits = ({
 }: SaveModalEditsProps) => {
   const router = useRouter();
   const { address } = useAccount();
+  const { textRecordsToUpdate, domainAddressesToUpdate } = useFields();
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
@@ -238,15 +239,12 @@ const SaveModalEdits = ({
         throw new Error("Resolver not found");
       }
 
-      const changedTexts: Record<string, string> = {};
-      const changedAddresses: Record<string, string> = {};
-
       const setDomainRecordsRes = await setDomainRecords({
         ensName,
-        textRecords: changedTexts,
         authenticatedAddress: address,
         domainResolverAddress: resolverAdd,
-        addresses: changedAddresses,
+        textRecords: textRecordsToUpdate,
+        addresses: domainAddressesToUpdate,
       });
 
       if (

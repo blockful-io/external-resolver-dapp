@@ -7,12 +7,13 @@ import {
   LinkSVG,
   WalletSVG,
 } from "@ensdomains/thorin";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { TransactionReceipt } from "viem";
 import Link from "next/link";
 import { DEFAULT_CHAIN_ID, isTestnet } from "@/lib/wallet/chains";
 import { useAccount } from "wagmi";
+import { WalletButton } from "@rainbow-me/rainbowkit";
 
 enum BlockchainCTAState {
   OPEN_WALLET,
@@ -37,7 +38,13 @@ export const BlockchainCTA = ({
   const [txHashOrError, setTxHashOrError] = useState<
     `0x${string}` | undefined
   >();
-  const { chain } = useAccount();
+  const { chain, address } = useAccount();
+
+  useEffect(() => {
+    if (!address) {
+      setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+    }
+  }, [address]);
 
   const sendBlockchainTx = async () => {
     if (chain?.id !== DEFAULT_CHAIN_ID) {
@@ -104,8 +111,33 @@ export const BlockchainCTA = ({
 };
 
 const OpenWalletCTA = ({ onClick }: BlockchainCTAComponentProps) => {
+  const { address } = useAccount();
+
+  if (!address) {
+    <WalletButton.Custom wallet="metamask">
+      {({ ready, connect }) => {
+        return (
+          <Button
+            size="medium"
+            onClick={connect}
+            disabled={!ready && !address}
+            colorStyle="bluePrimary"
+            prefix={<WalletSVG />}
+          >
+            Open Wallet
+          </Button>
+        );
+      }}
+    </WalletButton.Custom>;
+  }
+
   return (
-    <Button colorStyle="bluePrimary" onClick={onClick} prefix={<WalletSVG />}>
+    <Button
+      size="medium"
+      onClick={onClick}
+      colorStyle="bluePrimary"
+      prefix={<WalletSVG />}
+    >
       Open Wallet
     </Button>
   );

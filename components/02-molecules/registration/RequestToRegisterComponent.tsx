@@ -69,14 +69,6 @@ export const RequestToRegisterComponent = ({
       <div>
         {nameRegistrationData.commitTxReceipt ? (
           <TransactionConfirmedInBlockchainCTA onClick={() => {}} />
-        ) : !address ? (
-          <Button
-            colorStyle="bluePrimary"
-            onClick={openConnectModal}
-            prefix={<WalletSVG />}
-          >
-            Open Wallet
-          </Button>
         ) : typeof ethBalance === "undefined" ||
           !nameRegistrationData.registrationPrice ? (
           <Button colorStyle="blueSecondary" disabled>

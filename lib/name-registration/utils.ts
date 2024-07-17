@@ -19,6 +19,7 @@ export const getRegistrationStepBlock = (
     case RegistrationStep.WaitingRegistrationLocktime:
     case RegistrationStep.NameSecuredToBeRegistered:
     case RegistrationStep.NameRegisteredAwaitingRecordsSetting:
+    case RegistrationStep.RecordsSetAwaitingPrimaryNameSetting:
       return RegistrationBlock.RequestToRegister;
 
     case RegistrationStep.Registered:

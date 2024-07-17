@@ -141,7 +141,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                           src={
                             !!ensData?.textRecords?.avatar
                               ? ensData?.textRecords?.avatar
-                              : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
+                              : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
                           }
                           className="w-[100px] h-[100px] border-4 border-white rounded-[10px]"
                         />
@@ -151,7 +151,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                             size={100}
                             square
                             name="Margaret Bourke"
-                            variant="beam"
+                            variant="marble"
                             colors={[
                               "#44BCF0",
                               "#7298F8",

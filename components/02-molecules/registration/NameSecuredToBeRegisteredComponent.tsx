@@ -56,24 +56,14 @@ export const NameSecuredToBeRegisteredComponent = ({
         </p>
       </div>
       <div>
-        {!address ? (
-          <Button
-            colorStyle="bluePrimary"
-            onClick={openConnectModal}
-            prefix={<WalletSVG />}
-          >
-            Open Wallet
-          </Button>
-        ) : (
-          <BlockchainCTA
-            onSuccess={(txReceipt: TransactionReceipt) => {
-              setCommitTxReceipt(txReceipt);
+        <BlockchainCTA
+          onSuccess={(txReceipt: TransactionReceipt) => {
+            setCommitTxReceipt(txReceipt);
 
-              setTimeout(handleNextStep, 5000);
-            }}
-            transactionRequest={registerName}
-          />
-        )}
+            setTimeout(handleNextStep, 5000);
+          }}
+          transactionRequest={registerName}
+        />
       </div>
     </div>
   );
