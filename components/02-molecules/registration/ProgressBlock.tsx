@@ -11,20 +11,22 @@ export const ProgressBlock = () => {
 
   return (
     <div className="w-full h-20 bg-white neon-effect px-[60px] py-4 flex justify-between items-center border-b border-gray-200">
-      {progressBlockTabSteps.map((progressBlockTabStep, index) => {
-        return (
-          <ProgressBlockTabComponent
-            title={progressBlockTabStep.title}
-            subtitle={progressBlockTabStep.subtitle}
-            stepNumber={index + 1}
-            registrationBlock={progressBlockTabStep.registrationBlock}
-            key={progressBlockTabStep.title}
-            currentRegistrationBlock={getRegistrationStepBlock(
-              nameRegistrationData.currentRegistrationStep
-            )}
-          />
-        );
-      })}
+      <div className="flex justify-between items-center w-full mx-auto">
+        {progressBlockTabSteps.map((progressBlockTabStep, index) => {
+          return (
+            <ProgressBlockTabComponent
+              title={progressBlockTabStep.title}
+              subtitle={progressBlockTabStep.subtitle}
+              stepNumber={index + 1}
+              registrationBlock={progressBlockTabStep.registrationBlock}
+              key={progressBlockTabStep.title}
+              currentRegistrationBlock={getRegistrationStepBlock(
+                nameRegistrationData.currentRegistrationStep
+              )}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -41,8 +43,18 @@ const progressBlockTabSteps: ProgressBlockTabStep[] = [
     registrationBlock: RegistrationBlock.RequestToRegister,
   },
   {
-    title: "Register domain",
-    subtitle: "Registration transcation",
+    title: "Customize Profile",
+    subtitle: "Customize your profile",
+    registrationBlock: RegistrationBlock.CustomizeProfile,
+  },
+  {
+    title: "Register Domain",
+    subtitle: "Register your new Domain",
     registrationBlock: RegistrationBlock.RegisterDomain,
+  },
+  {
+    title: "Register Profile",
+    subtitle: "Save your texts records",
+    registrationBlock: RegistrationBlock.RegisterProfile,
   },
 ];
