@@ -36,6 +36,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         value: "",
         fieldType: FieldType.Text,
       } as Field,
+      {
+        label: "description",
+        placeholder: "Share your story…",
+        value: "",
+        fieldType: FieldType.Text,
+      } as Field,
     ],
     [Tab.Accounts]: [
       {
@@ -89,6 +95,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         {
           label: "url",
           placeholder: "https://coolcats.com",
+          value: "",
+          fieldType: FieldType.Text,
+        },
+        {
+          label: "description",
+          placeholder: "Share your story…",
           value: "",
           fieldType: FieldType.Text,
         },
