@@ -31,7 +31,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         label: "description",
         placeholder: "Share your story…",
         value: "",
-        fieldType: FieldType.TextArea,
+        fieldType: FieldType.Text,
       } as Field,
     ],
     [Tab.Accounts]: [
@@ -93,7 +93,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
           label: "description",
           placeholder: "Share your story…",
           value: "",
-          fieldType: FieldType.TextArea,
+          fieldType: FieldType.Text,
         },
       ],
       [Tab.Accounts]: [
