@@ -6,10 +6,12 @@ import _ from "lodash";
 interface FieldsContextType {
   fields: Record<Tab, Field[]>;
   initialFields: Record<Tab, Field[]>;
-  setInitialFields: (fields: Record<Tab, Field[]>) => void;
-  setFields: (fields: Record<Tab, Field[]>) => void;
   addField: (tab: Tab, fieldName: string) => void;
+  setFields: (fields: Record<Tab, Field[]>) => void;
+  setInitialFields: (fields: Record<Tab, Field[]>) => void;
   updateField: (tab: Tab, index: number, newValue: string) => void;
+  domainAddressesToUpdate: Record<string, string>;
+  textRecordsToUpdate: Record<string, string>;
 }
 
 interface FieldsProviderProps {
@@ -19,6 +21,13 @@ interface FieldsProviderProps {
 const FieldsContext = createContext<FieldsContextType | undefined>(undefined);
 
 const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
+  const [textRecordsToUpdate, setTextRecordsToUpdate] = useState<
+    Record<string, string>
+  >({});
+  const [domainAddressesToUpdate, setDomainAddressesToUpdate] = useState<
+    Record<string, string>
+  >({});
+
   const [fields, setFieldsState] = useState<Record<Tab, Field[]>>({
     [Tab.Profile]: [
       {
@@ -157,6 +166,19 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   const updateField = (tab: Tab, index: number, newValue: string) => {
     const updatedFields = [...fields[tab]];
     updatedFields[index].value = newValue;
+
+    if (updatedFields[index].fieldType === FieldType.Address) {
+      setDomainAddressesToUpdate({
+        ...domainAddressesToUpdate,
+        [updatedFields[index].label]: newValue,
+      });
+    } else if (updatedFields[index].fieldType === FieldType.Text) {
+      setTextRecordsToUpdate({
+        ...textRecordsToUpdate,
+        [updatedFields[index].label]: newValue,
+      });
+    }
+
     setFieldsState((prevFields) => ({
       ...prevFields,
       [tab]: updatedFields,
@@ -172,6 +194,8 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         setFields,
         addField,
         updateField,
+        domainAddressesToUpdate,
+        textRecordsToUpdate,
       }}
     >
       {children}

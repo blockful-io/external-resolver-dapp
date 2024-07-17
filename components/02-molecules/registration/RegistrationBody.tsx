@@ -1,23 +1,26 @@
 import { RegistrationStep } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { RegistrationYearsComponent } from "./RegistrationYearsComponent";
-import { PrimaryNameComponent } from "./PrimaryNameComponent";
-import { ENSResolverComponent } from "./ENSResolverComponent";
-import { RequestToRegisterComponent } from "./RequestToRegisterComponent";
-import { WaitingRegistrationLocktimeComponent } from "./WaitingRegistrationLocktimeComponent";
-import { NameSecuredToBeRegisteredComponent } from "./NameSecuredToBeRegisteredComponent";
-import { RegisteredComponent } from "./RegisteredComponent";
-import { SetTextRecordsComponent } from "./SetTextRecordsComponent";
-import { SetTextRecordsBasicInfoComponent } from "./SetTextRecordsBasicInfoComponent";
-import { SetTextRecordsSocialAccountsComponent } from "./SetTextRecordsSocialAccountsComponent";
-import { SetTextRecordsAddressesComponent } from "./SetTextRecordsAddressesComponent";
-import { NameRegisteredAwaitingRecordsSettingComponent } from "./NameRegisteredAwaitingRecordsSettingComponent";
+import {
+  RegistrationYearsComponent,
+  PrimaryNameComponent,
+  ENSResolverComponent,
+  RequestToRegisterComponent,
+  WaitingRegistrationLocktimeComponent,
+  NameSecuredToBeRegisteredComponent,
+  SetTextRecordsComponent,
+  RegisteredComponent,
+  SetTextRecordsBasicInfoComponent,
+  SetTextRecordsSocialAccountsComponent,
+  SetTextRecordsAddressesComponent,
+  NameRegisteredAwaitingRecordsSettingComponent,
+  RecordsSetAwaitingPrimaryNameSetting,
+} from "./";
 import { useEffect } from "react";
 import {
   getOpenNameRegistrationsOfNameByWallet,
   setNameRegistrationSecret,
 } from "@/lib/name-registration/localStorage";
-import { useUser } from "@/lib/wallet/useUser";
+import { useAccount } from "wagmi";
 
 export const RegistrationBody = () => {
   const { nameRegistrationData, setCurrentRegistrationStep } =
@@ -49,12 +52,12 @@ export const RegistrationBody = () => {
 
   const CurrentComponent = stepComponentMap()[currentStep];
 
-  const { authedUser } = useUser();
+  const { address } = useAccount();
 
   useEffect(() => {
-    if (authedUser && nameRegistrationData.name) {
+    if (address && nameRegistrationData.name) {
       const openRegistration = getOpenNameRegistrationsOfNameByWallet(
-        authedUser,
+        address,
         nameRegistrationData.name
       );
 
@@ -102,5 +105,7 @@ export const stepComponentMap = (): Record<RegistrationStep, React.FC<any>> => {
     [RegistrationStep.Registered]: RegisteredComponent,
     [RegistrationStep.NameRegisteredAwaitingRecordsSetting]:
       NameRegisteredAwaitingRecordsSettingComponent,
+    [RegistrationStep.RecordsSetAwaitingPrimaryNameSetting]:
+      RecordsSetAwaitingPrimaryNameSetting,
   };
 };

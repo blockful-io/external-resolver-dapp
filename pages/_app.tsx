@@ -5,16 +5,10 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { ThemeProvider } from "styled-components";
 import { ThorinGlobalStyles, lightTheme } from "@ensdomains/thorin";
 
-import {
-  getSiweMessageOptions,
-  queryClient,
-  wagmiConfig,
-} from "../lib/wallet/wallet-config";
+import { queryClient, wagmiConfig } from "../lib/wallet/wallet-config";
 import { WagmiProvider } from "wagmi";
-import { SessionProvider } from "next-auth/react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth";
 
 import { Provider } from "react-redux";
 import nameRegistrationStore from "@/lib/globalStore";
@@ -22,7 +16,6 @@ import nameRegistrationStore from "@/lib/globalStore";
 import { type AppProps } from "next/app";
 
 import { DappHeader } from "@/components/01-atoms";
-import { Session } from "next-auth";
 import { Toaster } from "react-hot-toast";
 import localFont from "@next/font/local";
 
@@ -66,41 +59,30 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-export default function App({
-  Component,
-  pageProps,
-}: AppProps<{
-  session: Session;
-}>) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiProvider config={wagmiConfig}>
-      <SessionProvider session={pageProps.session}>
-        <Provider store={nameRegistrationStore}>
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider theme={lightTheme}>
-              <ThorinGlobalStyles />
-              <RainbowKitSiweNextAuthProvider
-                getSiweMessageOptions={getSiweMessageOptions}
+      <Provider store={nameRegistrationStore}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={lightTheme}>
+            <ThorinGlobalStyles />
+            <RainbowKitProvider>
+              <div
+                style={{ background: "#fff" }}
+                className={`${satoshiFont.variable} h-screen flex flex-col`}
               >
-                <RainbowKitProvider>
-                  <div
-                    style={{ background: "#fff" }}
-                    className={`${satoshiFont.variable} h-screen flex flex-col`}
-                  >
-                    <DappHeader />
-                    <main>
-                      <div className="relative z-10 h-full flex-grow">
-                        <Toaster position="bottom-right" />
-                        <Component {...pageProps} />
-                      </div>
-                    </main>
+                <DappHeader />
+                <main>
+                  <div className="relative z-10 h-full flex-grow">
+                    <Toaster position="bottom-right" />
+                    <Component {...pageProps} />
                   </div>
-                </RainbowKitProvider>
-              </RainbowKitSiweNextAuthProvider>
-            </ThemeProvider>
-          </QueryClientProvider>
-        </Provider>
-      </SessionProvider>
+                </main>
+              </div>
+            </RainbowKitProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </Provider>
     </WagmiProvider>
   );
 }
