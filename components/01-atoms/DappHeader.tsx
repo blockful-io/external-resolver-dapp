@@ -1,20 +1,25 @@
 import Link from "next/link";
 import { WalletButton } from "@rainbow-me/rainbowkit";
-import { UserDropdown } from "@/components/02-molecules/UserDropdown";
 import { useAccount, useSwitchChain } from "wagmi";
 import { Button, WalletSVG } from "@ensdomains/thorin";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DEFAULT_CHAIN_ID } from "@/lib/wallet/chains";
+import { UserDropdown } from "@/components/02-molecules";
 
 export const DappHeader = () => {
   const { address, chain } = useAccount();
   const { switchChain } = useSwitchChain();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     if (chain?.id !== DEFAULT_CHAIN_ID) {
       switchChain({ chainId: DEFAULT_CHAIN_ID });
     }
   }, [chain]);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <div className="w-full h-20 py-5 bg-white px-6 flex justify-between items-center shadow z-50">
@@ -27,23 +32,21 @@ export const DappHeader = () => {
           <p className="text-xl font-bold text-black">DomainResolver</p>
         </Link>
         <div>
-          {address ? (
+          {isClient && address ? (
             <UserDropdown />
           ) : (
             <WalletButton.Custom wallet="metamask">
-              {({ ready, connect }) => {
-                return (
-                  <Button
-                    size="medium"
-                    disabled={!ready}
-                    onClick={connect}
-                    colorStyle="blueSecondary"
-                    prefix={<WalletSVG />}
-                  >
-                    Connect Metamask
-                  </Button>
-                );
-              }}
+              {({ ready, connect }) => (
+                <Button
+                  size="medium"
+                  disabled={!ready}
+                  onClick={connect}
+                  colorStyle="blueSecondary"
+                  prefix={<WalletSVG />}
+                >
+                  Connect Metamask
+                </Button>
+              )}
             </WalletButton.Custom>
           )}
         </div>
