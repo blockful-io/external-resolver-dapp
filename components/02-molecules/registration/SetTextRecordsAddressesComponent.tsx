@@ -1,8 +1,9 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isAddress } from "viem";
 import { Input } from "@ensdomains/thorin";
+import { useAccount } from "wagmi";
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
@@ -30,7 +31,8 @@ export const SetTextRecordsAddressesComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: SetTextRecordsAddressesComponentProps) => {
-  const { setDomainAddresses } = useNameRegistration();
+  const { address: authedAddress } = useAccount();
+  const { setDomainAddresses, nameRegistrationData } = useNameRegistration();
   const [addresses, setAddresses] = useState<Addresses>({
     ETH: { address: "", isValid: true },
   });
@@ -46,6 +48,7 @@ export const SetTextRecordsAddressesComponent = ({
   const validateAddressesInputs = () => {
     const updatedAddresses = Object.keys(addresses).reduce((acc, key) => {
       const address = addresses[key].address;
+
       acc[key] = {
         ...addresses[key],
         isValid: isAddress(address),
@@ -55,6 +58,14 @@ export const SetTextRecordsAddressesComponent = ({
 
     setAddresses(updatedAddresses);
   };
+
+  useEffect(() => {
+    if (authedAddress && nameRegistrationData.asPrimaryName) {
+      setAddresses({
+        ETH: { address: authedAddress, isValid: true },
+      });
+    }
+  }, [authedAddress]);
 
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
@@ -95,11 +106,16 @@ export const SetTextRecordsAddressesComponent = ({
               </div> */}
               <Input
                 clearable
-                label={address}
-                placeholder={"Your address"}
                 type="text"
                 id={address}
-                value={addresses[address].address}
+                label={address}
+                placeholder="Your address"
+                disabled={!!nameRegistrationData.asPrimaryName}
+                value={
+                  !!nameRegistrationData.asPrimaryName
+                    ? authedAddress
+                    : addresses[address].address
+                }
                 onChange={(e) =>
                   setAddresses((prevAddresses) => ({
                     ...prevAddresses,

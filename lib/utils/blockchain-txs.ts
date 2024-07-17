@@ -1,5 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable import/named */
+import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
 import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
@@ -7,6 +8,7 @@ import {
   EnsResolver,
   ensResolverAddress,
   nameRegistrationContracts,
+  nameRegistrationSCs,
 } from "../name-registration/constants";
 
 import {
@@ -21,10 +23,11 @@ import {
   Hash,
   Hex,
   Address,
+  toHex,
+  http,
 } from "viem";
-import { isTestnet } from "../wallet/chains";
+import { isTestnet, SupportedNetwork } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
-import PublicResolverABI from "@/lib/abi/public-resolver.json";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
 import {
   TransactionErrorType,
@@ -33,11 +36,13 @@ import {
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
 import {
   DomainAddressesSupportedCryptocurrencies,
   cryptocurrencyToCoinType,
 } from "./ensData";
+import { useEnsResolver } from "wagmi";
+import { universalResolverResolveAbi } from "viem/_types/constants/abis";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -263,8 +268,10 @@ export const commit = async ({
 
     if (!client) throw new Error("WalletClient not found");
 
+    const nameWithoutTLD = ensName.name.replace(".eth", "");
+
     const commitmentWithConfigHash = await makeCommitment({
-      name: ensName.name.replace(".eth", ""),
+      name: nameWithoutTLD,
       data: [],
       authenticatedAddress,
       durationInYears: durationInYears,
@@ -280,6 +287,7 @@ export const commit = async ({
       args: [commitmentWithConfigHash],
       functionName: "commit",
       abi: ETHRegistrarABI,
+      gas: 70000n,
     });
 
     const txHash = await client.writeContract(request);
@@ -315,6 +323,8 @@ export const register = async ({
 
     if (!client) throw new Error("WalletClient not found");
 
+    const nameWithoutTLD = ensName.name.replace(".eth", "");
+
     const namePrice = await getNamePrice({ ensName, durationInYears });
 
     const txHash = await client.writeContract({
@@ -322,7 +332,7 @@ export const register = async ({
       chain: isTestnet ? sepolia : mainnet,
       account: authenticatedAddress,
       args: [
-        ensName.name.replace(".eth", ""),
+        nameWithoutTLD,
         authenticatedAddress,
         durationInYears * SECONDS_PER_YEAR.seconds,
         getNameRegistrationSecret(),
@@ -334,6 +344,7 @@ export const register = async ({
       value: namePrice,
       abi: ETHRegistrarABI,
       functionName: "register",
+      gas: 500000n,
     });
 
     return txHash;
@@ -481,6 +492,60 @@ export const setDomainRecords = async ({
     return errorType;
   }
 };
+
+/*
+  4th step of a name registration - set domain as primary name if user wants
+*/
+export const setDomainAsPrimaryName = async ({
+  authenticatedAddress,
+  ensName,
+}: {
+  authenticatedAddress: `0x${string}`;
+  ensName: ENSName;
+}) => {
+  try {
+    // Create a wallet client for sending transactions to the blockchain
+    const walletClient = createWalletClient({
+      chain: isTestnet ? sepolia : mainnet,
+      transport: custom(window.ethereum),
+      account: authenticatedAddress,
+    });
+
+    const client = walletClient.extend(publicActions);
+
+    if (!client) throw new Error("WalletClient not found");
+
+    const nameWithTLD = ensName.name.includes(".eth")
+      ? ensName.name
+      : `${ensName.name}.eth`;
+
+    const network = isTestnet
+      ? SupportedNetwork.TESTNET
+      : SupportedNetwork.MAINNET;
+
+    const publicAddress = normalize(nameWithTLD);
+
+    const { request } = await client.simulateContract({
+      address: nameRegistrationSCs[network].ENS_REVERSE_REGISTRAR,
+      account: authenticatedAddress,
+      abi: ENSReverseRegistrarABI,
+      functionName: "setName",
+      args: [publicAddress],
+    });
+
+    const setAsPrimaryNameRes = await client.writeContract(request);
+
+    if (!!setAsPrimaryNameRes) {
+      return 200;
+    }
+  } catch (err) {
+    console.error("writing failed: ", { err });
+    const errorType = getBlockchainTransactionError(err);
+    return errorType;
+  }
+};
+
+// Error handling ⬇️
 
 export function getRevertErrorData(err: unknown) {
   if (!(err instanceof BaseError)) return undefined;

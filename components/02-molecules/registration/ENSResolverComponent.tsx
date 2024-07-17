@@ -61,7 +61,7 @@ export const ENSResolverComponent = ({
         </div>
 
         <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
-          <div
+          {/* <div
             onClick={() => handleENSResolverSelection(radioButtonRefMainnet)}
             className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
               ensResolver === null
@@ -87,7 +87,7 @@ export const ENSResolverComponent = ({
               <EthIcon className="h-6 w-6" />
               Mainnet
             </div>
-          </div>
+          </div> */}
           <div
             onClick={() => handleENSResolverSelection(radioButtonRefDatabase)}
             className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${

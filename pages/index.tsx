@@ -6,6 +6,7 @@ import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { DebounceInput } from "react-debounce-input";
 import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -80,7 +81,7 @@ export default function Home() {
 
         {/* Input  */}
         <div className="w-full h-[52px] relative max-w-[470px] ">
-          <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl">
+          <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl overflow-hidden">
             <div className="flex w-full justify-center items-center p-2 pl-5">
               <DebounceInput
                 minLength={3}
@@ -104,13 +105,16 @@ export default function Home() {
               </div>
             </div>
             <div
-              className={`transition-all duration-300 overflow-hidden ${
+              className={`transition-all duration-300 hover:bg-gray-50 overflow-hidden ${
                 domain
                   ? "opacity-100 visible h-[52px]"
-                  : " opacity-0 invisible h-0"
+                  : "opacity-0 invisible h-0"
               }`}
             >
-              <div className="flex w-full justify-between items-center border-gray-200 border-t p-4 pl-5 ">
+              <Link
+                href={`/register/${domain}`}
+                className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
+              >
                 <p className="text-gray-500 min-h-6">
                   {domain ? (
                     domain.includes(".eth") ? (
@@ -122,7 +126,6 @@ export default function Home() {
                     <span />
                   )}
                 </p>
-
                 {domainError ? (
                   <Tag colorStyle="redSecondary" size="small">
                     Invalid name
@@ -138,7 +141,7 @@ export default function Home() {
                     Registered
                   </Tag>
                 )}
-              </div>
+              </Link>
             </div>
           </div>
         </div>

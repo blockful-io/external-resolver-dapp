@@ -1,4 +1,3 @@
-import { useUser } from "@/lib/wallet/useUser";
 import {
   Dropdown,
   ExitSVG,
@@ -7,54 +6,38 @@ import {
   SkeletonGroup,
 } from "@ensdomains/thorin";
 import { normalize } from "viem/ens";
-import { useEffect, useState } from "react";
-import { useDisconnect } from "wagmi";
-import { publicClient } from "@/lib/wallet/wallet-config";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from "wagmi";
 
 export const UserDropdown = () => {
-  const { authedUser } = useUser();
+  const { address } = useAccount();
+  const { data: ensName } = useEnsName({ address: address });
+  const { data: ensAvatar } = useEnsAvatar({
+    name: ensName ? normalize(ensName) : "",
+  });
+
   const { disconnect } = useDisconnect();
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [authedUserDomain, setAuthedUserDomain] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    const fetchEnsAvatar = async () => {
+    if (!ensAvatar) {
+      setAvatarUrl(
+        "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
+      );
+    }
+  }, [ensAvatar]);
+
+  useEffect(() => {
+    if (!avatarUrl) {
       setIsLoading(true);
-      try {
-        if (authedUser) {
-          const ensName = await publicClient.getEnsName({
-            address: authedUser,
-          });
-
-          if (ensName) {
-            setAuthedUserDomain(ensName);
-            const result = await publicClient.getEnsAvatar({
-              name: normalize(ensName),
-            });
-
-            if (typeof result !== "string") {
-              throw new Error("ENS avatar is not a string");
-            }
-
-            setAvatarUrl(result);
-          } else {
-            console.error("ENS name does not exist");
-          }
-        } else {
-          setAvatarUrl("https://source.boringavatars.com/");
-        }
-      } catch (error) {
-        console.error("Error fetching ENS avatar:", error);
-      }
+    } else {
       setIsLoading(false);
-    };
-
-    fetchEnsAvatar();
-  }, [authedUser]);
+    }
+  }, [ensName]);
 
   return (
     <Dropdown
@@ -62,10 +45,8 @@ export const UserDropdown = () => {
       width={200}
       items={[
         {
-          disabled: true,
           label: "Manage",
-          onClick: () => router.push(`/domains/${authedUserDomain}`),
-          color: "grey",
+          onClick: () => router.push(`/domains/${ensName}`),
           icon: <PersonSVG />,
         },
         {
@@ -86,9 +67,9 @@ export const UserDropdown = () => {
 
             <Skeleton>
               <p className="text-base font-bold text-white">
-                {authedUserDomain && !isLoading
-                  ? authedUserDomain
-                  : authedUser?.slice(0, 6) + "..." + authedUser?.slice(-4)}
+                {ensName && !isLoading
+                  ? ensName
+                  : address?.slice(0, 6) + "..." + address?.slice(-4)}
               </p>
             </Skeleton>
           </div>
