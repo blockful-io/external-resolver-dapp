@@ -1,4 +1,4 @@
-import { Tab } from "@/types/editFieldsTypes";
+import { FieldType, Tab } from "@/types/editFieldsTypes";
 import { Input, Textarea } from "@ensdomains/thorin";
 import Image from "next/image";
 import React from "react";
@@ -24,22 +24,27 @@ export const ProfileTab = () => {
       </div>
       <div className="flex flex-col gap-4">
         <div className="h-6 w-full"></div>
-        {profileFields.map((field, index) => (
-          <Input
-            key={field.label}
-            clearable
-            label={field.label}
-            placeholder={field.placeholder}
-            type="text"
-            value={field.value}
-            onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
-          />
-        ))}
-        <Textarea
-          clearable
-          label="Description"
-          placeholder="Share your story…"
-        />
+        {profileFields.map((field, index) => {
+          return field.fieldType === FieldType.Text ? (
+            <Input
+              key={field.label}
+              clearable
+              label={field.label}
+              placeholder={field.placeholder}
+              type="text"
+              value={field.value}
+              onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
+            />
+          ) : (
+            <Textarea
+              clearable
+              label={field.label}
+              placeholder={field.placeholder}
+              value={field.value}
+              onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
+            />
+          );
+        })}
       </div>
     </div>
   );

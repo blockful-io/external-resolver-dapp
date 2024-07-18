@@ -6,6 +6,7 @@ export type Field = {
   validationFunction?: (fieldValue: string) => boolean;
 };
 
+// Used to differentiate setAddr and setText fields
 export enum FieldType {
   Address = "Address",
   Text = "Text",

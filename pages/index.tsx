@@ -12,6 +12,7 @@ export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [domainError, setDomainError] = useState(false);
 
   useEffect(() => {
     if (!domain) return;
@@ -40,18 +41,19 @@ export default function Home() {
     setDomain("");
   };
 
-  const [domainError, setDomainError] = useState(false);
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setDomainError(false);
 
+    // handle errors
     try {
-      const normalizedName = normalize(e.target.value.trim().replace(" ", ""));
-      setDomain(normalizedName);
+      normalize(e.target.value.trim().replace(" ", ""));
     } catch (error) {
       console.error(error);
       setDomainError(true);
     }
+
+    // update domain
+    setDomain(e.target.value.toLocaleLowerCase());
   };
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {

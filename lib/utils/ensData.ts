@@ -3,6 +3,7 @@ import { isTestnet } from "../wallet/chains";
 import { defaultTextRecords } from "@/types/textRecords";
 import { ETHEREUM_ADDRESS_REGEX } from "../name-registration/constants";
 import {
+  batch,
   getAvailable,
   getExpiry,
   getName,
@@ -11,7 +12,10 @@ import {
 } from "@ensdomains/ensjs/public";
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
-import { normalize } from "path";
+
+import { normalize } from "viem/ens";
+import assert from "assert";
+import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 // ENS Domain Data query
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -65,6 +69,128 @@ export const cryptocurrenciesToSymbol = {
   [DomainAddressesSupportedCryptocurrencies.BNB]: "₿",
 };
 
+// // ENS Data network requests
+// const fetchEnsDataRequest = async (domain: string) => {
+//   const res = await fetch(ENS_SUBGRAPH_ENDPOINT, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({
+//       query: ENS_DOMAIN_TEXT_RECORDS_QUERY,
+//       variables: { domain },
+//     }),
+//   });
+
+//   assert.strictEqual(200, res.status);
+
+//   const json = await res.json();
+
+//   return json.data.domains[0];
+// };
+
+// const fetchENSDomainTextRecords = async (
+//   domain: string,
+//   textKeys: string[]
+// ): Promise<Record<string, string>> => {
+//   const records: Record<string, string> = {};
+
+//   const promises = textKeys.map(async (key) => {
+//     try {
+//       let ensText;
+//       if (key === "avatar") {
+//         ensText = await publicClient.getEnsAvatar({
+//           name: normalize(domain),
+//         });
+//         records[key] = ensText ?? "";
+//       } else {
+//         ensText = await publicClient.getEnsText({
+//           name: normalize(domain),
+//           key,
+//         });
+//         ensText && (records[key] = ensText);
+//       }
+//     } catch (error) {
+//       console.error(`Error fetching text record for key ${key}:`, error);
+//       records[key] = "Error fetching record";
+//     }
+//   });
+//   await Promise.all(promises);
+
+//   return records;
+// };
+
+// const fetchENSDomainCoinsAddresses = async (
+//   domainName: string
+// ): Promise<(CoinInfo | undefined)[]> => {
+//   if (!Object.keys(DomainAddressesSupportedCryptocurrencies)) return [];
+
+//   const coinsMapping = Object.keys(
+//     DomainAddressesSupportedCryptocurrencies
+//   ).reduce(
+//     (prev: any, coin, idx) => ({
+//       ...prev,
+//       [idx]: coin,
+//     }),
+//     0
+//   );
+
+//   const coinTypesAddressesGetters = await Promise.all(
+//     Object.values(cryptocurrencyToCoinType).map((coin: string) => {
+//       return publicClient.getEnsAddress({
+//         coinType: parseInt(coin),
+//         name: domainName,
+//       });
+//     })
+//   );
+
+//   const coinsNamesMappedToAddresses = coinTypesAddressesGetters.map(
+//     (result, idx) => {
+//       if (result === null) return;
+
+//       const coinAcronym = coinsMapping[
+//         idx
+//       ] as DomainAddressesSupportedCryptocurrencies;
+//       let address = String(result) !== "0x" ? String(result) : "";
+
+//       if (
+//         coinAcronym !== DomainAddressesSupportedCryptocurrencies.ETH &&
+//         result !== "0x"
+//       ) {
+//         /*
+//         Below is needed because different coins have different address
+//         encoding formats. e.g. BTC -> P2PKH, ETH -> ChecksummedHex
+//       */
+//         const addrWithout0x = address.substring(2); // omit 0x
+//         const addrBuffer = Buffer.from(addrWithout0x, "hex");
+
+//         try {
+//           address =
+//             formatsByCoinType[
+//               parseInt(cryptocurrencyToCoinType[coinAcronym])
+//             ].encoder(addrBuffer);
+//         } catch (e: any) {
+//           console.error(
+//             "Error when decoding address of coin ID: ",
+//             coinAcronym
+//           );
+//           return {
+//             symbol: cryptocurrenciesToSymbol[coinAcronym],
+//             coinName: coinAcronym,
+//             address: "",
+//           };
+//         }
+//       } else {
+//         return {
+//           symbol: cryptocurrenciesToSymbol[coinAcronym],
+//           coinName: coinAcronym,
+//           address,
+//         };
+//       }
+//     }
+//   );
+
+//   return coinsNamesMappedToAddresses;
+// };
+
 export async function getENSDomainData(
   domain: string
 ): Promise<ResolvedEnsData | null> {
@@ -77,18 +203,33 @@ export async function getENSDomainData(
     return null;
   }
 
-  const resulto = await getSubgraphRecords(client, { name: domain });
+  const textRecordsKeys = await getSubgraphRecords(client, { name: domain });
+  const availableTextRecords = isTestnet
+    ? defaultTextRecords
+    : textRecordsKeys?.texts;
 
-  const availableTextRecords = isTestnet ? defaultTextRecords : resulto?.texts;
+  const [newAvatar, batchResults] = await Promise.all([
+    publicClient.getEnsAvatar({
+      name: normalize(domain),
+    }),
+    batch(
+      client,
+      getRecords.batch({
+        name: domain,
+        texts: availableTextRecords?.length
+          ? availableTextRecords
+          : defaultTextRecords,
+        coins: ["ETH"],
+        contentHash: true,
+      }),
+      getOwner.batch({ name: domain }),
+      getExpiry.batch({ name: domain })
+    ),
+  ]);
 
-  let textRecords = await getRecords(publicClient, {
-    name: domain,
-    texts: availableTextRecords?.length
-      ? availableTextRecords
-      : defaultTextRecords,
-    coins: ["ETH"],
-    contentHash: true,
-  });
+  const textRecords = batchResults[0];
+  const owner = batchResults[1];
+  const expiry = batchResults[2];
 
   const transformedTexts = textRecords.texts.reduce<Record<string, string>>(
     (acc, item) => {
@@ -97,10 +238,6 @@ export async function getENSDomainData(
     },
     {}
   );
-
-  const newAvatar = await publicClient.getEnsAvatar({
-    name: normalize(domain),
-  });
 
   const updatedTexts: Record<string, string> = Object.keys(
     transformedTexts
@@ -113,10 +250,6 @@ export async function getENSDomainData(
     return acc;
   }, {} as Record<string, string>);
 
-  const owner = await getOwner(publicClient, { name: domain });
-
-  const expiry = await getExpiry(publicClient, { name: domain });
-
   let ownerName;
   if (owner?.owner) {
     ownerName = await getName(publicClient, {
@@ -124,7 +257,6 @@ export async function getENSDomainData(
     });
   }
 
-  // Update textRecords with the transformed object
   const updatedTextRecords = {
     ...textRecords,
     texts: updatedTexts,
