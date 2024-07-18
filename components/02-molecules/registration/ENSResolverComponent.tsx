@@ -10,7 +10,7 @@ import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { RadioButton, Typography } from "@ensdomains/thorin";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -35,6 +35,10 @@ export const ENSResolverComponent = ({
   ) => {
     radioRef?.current?.click();
   };
+
+  useEffect(() => {
+    setEnsResolver(EnsResolver.Database);
+  }, []);
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
