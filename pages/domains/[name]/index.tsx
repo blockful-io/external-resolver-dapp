@@ -117,7 +117,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
     );
   }
 
-  console.log("ENS DATA ", ensData);
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
