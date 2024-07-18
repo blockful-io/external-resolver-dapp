@@ -9,34 +9,35 @@ import { normalize } from "viem/ens";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from "wagmi";
+import { publicClient } from "@/lib/wallet/wallet-config";
 
 export const UserDropdown = () => {
   const { address } = useAccount();
   const { data: ensName } = useEnsName({ address: address });
-  const { data: ensAvatar } = useEnsAvatar({
-    name: ensName ? normalize(ensName) : "",
-  });
 
   const { disconnect } = useDisconnect();
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (!ensAvatar) {
-      setAvatarUrl(
-        "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
-      );
+  const getEnsAvatar = async () => {
+    setIsLoading(true);
+    if (ensName) {
+      const ensAvatar = await publicClient.getEnsAvatar({ name: ensName });
+      if (ensAvatar) {
+        setAvatarUrl(ensAvatar);
+      } else {
+        setAvatarUrl(
+          "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
+        );
+      }
     }
-  }, [ensAvatar]);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    if (!avatarUrl) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
+    getEnsAvatar();
   }, [ensName]);
 
   return (
@@ -59,11 +60,11 @@ export const UserDropdown = () => {
       label={
         <SkeletonGroup loading={isLoading}>
           <div className="flex whitespace-nowrap items-center justify-center gap-2.5 rounded-full w-full">
-            <div className="h-6 w-6 bg-gradient-ens rounded-full overflow-hidden">
-              <Skeleton>
+            <Skeleton>
+              <div className="h-6 w-6 bg-gradient-ens rounded-full overflow-hidden">
                 <img src={avatarUrl} />
-              </Skeleton>
-            </div>
+              </div>
+            </Skeleton>
 
             <Skeleton>
               <p className="text-base font-bold text-white">
