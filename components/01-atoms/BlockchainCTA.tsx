@@ -47,7 +47,12 @@ export const BlockchainCTA = ({
   }, [address]);
 
   const sendBlockchainTx = async () => {
-    if (chain?.id !== DEFAULT_CHAIN_ID) {
+    if (!address) {
+      setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+      return;
+    }
+
+    if (chain && chain?.id !== DEFAULT_CHAIN_ID) {
       toast.error(`Please switch to ${isTestnet ? "Sepolia" : "Ethereum"}.`);
       return;
     }
@@ -114,21 +119,23 @@ const OpenWalletCTA = ({ onClick }: BlockchainCTAComponentProps) => {
   const { address } = useAccount();
 
   if (!address) {
-    <WalletButton.Custom wallet="metamask">
-      {({ ready, connect }) => {
-        return (
-          <Button
-            size="medium"
-            onClick={connect}
-            disabled={!ready && !address}
-            colorStyle="bluePrimary"
-            prefix={<WalletSVG />}
-          >
-            Open Wallet
-          </Button>
-        );
-      }}
-    </WalletButton.Custom>;
+    return (
+      <WalletButton.Custom wallet="metamask">
+        {({ ready, connect }) => {
+          return (
+            <Button
+              size="medium"
+              onClick={connect}
+              disabled={!ready}
+              colorStyle="bluePrimary"
+              prefix={<WalletSVG />}
+            >
+              Connect Metamask
+            </Button>
+          );
+        }}
+      </WalletButton.Custom>
+    );
   }
 
   return (
