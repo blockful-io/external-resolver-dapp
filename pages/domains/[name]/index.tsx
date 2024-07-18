@@ -101,7 +101,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
         return obj;
       }, {});
 
-    console.log(filteredRecords);
   }
 
   if (!ensData && !isLoading) {
