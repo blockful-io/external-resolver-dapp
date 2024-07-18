@@ -32,7 +32,7 @@ export const nameRegistrationInitialState: NameRegistrationData = {
   commitSubmitTimestamp: null,
   registrationYears: 1,
   asPrimaryName: false,
-  ensResolver: EnsResolver.Database,
+  ensResolver: null,
   namePrice: null,
   name: null,
 };
