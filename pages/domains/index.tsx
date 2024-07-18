@@ -1,23 +1,23 @@
 import { Table } from "@/components/02-molecules";
-import { useUser } from "@/lib/wallet/useUser";
 import { client } from "@/lib/wallet/wallet-config";
 import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
 import { Button, Heading, Skeleton, WalletSVG } from "@ensdomains/thorin";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 export default function RegisterNamePage() {
   const [names, setNames] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { authedUser } = useUser();
+  const { address } = useAccount();
 
   useEffect(() => {
     const getNames = async () => {
       setIsLoading(true);
 
-      if (authedUser) {
+      if (address) {
         const result = await getNamesForAddress(client, {
-          address: authedUser,
+          address: address,
         });
 
         const filteredNames = result.map((object) => object.name);
@@ -29,13 +29,13 @@ export default function RegisterNamePage() {
     };
 
     getNames();
-  }, [authedUser]);
+  }, [address]);
 
   return (
     <div className="w-full text-black px-5 flex h-full flex-col items-center justify-start bg-white">
       <div className="w-full flex-col gap-8 py-10 flex justify-start max-w-[1216px]">
-        <Skeleton className="!w-full min-h-screen" loading={isLoading}>
-          {!authedUser ? (
+        <Skeleton className="!w-full h-[500px]" loading={isLoading}>
+          {!address && !isLoading ? (
             <div className="w-full flex flex-col gap-4 items-center justify-center">
               <Heading level="2" className="text-start text-[26px]">
                 You have to connect your wallet to see your domains 😉

@@ -10,7 +10,7 @@ import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { RadioButton, Typography } from "@ensdomains/thorin";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -35,6 +35,10 @@ export const ENSResolverComponent = ({
   ) => {
     radioRef?.current?.click();
   };
+
+  useEffect(() => {
+    setEnsResolver(EnsResolver.Database);
+  }, []);
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
@@ -61,7 +65,7 @@ export const ENSResolverComponent = ({
         </div>
 
         <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
-          <div
+          {/* <div
             onClick={() => handleENSResolverSelection(radioButtonRefMainnet)}
             className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
               ensResolver === null
@@ -87,7 +91,7 @@ export const ENSResolverComponent = ({
               <EthIcon className="h-6 w-6" />
               Mainnet
             </div>
-          </div>
+          </div> */}
           <div
             onClick={() => handleENSResolverSelection(radioButtonRefDatabase)}
             className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${

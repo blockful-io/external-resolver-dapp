@@ -25,13 +25,11 @@ export const RegisteredComponent = ({
           manage its records and use it across the web3 space.
         </p>
         <div className="mt-5">
-          <a
-            href={`https://app.ens.domains/${nameRegistrationData.name?.displayName}`}
-          >
+          <Link href={`/domains/${nameRegistrationData.name?.displayName}`}>
             <Button colorStyle="blueSecondary" prefix={<>📇</>}>
-              View in app.ens.domains
+              View domain
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

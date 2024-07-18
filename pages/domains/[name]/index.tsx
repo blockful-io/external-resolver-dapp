@@ -9,12 +9,13 @@ import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
+import { formatDate } from "@/lib/utils/formats";
 
 import {
   Button,
   CalendarSVG,
   CogSVG,
+  EthSVG,
   EthTransparentSVG,
   Heading,
   HeartSVG,
@@ -38,10 +39,10 @@ export function ManageNamePageContent({ name }: { name: string }) {
     setIsLoading(true);
     try {
       const data = await getENSDomainData(name);
-
       setEnsData(data);
       setError(null);
     } catch (err) {
+      console.log(err);
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -68,15 +69,38 @@ export function ManageNamePageContent({ name }: { name: string }) {
     "url",
   ];
 
-  let filteredRecords: Record<string, string> = {};
+  interface TextRecord {
+    key: string;
+    value: string;
+  }
 
-  if (ensData) {
-    filteredRecords = Object.keys(ensData.textRecords)
-      .filter((key) => !excludeKeys.includes(key))
-      .reduce((obj: Record<string, string>, key) => {
-        obj[key] = ensData.textRecords[key];
+  if (!ensData && error) {
+    return (
+      <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
+        <Heading level="2" as="h3" className="p-4 text-black text-center">
+          😵
+          <br /> We had an error when loading this domain data
+        </Heading>
+        <Button
+          onClick={() => window.location.reload()}
+          colorStyle="blueSecondary"
+          className="mt-5"
+        >
+          Try again?
+        </Button>
+      </div>
+    );
+  }
+
+  let filteredRecords: Record<string, string> = {};
+  if (ensData && Array.isArray(ensData.texts)) {
+    filteredRecords = ensData.texts
+      .filter((text: TextRecord) => !excludeKeys.includes(text.key))
+      .reduce((obj: Record<string, string>, text: TextRecord) => {
+        obj[text.key] = text.value;
         return obj;
       }, {});
+
   }
 
   if (!ensData && !isLoading) {
@@ -92,6 +116,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </div>
     );
   }
+
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
@@ -115,14 +140,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
                   <div className="w-full px-6 pb-6 flex flex-col gap-5">
                     <div className="h-[56px] items-end w-full flex justify-between">
-                      {ensData?.textRecords?.avatar ? (
+                      {ensData?.texts?.avatar ? (
                         <CustomImage
                           alt="avatar image"
                           width={100}
                           height={100}
                           src={
-                            !!ensData?.textRecords?.avatar
-                              ? ensData?.textRecords?.avatar
+                            !!ensData?.texts?.avatar
+                              ? ensData?.texts?.avatar
                               : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
                           }
                           className="w-[100px] h-[100px] border-4 border-white rounded-[10px]"
@@ -133,7 +158,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                             size={100}
                             square
                             name="Margaret Bourke"
-                            variant="beam"
+                            variant="marble"
                             colors={[
                               "#44BCF0",
                               "#7298F8",
@@ -160,22 +185,22 @@ export function ManageNamePageContent({ name }: { name: string }) {
                     <div className="flex flex-col">
                       <Skeleton>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-[26px]">{name}</h3>
+                          <h3 className="text-[26px] truncate">{name}</h3>
                         </div>
-                        {ensData?.textRecords?.url && (
+                        {ensData?.texts?.url && (
                           <a
-                            href={ensData.textRecords.url}
+                            href={ensData.texts.url}
                             target="_blank"
                             className="text-[16px] text-blue-500"
                           >
-                            {ensData.textRecords.url}
+                            {ensData.texts.url}
                           </a>
                         )}
                       </Skeleton>
                     </div>
                     <Skeleton>
                       <p className="text-base text-gray-400">
-                        {ensData?.textRecords?.description}
+                        {ensData?.texts?.description}
                       </p>
                     </Skeleton>
                     {/* <Skeleton>
@@ -186,49 +211,49 @@ export function ManageNamePageContent({ name }: { name: string }) {
                       </div>
                     </Skeleton> */}
                     <div className="flex flex-col items-start justify-center gap-1">
-                      {ensData?.textRecords?.["email"] && (
+                      {ensData?.texts?.["email"] && (
                         <Link
                           target="_blank"
-                          href={`mailto:${ensData?.textRecords?.["email"]}`}
+                          href={`mailto:${ensData?.texts?.["email"]}`}
                           className="p-2 flex gap-2 group"
                         >
                           <EmailIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
                           <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.textRecords?.["email"]}
+                            {ensData?.texts?.["email"]}
                           </h3>
                         </Link>
                       )}
 
-                      {!!ensData?.textRecords?.["com.github"] && (
+                      {!!ensData?.texts?.["com.github"] && (
                         <Link
                           target="_blank"
-                          href={`https://github.com/${ensData?.textRecords["com.github"]}`}
+                          href={`https://github.com/${ensData?.texts["com.github"]}`}
                           className="p-2 flex gap-2 group"
                         >
                           <GithubIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
                           <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.textRecords?.["com.github"]}
+                            {ensData?.texts?.["com.github"]}
                           </h3>
                         </Link>
                       )}
 
-                      {ensData?.textRecords?.["com.twitter"] && (
+                      {ensData?.texts?.["com.twitter"] && (
                         <Link
                           target="_blank"
-                          href={`https://x.com/${ensData?.textRecords["com.twitter"]}`}
+                          href={`https://x.com/${ensData?.texts["com.twitter"]}`}
                           className="p-2 flex gap-2 group"
                         >
                           <TwitterIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
                           <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.textRecords?.["com.twitter"]}
+                            {ensData?.texts?.["com.twitter"]}
                           </h3>
                         </Link>
                       )}
 
-                      {ensData?.textRecords?.["com.linkedin"] && (
+                      {ensData?.texts?.["com.linkedin"] && (
                         <Link
                           target="_blank"
-                          href={`https://www.linkedin.com/in/${ensData?.textRecords["com.linkedin"]}`}
+                          href={`https://www.linkedin.com/in/${ensData?.texts["com.linkedin"]}`}
                           className="p-2"
                         >
                           <LinkedInIcon className="w-5 h-5" />
@@ -240,27 +265,30 @@ export function ManageNamePageContent({ name }: { name: string }) {
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {ensData?.coinTypes.length && (
-                  <div className="flex flex-col gap-4">
-                    <Skeleton>
-                      <h3 className="font-semibold text-base">Addresses</h3>
-                    </Skeleton>
-                    <div className="grid grid-cols-2 gap-4">
-                      {ensData?.coinTypes.map((coinInfo: CoinInfo) => (
-                        <>
-                          {coinInfo.address && (
-                            <Skeleton key={coinInfo.coinName}>
-                              <ProfileRecordItem
-                                symbol={coinInfo.symbol}
-                                text={coinInfo.address}
-                              />
-                            </Skeleton>
-                          )}
-                        </>
-                      ))}
+                {!!ensData?.coins.length &&
+                  ensData?.coins.some(
+                    (add: CoinInfo | undefined) => typeof add !== "undefined"
+                  ) && (
+                    <div className="flex flex-col gap-4">
+                      <Skeleton>
+                        <h3 className="font-semibold text-base">Addresses</h3>
+                      </Skeleton>
+                      <div className="grid grid-cols-2 gap-4">
+                        {ensData?.coins.map((coin: CoinInfo | undefined) => (
+                          <>
+                            {coin ? (
+                              <Skeleton key={coin.name}>
+                                <ProfileRecordItem
+                                  icon={EthTransparentSVG}
+                                  text={coin.value}
+                                />
+                              </Skeleton>
+                            ) : null}
+                          </>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {Object.keys(filteredRecords).length !== 0 && (
                   <div className="flex flex-col gap-4">
@@ -291,7 +319,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                       <ProfileRecordItem
                         icon={CogSVG}
                         label="manager"
-                        text={formatHexAddress(ensData?.ownerId)}
+                        text={ensData?.owner && ensData?.owner}
                       />
                     </Skeleton>
 
@@ -299,7 +327,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                       <ProfileRecordItem
                         icon={HeartSVG}
                         label="owner"
-                        text={formatHexAddress(ensData?.ownerId)}
+                        text={ensData?.owner}
                       />
                     </Skeleton>
 
@@ -308,7 +336,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         icon={CalendarSVG}
                         label="expiry"
                         text={formatDate({
-                          unixTimestamp: parseInt(ensData?.expiryDate),
+                          unixTimestamp: ensData?.expiry / 1000,
                         })}
                       />
                     </Skeleton>
@@ -316,7 +344,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                       <ProfileRecordItem
                         icon={EthTransparentSVG}
                         label="parent"
-                        text={ensData?.parentName}
+                        text="ETH"
                       />
                     </Skeleton>
                   </div>

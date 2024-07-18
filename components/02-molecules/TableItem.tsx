@@ -59,7 +59,7 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
                 src={
                   !!avatar
                     ? avatar
-                    : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
+                    : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
                 }
                 className="w-10 h-10 rounded-[10px]"
               />
@@ -69,7 +69,7 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
                   size={40}
                   square
                   name="Margaret Bourke"
-                  variant="beam"
+                  variant="marble"
                   colors={["#44BCF0", "#7298F8", "#A099FF", "#FFFFFF"]}
                 />
               </div>
