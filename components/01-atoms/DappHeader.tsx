@@ -5,6 +5,7 @@ import { Button, WalletSVG } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import { DEFAULT_CHAIN_ID } from "@/lib/wallet/chains";
 import { UserDropdown } from "@/components/02-molecules";
+import { ConnectMetamask } from "./ConnectMetamask";
 
 export const DappHeader = () => {
   const { address, chain } = useAccount();
@@ -28,23 +29,7 @@ export const DappHeader = () => {
           <p className="text-2xl font-bold text-black">nameful</p>
         </Link>
         <div>
-          {isClient && address ? (
-            <UserDropdown />
-          ) : (
-            <WalletButton.Custom wallet="metamask">
-              {({ ready, connect }) => (
-                <Button
-                  size="medium"
-                  disabled={!ready}
-                  onClick={connect}
-                  colorStyle="blueSecondary"
-                  prefix={<WalletSVG />}
-                >
-                  Connect Metamask
-                </Button>
-              )}
-            </WalletButton.Custom>
-          )}
+          {isClient && address ? <UserDropdown /> : <ConnectMetamask />}
         </div>
       </div>
     </div>
