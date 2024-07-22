@@ -9,7 +9,7 @@ assignees: ''
 
 ## Bug Report
 
-### Swaplace version
+### External Resolver dApp version
 
 <!-- Please specify the commit or tag version. -->
 
