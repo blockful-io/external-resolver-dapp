@@ -68,13 +68,7 @@ export const RequestToRegisterComponent = ({
 
       <div>
         {!address ? (
-          <BlockchainCTA
-            onSuccess={() => {
-              setCommitSubmitTimestamp(new Date());
-              handleNextStep();
-            }}
-            transactionRequest={commitToRegister}
-          />
+          <BlockchainCTA />
         ) : nameRegistrationData.commitTxReceipt ? (
           <TransactionConfirmedInBlockchainCTA onClick={() => {}} />
         ) : typeof ethBalance === "undefined" ||
