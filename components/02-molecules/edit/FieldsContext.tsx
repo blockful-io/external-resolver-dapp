@@ -95,7 +95,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     ]);
   };
 
-  //INITIAL PROFILE STATE
+  // INITIAL PROFILE STATE
   const [initialProfileFields, setInitialProfileFieldsState] = useState<Field[]>([
     {
       label: "url",
