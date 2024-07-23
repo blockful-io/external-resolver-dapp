@@ -50,13 +50,13 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       placeholder: "https://coolcats.com",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
     {
       label: "description",
       placeholder: "Share your story…",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
   ])
 
   const setProfileFields = (fields: Field[]) => {
@@ -102,13 +102,13 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       placeholder: "https://coolcats.com",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
     {
       label: "description",
       placeholder: "Share your story…",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
   ])
 
   const setInitialProfileFields = (fields: Field[]) => {
@@ -124,19 +124,19 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       placeholder: "mail@mail.com",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
     {
       label: "com.twitter",
       placeholder: "@twitter",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
     {
       label: "com.linkedin",
       placeholder: "/linkedin",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
   ])
 
   const setAccountsFields = (fields: Field[]) => {
@@ -183,19 +183,19 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       placeholder: "mail@mail.com",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
     {
       label: "com.twitter",
       placeholder: "@twitter",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
     {
       label: "com.linkedin",
       placeholder: "/linkedin",
       value: "",
       fieldType: FieldType.Text,
-    } as Field,
+    },
   ])
 
   const setInitialAccountsFields = (fields: Field[]) => {
@@ -216,7 +216,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         const isValidAddress: Readonly<boolean> =
           typeof fieldValue === "string" && !!isAddress(fieldValue);
 
-        return fieldIsEmpty || isAddressValid;
+        return fieldIsEmpty || isValidAddress;
       },
     } as Field,
   ])

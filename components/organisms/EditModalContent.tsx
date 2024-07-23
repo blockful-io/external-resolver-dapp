@@ -25,6 +25,7 @@ import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
 import { publicClient } from "@/lib/wallet/wallet-config";
 import { useAccount } from "wagmi";
+import cc from "classcat";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -139,10 +140,13 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Profile);
             }}
-            className={cc(["py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300", {
-              "text-blue-500 border-blue-500": selectedTab === Tab.Profile,
-              "text-gray-500 border-gray-200": selectedTab !== Tab.Profile
-              }}
+            className={cc([
+              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              {
+                "text-blue-500 border-blue-500": selectedTab === Tab.Profile,
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Profile
+              }
+            ])}
           >
             Profile
           </button>
@@ -150,10 +154,15 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Accounts);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${selectedTab === Tab.Accounts
-              ? "text-blue-500 border-blue-500"
-              : "text-gray-500 border-gray-200"
-              }`}
+            className={
+              cc([
+                "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+                {
+                  "text-blue-500 border-blue-500": selectedTab === Tab.Accounts,
+                  "text-gray-500 border-gray-200": selectedTab !== Tab.Accounts
+                }
+              ])
+            }
           >
             Accounts
           </button>
@@ -161,10 +170,15 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Addresses);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${selectedTab === Tab.Addresses
-              ? "text-blue-500 border-blue-500"
-              : "text-gray-500 border-gray-200"
-              }`}
+            className={
+              cc(["py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+                {
+
+                  "text-blue-500 border-blue-500": selectedTab === Tab.Addresses,
+                  "text-gray-500 border-gray-200": selectedTab !== Tab.Addresses
+                }
+              ])
+            }
           >
             Addresses
           </button>
