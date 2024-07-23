@@ -67,7 +67,9 @@ export const RequestToRegisterComponent = ({
       </div>
 
       <div>
-        {nameRegistrationData.commitTxReceipt ? (
+        {!address ? (
+          <BlockchainCTA />
+        ) : nameRegistrationData.commitTxReceipt ? (
           <TransactionConfirmedInBlockchainCTA onClick={() => {}} />
         ) : typeof ethBalance === "undefined" ||
           !nameRegistrationData.registrationPrice ? (

@@ -6,6 +6,7 @@ export * from "./NextButton";
 export * from "./ProgressBar";
 export * from "./ProgressBlockTab";
 export * from "./ENSResolverTag";
+export * from "./ConnectMetamask";
 
 // exports from ./icons
 export * from "./icons/arbitrum";

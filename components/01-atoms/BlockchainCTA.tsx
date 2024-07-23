@@ -7,13 +7,13 @@ import {
   LinkSVG,
   WalletSVG,
 } from "@ensdomains/thorin";
-import { useEffect, useState } from "react";
-import { TransactionErrorType } from "@/lib/wallet/txError";
-import { TransactionReceipt } from "viem";
 import Link from "next/link";
-import { DEFAULT_CHAIN_ID, isTestnet } from "@/lib/wallet/chains";
 import { useAccount } from "wagmi";
-import { WalletButton } from "@rainbow-me/rainbowkit";
+import { TransactionReceipt } from "viem";
+import { useEffect, useState } from "react";
+import { ConnectMetamask } from "./ConnectMetamask";
+import { TransactionErrorType } from "@/lib/wallet/txError";
+import { DEFAULT_CHAIN_ID, isTestnet } from "@/lib/wallet/chains";
 
 enum BlockchainCTAState {
   OPEN_WALLET,
@@ -23,10 +23,19 @@ enum BlockchainCTAState {
 }
 
 interface BlockchainCTAProps {
-  transactionRequest: () => Promise<
+  /*
+    When no authenticated address is defined (we use wagmi useAccount hook to get it),
+    the component will render a ConnectMetamask button. Otherwise, it will render a Button
+    with a transactionRequest callback onClick and a onSuccess callback on transaction 
+    success. The only possibility of these callbacks being undefined is if the component
+    is being used in a context where the user is not authenticated. Otherwise, if these 
+    callbacks are undefined and an authenticated address is identified by wagmi useAccount,
+    an error will be thrown in sendBlockchainTx.
+  */
+  transactionRequest?: () => Promise<
     `0x${string}` | TransactionErrorType | null
   >;
-  onSuccess: (txReceipt: TransactionReceipt) => void;
+  onSuccess?: (txReceipt: TransactionReceipt) => void;
 }
 
 export const BlockchainCTA = ({
@@ -47,9 +56,20 @@ export const BlockchainCTA = ({
   }, [address]);
 
   const sendBlockchainTx = async () => {
-    if (chain?.id !== DEFAULT_CHAIN_ID) {
+    if (!address) {
+      setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+      return;
+    }
+
+    if (chain && chain?.id !== DEFAULT_CHAIN_ID) {
       toast.error(`Please switch to ${isTestnet ? "Sepolia" : "Ethereum"}.`);
       return;
+    }
+
+    if (!transactionRequest || !onSuccess) {
+      throw new Error(
+        "The component should not trigger blockchain related events without a transactionRequest or onSuccess callback"
+      );
     }
 
     setBlockchainCtaStatus(BlockchainCTAState.APPROVING_IN_WALLET);
@@ -114,21 +134,7 @@ const OpenWalletCTA = ({ onClick }: BlockchainCTAComponentProps) => {
   const { address } = useAccount();
 
   if (!address) {
-    <WalletButton.Custom wallet="metamask">
-      {({ ready, connect }) => {
-        return (
-          <Button
-            size="medium"
-            onClick={connect}
-            disabled={!ready && !address}
-            colorStyle="bluePrimary"
-            prefix={<WalletSVG />}
-          >
-            Open Wallet
-          </Button>
-        );
-      }}
-    </WalletButton.Custom>;
+    return <ConnectMetamask />;
   }
 
   return (
