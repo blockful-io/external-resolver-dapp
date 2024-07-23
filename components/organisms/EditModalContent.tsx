@@ -86,7 +86,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
           field.validationFunction &&
           field.validationFunction(field.value) === false
       );
-    const invalidAddressesField = Object.values(accountsFields)
+    const invalidAddressesField = Object.values(addressesFields)
       .flatMap((fields) => fields)
       .some(
         (field) =>
