@@ -62,7 +62,7 @@ export const WaitingRegistrationLocktimeComponent = ({
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
         {timer !== null && (
           <CountdownTimer
             onTimeEnd={() => setTimerDone(true)}
@@ -81,7 +81,9 @@ export const WaitingRegistrationLocktimeComponent = ({
             : `Please wait ${timeLeft} seconds to confirm the registration commitment.`}
         </p>
       </div>
-      <NextButton disabled={!timerDone} onClick={handleNextStep} />
+      <div className="w-[500px] flex flex-row-reverse">
+        <NextButton disabled={!timerDone} onClick={handleNextStep} />
+      </div>
     </div>
   );
 };
