@@ -29,7 +29,7 @@ export const ENS_SUBGRAPH_ENDPOINT = isTestnet
   : `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
 
 // ENS Domain Data interface
-interface TextRecords {
+export interface TextRecords {
   [key: string]: string | undefined;
 }
 export interface CoinInfo {
@@ -37,7 +37,7 @@ export interface CoinInfo {
   name: string;
   value: string;
 }
-interface ResolvedEnsData {
+export interface ResolvedEnsData {
   expiry?: number;
   coins?: DecodedAddr[];
   texts?: TextRecords;

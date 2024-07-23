@@ -45,30 +45,62 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
 
   const [changedFields, setChangedFields] = useState<Field[]>([]);
 
-  const { fields, setFields, initialFields } = useFields();
+  const {
+    profileFields,
+    accountsFields,
+    addressesFields,
+    setProfileFields,
+    initialProfileFields,
+    setAddressesFields,
+    initialAddressesFields,
+    setAccountsFields,
+    initialAccountsFields,
+  } = useFields();
 
   useEffect(() => {
     const changedFieldsKeys: Field[] = [];
 
-    Object.values(fields).forEach((tabFields) => {
-      tabFields.forEach((field) => {
-        if (!!field.value) {
-          changedFieldsKeys.push(field);
-        }
-      });
+    Object.values(profileFields).forEach((field) => {
+      if (!!field.value) {
+        changedFieldsKeys.push(field);
+      }
     });
-
+    Object.values(accountsFields).forEach((field) => {
+      if (!!field.value) {
+        changedFieldsKeys.push(field);
+      }
+    });
+    Object.values(addressesFields).forEach((field) => {
+      if (!!field.value) {
+        changedFieldsKeys.push(field);
+      }
+    });
     setChangedFields(changedFieldsKeys);
-  }, [fields]);
+  }, [profileFields, accountsFields, addressesFields]);
 
   const hasAnyInvalidField = () => {
-    return Object.values(fields)
+    const invalidProfileField = Object.values(profileFields)
       .flatMap((fields) => fields)
       .some(
         (field) =>
           field.validationFunction &&
           field.validationFunction(field.value) === false
       );
+    const invalidAddressesField = Object.values(accountsFields)
+      .flatMap((fields) => fields)
+      .some(
+        (field) =>
+          field.validationFunction &&
+          field.validationFunction(field.value) === false
+      );
+    const invalidAccountsField = Object.values(accountsFields)
+      .flatMap((fields) => fields)
+      .some(
+        (field) =>
+          field.validationFunction &&
+          field.validationFunction(field.value) === false
+      );
+    return invalidProfileField || invalidAddressesField || invalidAccountsField;
   };
 
   if (recordsEdited) {
@@ -107,11 +139,10 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Profile);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-              selectedTab === Tab.Profile
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
-            }`}
+            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${selectedTab === Tab.Profile
+              ? "text-blue-500 border-blue-500"
+              : "text-gray-500 border-gray-200"
+              }`}
           >
             Profile
           </button>
@@ -119,11 +150,10 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Accounts);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-              selectedTab === Tab.Accounts
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
-            }`}
+            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${selectedTab === Tab.Accounts
+              ? "text-blue-500 border-blue-500"
+              : "text-gray-500 border-gray-200"
+              }`}
           >
             Accounts
           </button>
@@ -131,11 +161,10 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Addresses);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-              selectedTab === Tab.Addresses
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
-            }`}
+            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${selectedTab === Tab.Addresses
+              ? "text-blue-500 border-blue-500"
+              : "text-gray-500 border-gray-200"
+              }`}
           >
             Addresses
           </button>
@@ -178,7 +207,9 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             colorStyle="greySecondary"
             onClick={() => {
               closeModal();
-              setFields(initialFields);
+              setProfileFields(initialProfileFields);
+              setAddressesFields(initialAddressesFields);
+              setAccountsFields(initialAccountsFields);
             }}
           >
             Cancel

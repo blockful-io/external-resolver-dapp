@@ -4,8 +4,7 @@ import { useFields, Tab } from "./FieldsContext";
 import AddCustomTextRecord from "./AddCustomTextRecord";
 
 export const AccountsTab: React.FC = () => {
-  const { fields, updateField } = useFields();
-  const accountsFields = fields[Tab.Accounts];
+  const { accountsFields, updateAccountField } = useFields();
 
   return (
     <div className="w-full flex flex-col">
@@ -18,7 +17,7 @@ export const AccountsTab: React.FC = () => {
             placeholder={field.placeholder}
             type="text"
             value={field.value}
-            onChange={(e) => updateField(Tab.Accounts, index, e.target.value)}
+            onChange={(e) => updateAccountField(index, e.target.value)}
           />
         ))}
         <AddCustomTextRecord tab={Tab.Accounts} />

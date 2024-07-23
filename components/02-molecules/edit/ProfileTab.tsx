@@ -6,8 +6,7 @@ import { useFields } from "./FieldsContext";
 import Avatar from "boring-avatars";
 
 export const ProfileTab = () => {
-  const { fields, updateField } = useFields();
-  const profileFields = fields[Tab.Profile];
+  const { profileFields, updateProfileField } = useFields();
 
   return (
     <div className="w-full">
@@ -33,7 +32,7 @@ export const ProfileTab = () => {
               placeholder={field.placeholder}
               type="text"
               value={field.value}
-              onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
+              onChange={(e) => updateProfileField(index, e.target.value)}
             />
           ) : (
             <Textarea
@@ -41,7 +40,7 @@ export const ProfileTab = () => {
               label={field.label}
               placeholder={field.placeholder}
               value={field.value}
-              onChange={(e) => updateField(Tab.Profile, index, e.target.value)}
+              onChange={(e) => updateProfileField(index, e.target.value)}
             />
           );
         })}

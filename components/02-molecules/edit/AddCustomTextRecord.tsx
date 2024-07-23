@@ -14,10 +14,22 @@ interface AddCustomTextRecordProps {
 const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
   const [buttonType, setButtonType] = useState(ButtonType.ADD_RECORD);
   const [fieldName, setFieldName] = useState("");
-  const { addField } = useFields();
+  const { addProfileField, addAccountField, addAddressField } = useFields();
 
   const handleAddField = () => {
-    addField(tab, fieldName);
+    switch (tab) {
+      case Tab.Profile:
+        addProfileField(fieldName)
+        break;
+      case Tab.Accounts:
+        addAccountField(fieldName);
+        break;
+      case Tab.Addresses:
+        addAddressField(fieldName);
+        break;
+      default:
+        break;
+    }
     setButtonType(ButtonType.ADD_RECORD);
   };
 
