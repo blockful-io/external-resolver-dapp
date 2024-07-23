@@ -27,8 +27,6 @@ const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
       case Tab.Addresses:
         addAddressField(fieldName);
         break;
-      default:
-        break;
     }
     setButtonType(ButtonType.ADD_RECORD);
   };
