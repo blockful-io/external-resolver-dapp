@@ -7,22 +7,14 @@ import { ResolvedEnsData, TextRecords } from "@/lib/utils/ensData";
 interface FieldsContextType {
   profileFields: Field[];
   initialProfileFields: Field[];
-  addProfileField: (fieldName: string) => void;
-  setProfileFields: (fields: Field[]) => void;
-  setInitialProfileFields: (fields: Field[]) => void;
-  updateProfileField: (index: number, newValue: string) => void;
   accountsFields: Field[];
   initialAccountsFields: Field[];
-  addAccountField: (fieldName: string) => void;
-  setAccountsFields: (fields: Field[]) => void;
-  setInitialAccountsFields: (fields: Field[]) => void;
-  updateAccountField: (index: number, newValue: string) => void;
   addressesFields: Field[];
   initialAddressesFields: Field[];
-  addAddressField: (fieldName: string) => void;
-  setAddressesFields: (fields: Field[]) => void;
-  setInitialAddressesFields: (fields: Field[]) => void;
-  updateAddressField: (index: number, newValue: string) => void;
+  addField: (tab: Tab, fieldName: string) => void;
+  setFields: (tab: Tab, fields: Field[]) => void;
+  setInitialFields: (tab: Tab, fields: Field[]) => void;
+  updateField: (tab: Tab, index: number, newValue: string) => void;
   domainAddressesToUpdate: Record<string, string>;
   textRecordsToUpdate: Record<string, string>;
   updateFieldsWithEnsData: (ensData: ResolvedEnsData | null) => void;
@@ -59,13 +51,29 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ])
 
-  const setProfileFields = (fields: Field[]) => {
+  const setFields = (tab: Tab, fields: Field[]) => {
+    const setStateByTab = {
+      [Tab.Profile]: setProfileFieldsState,
+      [Tab.Accounts]: setAccountsFieldsState,
+      [Tab.Addresses]: setAddressesFieldsState,
+    }
     const deepCopiedFields = _.cloneDeep(fields);
-    setProfileFieldsState(deepCopiedFields);
+    setStateByTab[tab](deepCopiedFields);
+
   };
 
-  const updateProfileField = (index: number, newValue: string) => {
-    const updatedFields = [...profileFields];
+  const updateField = (tab: Tab, index: number, newValue: string) => {
+    const fieldsByTab = {
+      [Tab.Profile]: [...profileFields],
+      [Tab.Accounts]: [...accountsFields],
+      [Tab.Addresses]: [...addressesFields],
+    }
+    const setStateByTab = {
+      [Tab.Profile]: setProfileFieldsState,
+      [Tab.Accounts]: setAccountsFieldsState,
+      [Tab.Addresses]: setAddressesFieldsState,
+    }
+    const updatedFields = fieldsByTab[tab];
     updatedFields[index].value = newValue;
 
     if (updatedFields[index].fieldType === FieldType.Address) {
@@ -79,17 +87,22 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         [updatedFields[index].label]: newValue,
       });
     }
-    setProfileFieldsState(updatedFields);
+    setStateByTab[tab](updatedFields);
   };
 
-  const addProfileField = (fieldName: string) => {
+  const addField = (tab: Tab, fieldName: string) => {
+    const setStateByTab = {
+      [Tab.Profile]: setProfileFieldsState,
+      [Tab.Accounts]: setAccountsFieldsState,
+      [Tab.Addresses]: setAddressesFieldsState,
+    }
     const newField: Field = {
       label: fieldName,
       placeholder: "",
       value: "",
       fieldType: FieldType.Text,
     };
-    setProfileFieldsState((prevFields) => [
+    setStateByTab[tab]((prevFields) => [
       ...prevFields,
       newField,
     ]);
@@ -111,9 +124,14 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ])
 
-  const setInitialProfileFields = (fields: Field[]) => {
+  const setInitialFields = (tab: Tab, fields: Field[]) => {
+    const setInitialFieldsByTab = {
+      [Tab.Profile]: setInitialProfileFieldsState,
+      [Tab.Accounts]: setInitialAccountsFieldsState,
+      [Tab.Addresses]: setInitialAddressesFieldsState,
+    }
     const deepCopiedFields = _.cloneDeep(fields);
-    setInitialProfileFieldsState(deepCopiedFields);
+    setInitialFieldsByTab[tab](deepCopiedFields);
   };
 
 
@@ -139,43 +157,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ])
 
-  const setAccountsFields = (fields: Field[]) => {
-    const deepCopiedFields = _.cloneDeep(fields);
-    setAccountsFieldsState(deepCopiedFields);
-  };
-
-  const updateAccountField = (index: number, newValue: string) => {
-    const updatedFields = [...accountsFields];
-    updatedFields[index].value = newValue;
-
-    if (updatedFields[index].fieldType === FieldType.Address) {
-      setDomainAddressesToUpdate({
-        ...domainAddressesToUpdate,
-        [updatedFields[index].label]: newValue,
-      });
-    } else if (updatedFields[index].fieldType === FieldType.Text) {
-      setTextRecordsToUpdate({
-        ...textRecordsToUpdate,
-        [updatedFields[index].label]: newValue,
-      });
-    }
-    setProfileFieldsState(updatedFields);
-  };
-
-
-  const addAccountField = (fieldName: string) => {
-    const newField: Field = {
-      label: fieldName,
-      placeholder: "",
-      value: "",
-      fieldType: FieldType.Text,
-    };
-    setAccountsFieldsState((prevFields) => [
-      ...prevFields,
-      newField,
-    ]);
-  };
-
   // INITIAL ACCOUNTS STATE
   const [initialAccountsFields, setInitialAccountsFieldsState] = useState<Field[]>([
     {
@@ -198,13 +179,8 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ])
 
-  const setInitialAccountsFields = (fields: Field[]) => {
-    const deepCopiedFields = _.cloneDeep(fields);
-    setInitialAccountsFieldsState(deepCopiedFields);
-  };
 
-
-  //ADDRESS TAB
+  // ADDRESS TAB
   const [addressesFields, setAddressesFieldsState] = useState<Field[]>([
     {
       label: "ETH",
@@ -221,43 +197,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     } as Field,
   ])
 
-  const setAddressesFields = (fields: Field[]) => {
-    const deepCopiedFields = _.cloneDeep(fields);
-    setAddressesFieldsState(deepCopiedFields);
-  };
-
-  const updateAddressField = (index: number, newValue: string) => {
-    const updatedFields = [...addressesFields];
-    updatedFields[index].value = newValue;
-
-    if (updatedFields[index].fieldType === FieldType.Address) {
-      setDomainAddressesToUpdate({
-        ...domainAddressesToUpdate,
-        [updatedFields[index].label]: newValue,
-      });
-    } else if (updatedFields[index].fieldType === FieldType.Text) {
-      setTextRecordsToUpdate({
-        ...textRecordsToUpdate,
-        [updatedFields[index].label]: newValue,
-      });
-    }
-    setProfileFieldsState(updatedFields);
-  };
-
-  const addAddressField = (fieldName: string) => {
-    const newField: Field = {
-      label: fieldName,
-      placeholder: "",
-      value: "",
-      fieldType: FieldType.Text,
-    };
-    setAddressesFieldsState((prevFields) => [
-      ...prevFields,
-      newField,
-    ]);
-  };
-
-  //INITIAL ADDRESS STATE
+  // INITIAL ADDRESS STATE
   const [initialAddressesFields, setInitialAddressesFieldsState] = useState<Field[]>([
     {
       label: "ETH",
@@ -273,11 +213,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       },
     } as Field,
   ])
-
-  const setInitialAddressesFields = (fields: Field[]) => {
-    const deepCopiedFields = _.cloneDeep(fields);
-    setInitialAddressesFieldsState(deepCopiedFields);
-  };
 
   const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {
     if (!ensData) {
@@ -295,7 +230,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       return field
     })
     const newAddressesFields = addressesFields.map((field) => {
-      
+
       if (keys.includes(field.label)) {
         return { ...field, value: (ensData.texts as TextRecords)[field.label] as string }
       }
@@ -307,12 +242,15 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       }
       return field
     })
-    setProfileFields(newProfileFields);
-    setInitialProfileFields(newProfileFields);
-    setAddressesFields(newAddressesFields);
-    setInitialAddressesFields(newAddressesFields);
-    setAccountsFields(newAccountsFields);
-    setInitialAccountsFields(newAccountsFields);
+    const newFieldsByTab = {
+      [Tab.Profile]: newProfileFields,
+      [Tab.Accounts]: newAccountsFields,
+      [Tab.Addresses]: newAddressesFields,
+    };
+    [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
+      setFields(tab, newFieldsByTab[tab])
+      setInitialFields(tab, newFieldsByTab[tab])
+    })
   }
 
   return (
@@ -320,25 +258,17 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value={{
         profileFields,
         initialProfileFields,
-        addProfileField,
-        setProfileFields,
-        setInitialProfileFields,
-        updateProfileField,
         accountsFields,
         initialAccountsFields,
-        addAccountField,
-        setAccountsFields,
-        setInitialAccountsFields,
-        updateAccountField,
         addressesFields,
         initialAddressesFields,
-        addAddressField,
-        setAddressesFields,
-        setInitialAddressesFields,
-        updateAddressField,
         domainAddressesToUpdate,
         textRecordsToUpdate,
         updateFieldsWithEnsData,
+        addField,
+        updateField,
+        setFields,
+        setInitialFields,
       }}
     >
       {children}

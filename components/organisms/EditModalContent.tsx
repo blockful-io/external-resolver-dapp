@@ -50,12 +50,10 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
     profileFields,
     accountsFields,
     addressesFields,
-    setProfileFields,
     initialProfileFields,
-    setAddressesFields,
     initialAddressesFields,
-    setAccountsFields,
     initialAccountsFields,
+    setFields,
   } = useFields();
 
   useEffect(() => {
@@ -221,9 +219,9 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             colorStyle="greySecondary"
             onClick={() => {
               closeModal();
-              setProfileFields(initialProfileFields);
-              setAddressesFields(initialAddressesFields);
-              setAccountsFields(initialAccountsFields);
+              setFields(Tab.Profile, initialProfileFields);
+              setFields(Tab.Addresses, initialAddressesFields);
+              setFields(Tab.Accounts, initialAccountsFields);
             }}
           >
             Cancel

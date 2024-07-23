@@ -3,7 +3,7 @@ import React from "react";
 import { Tab, useFields } from "./FieldsContext";
 
 export const AddressesTab = () => {
-  const { addressesFields, updateAddressField } = useFields();
+  const { addressesFields, updateField } = useFields();
 
   return (
     <div className="w-full">
@@ -16,7 +16,7 @@ export const AddressesTab = () => {
             placeholder={field.placeholder}
             type="text"
             value={field.value}
-            onChange={(e) => updateAddressField(index, e.target.value)}
+            onChange={(e) => updateField(Tab.Addresses, index, e.target.value)}
             error={
               field?.validationFunction &&
               !field?.validationFunction(field.value) &&
