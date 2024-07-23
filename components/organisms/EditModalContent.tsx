@@ -139,10 +139,10 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Profile);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${selectedTab === Tab.Profile
-              ? "text-blue-500 border-blue-500"
-              : "text-gray-500 border-gray-200"
-              }`}
+            className={cc(["py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300", {
+              "text-blue-500 border-blue-500": selectedTab === Tab.Profile,
+              "text-gray-500 border-gray-200": selectedTab !== Tab.Profile
+              }}
           >
             Profile
           </button>
