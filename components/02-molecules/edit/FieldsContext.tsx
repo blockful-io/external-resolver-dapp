@@ -117,7 +117,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   };
 
 
-  //ACCOUNTS TAB
+  // ACCOUNTS TAB
   const [accountsFields, setAccountsFieldsState] = useState<Field[]>([
     {
       label: "email",
