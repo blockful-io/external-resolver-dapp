@@ -212,7 +212,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       fieldType: FieldType.Address,
       value: "",
       validationFunction: (fieldValue: string) => {
-        const fieldIsEmpty: boolean = fieldValue === "";
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isAddressValid: boolean =
           typeof fieldValue === "string" && !!isAddress(fieldValue);
 
