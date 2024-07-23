@@ -301,9 +301,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       return field
     })
     const newAccountsFields = accountsFields.map((field) => {
-      console.log(field.label);
-      console.log(keys);
-      console.log(keys.includes(field.label))
       if (keys.includes(field.label)) {
         return { ...field, value: (ensData.texts as TextRecords)[field.label] as string }
       }
