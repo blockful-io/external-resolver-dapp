@@ -175,7 +175,8 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       newField,
     ]);
   };
-  //INITIAL ACCOUNTS STATE
+
+  // INITIAL ACCOUNTS STATE
   const [initialAccountsFields, setInitialAccountsFieldsState] = useState<Field[]>([
     {
       label: "email",
