@@ -355,7 +355,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
           </div>
         </div>
       </SkeletonGroup>
-      <Modal open={modalOpen} onDismiss={() => { }}>
+      <Modal open={modalOpen} onDismiss={() => {}}>
         <EditModalContent
           closeModal={() => {
             setModalOpen(false);
