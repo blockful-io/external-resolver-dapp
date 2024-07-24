@@ -81,7 +81,7 @@ export const WaitingRegistrationLocktimeComponent = ({
             : `Please wait ${timeLeft} seconds to confirm the registration commitment.`}
         </p>
       </div>
-      <div className="w-[500px] flex flex-row-reverse">
+      <div className="w-[500px] flex">
         <NextButton disabled={!timerDone} onClick={handleNextStep} />
       </div>
     </div>
