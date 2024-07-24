@@ -65,7 +65,7 @@ export const PrimaryNameComponent = ({
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-row-reverse">
+      <div className="w-full flex">
         <NextButton
           disabled={asPrimaryName === null}
           onClick={handleNextStep}
