@@ -83,7 +83,7 @@ export const SetTextRecordsSocialAccountsComponent = ({
           </Button> */}
         </form>
       </div>
-      <div className="w-[500px] flex flex-row-reverse">
+      <div className="w-[500px] flex">
         <NextButton onClick={handleNextStep} />
       </div>
     </div>
