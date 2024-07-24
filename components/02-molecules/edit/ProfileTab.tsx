@@ -6,8 +6,7 @@ import { useFields } from "./FieldsContext";
 import Avatar from "boring-avatars";
 
 export const ProfileTab = () => {
-  const { fields, updateField } = useFields();
-  const profileFields = fields[Tab.Profile];
+  const { profileFields, updateField } = useFields();
 
   return (
     <div className="w-full">

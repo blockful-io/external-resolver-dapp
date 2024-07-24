@@ -6,7 +6,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
-export default function RegisterNamePage() {
+export default function DomainsPage() {
   const [names, setNames] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { address } = useAccount();
