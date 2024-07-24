@@ -22,7 +22,7 @@ export const SetTextRecordsComponent = ({
           your domain.
         </p>
       </div>
-      <div className="w-full flex flex-row-reverse">
+      <div className="w-full flex">
         <NextButton onClick={handleNextStep} />
       </div>
     </div>
