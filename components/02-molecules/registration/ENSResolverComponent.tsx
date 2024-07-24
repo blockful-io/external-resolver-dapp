@@ -182,7 +182,7 @@ export const ENSResolverComponent = ({
           </button>
         </div>
       </div>
-      <div className="w-full flex flex-row-reverse">
+      <div className="w-full flex">
         <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
       </div>
     </div>
