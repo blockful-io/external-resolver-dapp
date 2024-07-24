@@ -60,17 +60,26 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
     const changedFieldsKeys: Field[] = [];
 
     Object.values(profileFields).forEach((field) => {
-      if (!!field.value) {
+      const initialProfileField = initialProfileFields.find(
+        ({ label }) => label === field.label
+      ) ?? { value: "" };
+      if (field.value !== initialProfileField.value && !!field.value) {
         changedFieldsKeys.push(field);
       }
     });
     Object.values(accountsFields).forEach((field) => {
-      if (!!field.value) {
+      const initialAccountField = initialAccountsFields.find(
+        ({ label }) => label === field.label
+      ) ?? { value: "" };
+      if (field.value !== initialAccountField.value && !!field.value) {
         changedFieldsKeys.push(field);
       }
     });
     Object.values(addressesFields).forEach((field) => {
-      if (!!field.value) {
+      const initialAddressField = initialAddressesFields.find(
+        ({ label }) => label === field.label
+      ) ?? { value: "" };
+      if (field.value !== initialAddressField.value && !!field.value) {
         changedFieldsKeys.push(field);
       }
     });
