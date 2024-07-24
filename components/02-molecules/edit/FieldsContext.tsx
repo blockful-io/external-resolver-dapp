@@ -200,7 +200,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     Field[]
   >([
     {
-      label: "ETH",
+      label: "eth",
       placeholder: "0x0000000000000000000000000000000000000000",
       fieldType: FieldType.Address,
       value: "",
