@@ -193,6 +193,19 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         return fieldIsEmpty || isValidAddress;
       },
     } as Field,
+    {
+      label: "btc",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+
+        return fieldIsEmpty || isValidAddress;
+      },
+    } as Field,
   ]);
 
   // INITIAL ADDRESS STATE
@@ -210,6 +223,19 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
           typeof fieldValue === "string" && !!isAddress(fieldValue);
 
         return fieldIsEmpty || isAddressValid;
+      },
+    } as Field,
+    {
+      label: "btc",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+
+        return fieldIsEmpty || isValidAddress;
       },
     } as Field,
   ]);
@@ -240,7 +266,9 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       if (coinNames.includes(field.label)) {
         return {
           ...field,
-          value: (ensData.coins as DecodedAddr[]).find((coin)=>coin.name===field.label)?.value as string,
+          value: (ensData.coins as DecodedAddr[]).find(
+            (coin) => coin.name === field.label
+          )?.value as string,
         };
       }
       return field;
