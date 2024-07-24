@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
 import _ from "lodash";
 import { ResolvedEnsData, TextRecords } from "@/lib/utils/ensData";
+import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 
 interface FieldsContextType {
   profileFields: Field[];
@@ -34,7 +35,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     Record<string, string>
   >({});
 
-
   // PROFILE TAB
   const [profileFields, setProfileFieldsState] = useState<Field[]>([
     {
@@ -49,17 +49,16 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       fieldType: FieldType.Text,
     },
-  ])
+  ]);
 
   const setFields = (tab: Tab, fields: Field[]) => {
     const setStateByTab = {
       [Tab.Profile]: setProfileFieldsState,
       [Tab.Accounts]: setAccountsFieldsState,
       [Tab.Addresses]: setAddressesFieldsState,
-    }
+    };
     const deepCopiedFields = _.cloneDeep(fields);
     setStateByTab[tab](deepCopiedFields);
-
   };
 
   const updateField = (tab: Tab, index: number, newValue: string) => {
@@ -67,12 +66,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       [Tab.Profile]: [...profileFields],
       [Tab.Accounts]: [...accountsFields],
       [Tab.Addresses]: [...addressesFields],
-    }
+    };
     const setStateByTab = {
       [Tab.Profile]: setProfileFieldsState,
       [Tab.Accounts]: setAccountsFieldsState,
       [Tab.Addresses]: setAddressesFieldsState,
-    }
+    };
     const updatedFields = fieldsByTab[tab];
     updatedFields[index].value = newValue;
 
@@ -95,21 +94,20 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       [Tab.Profile]: setProfileFieldsState,
       [Tab.Accounts]: setAccountsFieldsState,
       [Tab.Addresses]: setAddressesFieldsState,
-    }
+    };
     const newField: Field = {
       label: fieldName,
       placeholder: "",
       value: "",
       fieldType: FieldType.Text,
     };
-    setStateByTab[tab]((prevFields) => [
-      ...prevFields,
-      newField,
-    ]);
+    setStateByTab[tab]((prevFields) => [...prevFields, newField]);
   };
 
   // INITIAL PROFILE STATE
-  const [initialProfileFields, setInitialProfileFieldsState] = useState<Field[]>([
+  const [initialProfileFields, setInitialProfileFieldsState] = useState<
+    Field[]
+  >([
     {
       label: "url",
       placeholder: "https://coolcats.com",
@@ -122,18 +120,17 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       fieldType: FieldType.Text,
     },
-  ])
+  ]);
 
   const setInitialFields = (tab: Tab, fields: Field[]) => {
     const setInitialFieldsByTab = {
       [Tab.Profile]: setInitialProfileFieldsState,
       [Tab.Accounts]: setInitialAccountsFieldsState,
       [Tab.Addresses]: setInitialAddressesFieldsState,
-    }
+    };
     const deepCopiedFields = _.cloneDeep(fields);
     setInitialFieldsByTab[tab](deepCopiedFields);
   };
-
 
   // ACCOUNTS TAB
   const [accountsFields, setAccountsFieldsState] = useState<Field[]>([
@@ -155,10 +152,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       fieldType: FieldType.Text,
     },
-  ])
+  ]);
 
   // INITIAL ACCOUNTS STATE
-  const [initialAccountsFields, setInitialAccountsFieldsState] = useState<Field[]>([
+  const [initialAccountsFields, setInitialAccountsFieldsState] = useState<
+    Field[]
+  >([
     {
       label: "email",
       placeholder: "mail@mail.com",
@@ -177,13 +176,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       fieldType: FieldType.Text,
     },
-  ])
-
+  ]);
 
   // ADDRESS TAB
   const [addressesFields, setAddressesFieldsState] = useState<Field[]>([
     {
-      label: "ETH",
+      label: "eth",
       placeholder: "0x0000000000000000000000000000000000000000",
       fieldType: FieldType.Address,
       value: "",
@@ -195,10 +193,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         return fieldIsEmpty || isValidAddress;
       },
     } as Field,
-  ])
+  ]);
 
   // INITIAL ADDRESS STATE
-  const [initialAddressesFields, setInitialAddressesFieldsState] = useState<Field[]>([
+  const [initialAddressesFields, setInitialAddressesFieldsState] = useState<
+    Field[]
+  >([
     {
       label: "ETH",
       placeholder: "0x0000000000000000000000000000000000000000",
@@ -212,46 +212,58 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         return fieldIsEmpty || isAddressValid;
       },
     } as Field,
-  ])
+  ]);
 
   const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {
+    console.log(ensData);
     if (!ensData) {
-      console.warn("FieldsContext - updateFieldsWithEnsData - No ENS Data")
+      console.warn("FieldsContext - updateFieldsWithEnsData - No ENS Data");
       return;
     }
     if (!ensData.texts || _.isEmpty(ensData.texts)) {
-      console.warn("FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts")
+      console.warn(
+        "FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts"
+      );
     }
-    const keys = Object.keys(ensData.texts || {})
+    const textsKeys = Object.keys(ensData.texts || {});
+    const coinNames = ensData.coins?.map((coin) => coin.name) ?? [];
     const newProfileFields: Field[] = profileFields.map((field) => {
-      if (keys.includes(field.label)) {
-        return { ...field, value: (ensData.texts as TextRecords)[field.label] as string }
+      if (textsKeys.includes(field.label)) {
+        return {
+          ...field,
+          value: (ensData.texts as TextRecords)[field.label] as string,
+        };
       }
-      return field
-    })
+      return field;
+    });
     const newAddressesFields = addressesFields.map((field) => {
-
-      if (keys.includes(field.label)) {
-        return { ...field, value: (ensData.texts as TextRecords)[field.label] as string }
+      if (coinNames.includes(field.label)) {
+        return {
+          ...field,
+          value: (ensData.coins as DecodedAddr[]).find((coin)=>coin.name===field.label)?.value as string,
+        };
       }
-      return field
-    })
+      return field;
+    });
     const newAccountsFields = accountsFields.map((field) => {
-      if (keys.includes(field.label)) {
-        return { ...field, value: (ensData.texts as TextRecords)[field.label] as string }
+      if (textsKeys.includes(field.label)) {
+        return {
+          ...field,
+          value: (ensData.texts as TextRecords)[field.label] as string,
+        };
       }
-      return field
-    })
+      return field;
+    });
     const newFieldsByTab = {
       [Tab.Profile]: newProfileFields,
       [Tab.Accounts]: newAccountsFields,
       [Tab.Addresses]: newAddressesFields,
     };
     [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
-      setFields(tab, newFieldsByTab[tab])
-      setInitialFields(tab, newFieldsByTab[tab])
-    })
-  }
+      setFields(tab, newFieldsByTab[tab]);
+      setInitialFields(tab, newFieldsByTab[tab]);
+    });
+  };
 
   return (
     <FieldsContext.Provider
