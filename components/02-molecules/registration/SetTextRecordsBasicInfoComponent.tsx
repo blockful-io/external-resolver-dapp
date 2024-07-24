@@ -98,7 +98,7 @@ export const SetTextRecordsBasicInfoComponent = ({
           ))}
         </form>
       </div>
-      <div className="w-[500px] flex flex-row-reverse">
+      <div className="w-[500px] flex">
         <NextButton onClick={validateForm} />
       </div>
     </div>
