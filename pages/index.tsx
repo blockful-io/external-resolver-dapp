@@ -95,13 +95,18 @@ export default function Home() {
     updateDomainStatus(searchedDomain);
   };
 
+  const getDomainRoute = (): string => {
+    if (domainStatus === EnsDomainStatus.Available) {
+      return `/register/${domain}`;
+    } else if (domainStatus === EnsDomainStatus.Registered) {
+      return `/domains/${domainWithEth(domain)}`;
+    }
+    return "";
+  };
+
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === "Enter" && domain) {
-      if (domainStatus === EnsDomainStatus.Available) {
-        router.push(`/register/${domain}`);
-      } else if (domainStatus === EnsDomainStatus.Registered) {
-        router.push(`/domains/${domain}.eth`);
-      }
+      router.push(getDomainRoute());
     }
   };
 
@@ -159,7 +164,7 @@ export default function Home() {
               }`}
             >
               <Link
-                href={`/register/${domain}`}
+                href={getDomainRoute()}
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
