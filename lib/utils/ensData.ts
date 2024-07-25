@@ -44,29 +44,20 @@ export interface ResolvedEnsData {
   owner?: string;
 }
 
-// ENS Domain Coins utils
-export enum DomainAddressesSupportedCryptocurrencies {
-  BTC = "BTC",
-  LTC = "LTC",
-  DOGE = "DOGE",
-  ETH = "ETH",
-  BNB = "BNB",
-}
-
 export const cryptocurrencyToCoinType = {
-  [DomainAddressesSupportedCryptocurrencies.BTC]: "0",
-  [DomainAddressesSupportedCryptocurrencies.LTC]: "2",
-  [DomainAddressesSupportedCryptocurrencies.DOGE]: "3",
-  [DomainAddressesSupportedCryptocurrencies.ETH]: "60",
-  [DomainAddressesSupportedCryptocurrencies.BNB]: "714",
+  BTC: "0",
+  LTC: "2",
+  DOGE: "3",
+  ETH: "60",
+  BNB: "714",
 };
 
 export const cryptocurrenciesToSymbol = {
-  [DomainAddressesSupportedCryptocurrencies.BTC]: "₿",
-  [DomainAddressesSupportedCryptocurrencies.LTC]: "Ł",
-  [DomainAddressesSupportedCryptocurrencies.DOGE]: "Ð",
-  [DomainAddressesSupportedCryptocurrencies.ETH]: "Ξ",
-  [DomainAddressesSupportedCryptocurrencies.BNB]: "₿",
+  BTC: "₿",
+  LTC: "Ł",
+  DOGE: "Ð",
+  ETH: "Ξ",
+  BNB: "₿",
 };
 
 // // ENS Data network requests

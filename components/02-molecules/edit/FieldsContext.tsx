@@ -4,6 +4,7 @@ import { isAddress } from "viem";
 import _ from "lodash";
 import { ResolvedEnsData, TextRecords } from "@/lib/utils/ensData";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
+import validateBitcoinAddress from "bitcoin-address-validation";
 
 interface FieldsContextType {
   profileFields: Field[];
@@ -195,13 +196,13 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     } as Field,
     {
       label: "btc",
-      placeholder: "0x0000000000000000000000000000000000000000",
+      placeholder: "bc1000000000000000000000000000000000000000",
       fieldType: FieldType.Address,
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+          typeof fieldValue === "string" && !!validateBitcoinAddress(fieldValue);
 
         return fieldIsEmpty || isValidAddress;
       },
@@ -227,14 +228,13 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     } as Field,
     {
       label: "btc",
-      placeholder: "0x0000000000000000000000000000000000000000",
+      placeholder: "bc1000000000000000000000000000000000000000",
       fieldType: FieldType.Address,
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
-
+          typeof fieldValue === "string" && !!validateBitcoinAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     } as Field,

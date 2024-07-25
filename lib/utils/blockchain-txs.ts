@@ -37,10 +37,7 @@ import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage"
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
 import { normalize, packetToBytes } from "viem/ens";
-import {
-  DomainAddressesSupportedCryptocurrencies,
-  cryptocurrencyToCoinType,
-} from "./ensData";
+import { cryptocurrencyToCoinType } from "./ensData";
 import { useEnsResolver } from "wagmi";
 import { universalResolverResolveAbi } from "viem/_types/constants/abis";
 
@@ -421,19 +418,18 @@ export const setDomainRecords = async ({
     }
 
     for (let i = 0; i < Object.keys(addresses).length; i++) {
-      const value = Object.values(addresses)[i];
-
+      const [cryptoCurrencyName, address] = Object.entries(addresses)[i];
+      const [_, coinType] = Object.entries(cryptocurrencyToCoinType).find(
+        ([key, value]) => key == cryptoCurrencyName.toUpperCase()
+      ) ?? [undefined, undefined];
+      if(!coinType){
+        console.error("coinType ${}")
+      }
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
         // To be replaced when multiple coin types are supported
-        args: [
-          namehash(publicAddress),
-          cryptocurrencyToCoinType[
-            DomainAddressesSupportedCryptocurrencies.ETH
-          ],
-          value,
-        ],
+        args: [namehash(publicAddress), coinType, address],
       });
 
       calls.push(callData);
