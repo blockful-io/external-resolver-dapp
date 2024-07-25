@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
 import Link from "next/link";
 
-enum EnsNameStatus {
+enum EnsDomainStatus {
   NotOwned = "NotOwned",
   Registered = "Registered",
   Available = "Available",
@@ -16,42 +16,47 @@ enum EnsNameStatus {
   Searching = "Searching",
 }
 
-const EnsNameStatusComponents: { [key in EnsNameStatus]: React.ReactElement } =
-  {
-    [EnsNameStatus.NotOwned]: (
-      <Tag colorStyle="blueSecondary" size="small">
-        Not owned
-      </Tag>
-    ),
-    [EnsNameStatus.Registered]: (
-      <Tag colorStyle="blueSecondary" size="small">
-        Registered
-      </Tag>
-    ),
-    [EnsNameStatus.Available]: (
-      <Tag colorStyle="greenSecondary" size="small">
-        Available
-      </Tag>
-    ),
-    [EnsNameStatus.Invalid]: (
-      <Tag colorStyle="redSecondary" size="small">
-        Invalid name
-      </Tag>
-    ),
-    [EnsNameStatus.Searching]: <Spinner color="blue" />,
-  };
+const domainWithEth = (domain: string): string => {
+  return domain.endsWith(".eth") ? domain : `${domain}.eth`;
+};
+
+const EnsDomainStatusComponents: {
+  [key in EnsDomainStatus]: React.ReactElement;
+} = {
+  [EnsDomainStatus.NotOwned]: (
+    <Tag colorStyle="blueSecondary" size="small">
+      Not owned
+    </Tag>
+  ),
+  [EnsDomainStatus.Registered]: (
+    <Tag colorStyle="blueSecondary" size="small">
+      Registered
+    </Tag>
+  ),
+  [EnsDomainStatus.Available]: (
+    <Tag colorStyle="greenSecondary" size="small">
+      Available
+    </Tag>
+  ),
+  [EnsDomainStatus.Invalid]: (
+    <Tag colorStyle="redSecondary" size="small">
+      Invalid name
+    </Tag>
+  ),
+  [EnsDomainStatus.Searching]: <Spinner color="blue" />,
+};
 
 export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
-  const [domainStatus, setDomainStatus] = useState<EnsNameStatus>(
-    EnsNameStatus.Available
+  const [domainStatus, setDomainStatus] = useState<EnsDomainStatus>(
+    EnsDomainStatus.Available
   );
 
   const updateDomainStatus = (searchedDomain: string) => {
-    if (!searchedDomain) return EnsNameStatus.Invalid;
+    if (!searchedDomain) return EnsDomainStatus.Invalid;
 
-    setDomainStatus(EnsNameStatus.Searching);
+    setDomainStatus(EnsDomainStatus.Searching);
 
     let ensName: null | ENSName = null;
 
@@ -61,7 +66,7 @@ export default function Home() {
       ensName = buildENSName(searchedDomain);
     } catch (error) {
       console.error(error);
-      setDomainStatus(EnsNameStatus.Invalid);
+      setDomainStatus(EnsDomainStatus.Invalid);
       return;
     }
 
@@ -69,13 +74,13 @@ export default function Home() {
     isNameAvailable(ensName)
       .then((isAvailable: boolean) => {
         if (isAvailable) {
-          setDomainStatus(EnsNameStatus.Available);
+          setDomainStatus(EnsDomainStatus.Available);
         } else {
-          setDomainStatus(EnsNameStatus.Registered);
+          setDomainStatus(EnsDomainStatus.Registered);
         }
       })
       .catch(() => {
-        setDomainStatus(EnsNameStatus.Registered);
+        setDomainStatus(EnsDomainStatus.Registered);
       });
   };
 
@@ -91,12 +96,12 @@ export default function Home() {
   };
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (
-      e.code === "Enter" &&
-      domain &&
-      domainStatus !== EnsNameStatus.Invalid
-    ) {
-      router.push(`/register/${domain}`);
+    if (e.code === "Enter" && domain) {
+      if (domainStatus === EnsDomainStatus.Available) {
+        router.push(`/register/${domain}`);
+      } else if (domainStatus === EnsDomainStatus.Registered) {
+        router.push(`/domains/${domain}.eth`);
+      }
     }
   };
 
@@ -158,17 +163,9 @@ export default function Home() {
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
-                  {domain ? (
-                    domain.includes(".eth") ? (
-                      domain
-                    ) : (
-                      `${domain}.eth`
-                    )
-                  ) : (
-                    <span />
-                  )}
+                  {domain ? domainWithEth(domain) : <span />}
                 </p>
-                {EnsNameStatusComponents[domainStatus]}
+                {EnsDomainStatusComponents[domainStatus]}
               </Link>
             </div>
           </div>
