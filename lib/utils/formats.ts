@@ -27,3 +27,7 @@ export const formatDate = ({ unixTimestamp }: { unixTimestamp: number }) => {
   const formattedDate = date.format("D MMMM, YYYY");
   return formattedDate;
 };
+
+export const domainWithEth = (domain: string): string => {
+  return domain.endsWith(".eth") ? domain : `${domain}.eth`;
+};

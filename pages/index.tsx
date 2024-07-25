@@ -1,5 +1,5 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { CrossCircleSVG, Spinner, Tag } from "@ensdomains/thorin";
+import { ChangeEvent, useState } from "react";
+import { CrossCircleSVG } from "@ensdomains/thorin";
 import { HomepageBg } from "@/components/01-atoms";
 import { isNameAvailable } from "@/lib/utils/blockchain-txs";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
@@ -7,44 +7,9 @@ import { DebounceInput } from "react-debounce-input";
 import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
 import Link from "next/link";
-
-enum EnsDomainStatus {
-  NotOwned = "NotOwned",
-  Registered = "Registered",
-  Available = "Available",
-  Invalid = "Invalid",
-  Searching = "Searching",
-}
-
-const domainWithEth = (domain: string): string => {
-  return domain.endsWith(".eth") ? domain : `${domain}.eth`;
-};
-
-const EnsDomainStatusComponents: {
-  [key in EnsDomainStatus]: React.ReactElement;
-} = {
-  [EnsDomainStatus.NotOwned]: (
-    <Tag colorStyle="blueSecondary" size="small">
-      Not owned
-    </Tag>
-  ),
-  [EnsDomainStatus.Registered]: (
-    <Tag colorStyle="blueSecondary" size="small">
-      Registered
-    </Tag>
-  ),
-  [EnsDomainStatus.Available]: (
-    <Tag colorStyle="greenSecondary" size="small">
-      Available
-    </Tag>
-  ),
-  [EnsDomainStatus.Invalid]: (
-    <Tag colorStyle="redSecondary" size="small">
-      Invalid name
-    </Tag>
-  ),
-  [EnsDomainStatus.Searching]: <Spinner color="blue" />,
-};
+import { EnsDomainStatus } from "@/types/ensDomainStatus";
+import { domainWithEth } from "@/lib/utils/formats";
+import { EnsDomainStatusComponents } from "@/components/02-molecules";
 
 export default function Home() {
   const router = useRouter();
@@ -138,8 +103,6 @@ export default function Home() {
                 value={domain}
                 debounceTimeout={300}
                 onChange={handleInputChange}
-                // if not owned, go to register page
-                // if owned, go to domain page
                 onKeyDown={(e) => goToRegisterPage(e)}
                 className="w-full py-2 text-black text-xl"
                 placeholder="Search for a domain"
