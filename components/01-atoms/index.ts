@@ -20,3 +20,4 @@ export * from "./icons/twitter";
 export * from "./icons/info-circle";
 export * from "./icons/optimism";
 export * from "./icons/pencil-icon";
+export * from "./icons/plus-circle-icon";
