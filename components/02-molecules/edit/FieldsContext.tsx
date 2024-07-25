@@ -241,7 +241,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   ]);
 
   const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {
-    console.log(ensData);
     if (!ensData) {
       console.warn("FieldsContext - updateFieldsWithEnsData - No ENS Data");
       return;
