@@ -47,6 +47,7 @@ export const BlockchainCTA = ({
   const [txHashOrError, setTxHashOrError] = useState<
     `0x${string}` | undefined
   >();
+
   const { chain, address } = useAccount();
 
   useEffect(() => {
