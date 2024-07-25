@@ -8,56 +8,94 @@ import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
 import Link from "next/link";
 
+enum EnsNameStatus {
+  NotOwned = "NotOwned",
+  Registered = "Registered",
+  Available = "Available",
+  Invalid = "Invalid",
+  Searching = "Searching",
+}
+
+const EnsNameStatusComponents: { [key in EnsNameStatus]: React.ReactElement } =
+  {
+    [EnsNameStatus.NotOwned]: (
+      <Tag colorStyle="blueSecondary" size="small">
+        Not owned
+      </Tag>
+    ),
+    [EnsNameStatus.Registered]: (
+      <Tag colorStyle="blueSecondary" size="small">
+        Registered
+      </Tag>
+    ),
+    [EnsNameStatus.Available]: (
+      <Tag colorStyle="greenSecondary" size="small">
+        Available
+      </Tag>
+    ),
+    [EnsNameStatus.Invalid]: (
+      <Tag colorStyle="redSecondary" size="small">
+        Invalid name
+      </Tag>
+    ),
+    [EnsNameStatus.Searching]: <Spinner color="blue" />,
+  };
+
 export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [domainError, setDomainError] = useState(false);
+  const [domainStatus, setDomainStatus] = useState<EnsNameStatus>(
+    EnsNameStatus.Available
+  );
 
-  useEffect(() => {
-    if (!domain) return;
+  const updateDomainStatus = (searchedDomain: string) => {
+    if (!searchedDomain) return EnsNameStatus.Invalid;
 
-    setIsAvailable(null);
+    setDomainStatus(EnsNameStatus.Searching);
 
     let ensName: null | ENSName = null;
+
+    // check if the domain is valid
     try {
-      ensName = buildENSName(domain);
+      normalize(searchedDomain);
+      ensName = buildENSName(searchedDomain);
     } catch (error) {
       console.error(error);
-      setIsAvailable(false);
+      setDomainStatus(EnsNameStatus.Invalid);
       return;
     }
 
+    // check if domain is available
     isNameAvailable(ensName)
       .then((isAvailable: boolean) => {
-        setIsAvailable(isAvailable);
+        if (isAvailable) {
+          setDomainStatus(EnsNameStatus.Available);
+        } else {
+          setDomainStatus(EnsNameStatus.Registered);
+        }
       })
       .catch(() => {
-        setIsAvailable(false);
+        setDomainStatus(EnsNameStatus.Registered);
       });
-  }, [domain]);
+  };
 
   const clearDomainSearch = () => {
     setDomain("");
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDomainError(false);
+    let searchedDomain = e.target.value.toLocaleLowerCase();
 
-    // handle errors
-    try {
-      normalize(e.target.value.trim().replace(" ", ""));
-    } catch (error) {
-      console.error(error);
-      setDomainError(true);
-    }
-
-    // update domain
-    setDomain(e.target.value.toLocaleLowerCase());
+    setDomain(searchedDomain);
+    updateDomainStatus(searchedDomain);
   };
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter" && domain && !domainError) {
+    if (
+      e.code === "Enter" &&
+      domain &&
+      domainStatus !== EnsNameStatus.Invalid
+    ) {
       router.push(`/register/${domain}`);
     }
   };
@@ -90,6 +128,8 @@ export default function Home() {
                 value={domain}
                 debounceTimeout={300}
                 onChange={handleInputChange}
+                // if not owned, go to register page
+                // if owned, go to domain page
                 onKeyDown={(e) => goToRegisterPage(e)}
                 className="w-full py-2 text-black text-xl"
                 placeholder="Search for a domain"
@@ -128,21 +168,7 @@ export default function Home() {
                     <span />
                   )}
                 </p>
-                {domainError ? (
-                  <Tag colorStyle="redSecondary" size="small">
-                    Invalid name
-                  </Tag>
-                ) : isAvailable === null ? (
-                  <Spinner color="blue" />
-                ) : isAvailable ? (
-                  <Tag colorStyle="greenSecondary" size="small">
-                    Available
-                  </Tag>
-                ) : (
-                  <Tag colorStyle="blueSecondary" size="small">
-                    Registered
-                  </Tag>
-                )}
+                {EnsNameStatusComponents[domainStatus]}
               </Link>
             </div>
           </div>
