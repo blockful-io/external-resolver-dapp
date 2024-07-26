@@ -17,7 +17,7 @@ const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
   const { addField } = useFields();
 
   const handleAddField = () => {
-    addField(tab, fieldName);
+    addField(tab, fieldName)
     setButtonType(ButtonType.ADD_RECORD);
   };
 

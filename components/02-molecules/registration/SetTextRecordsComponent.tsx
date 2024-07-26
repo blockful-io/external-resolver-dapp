@@ -12,7 +12,7 @@ export const SetTextRecordsComponent = ({
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} disabled={true} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
         <h3 className="text-7xl">⚙️</h3>
         <h3 className="text-start text-[34px] font-medium">
           Let&apos;s set your domain records
@@ -22,7 +22,9 @@ export const SetTextRecordsComponent = ({
           your domain.
         </p>
       </div>
-      <NextButton onClick={handleNextStep} />
+      <div className="w-full flex">
+        <NextButton onClick={handleNextStep} />
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { Tab, useFields } from "./FieldsContext";
 import AddCustomTextRecord from "./AddCustomTextRecord";
 
 export const OthersTab = () => {
-  const { fields, addField, updateField } = useFields();
+  // const { fields, addField, updateField } = useFields();
   // const othersFields = fields[Tab.Others];
 
   return (

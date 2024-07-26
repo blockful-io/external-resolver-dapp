@@ -44,7 +44,7 @@ export const ENSResolverComponent = ({
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
 
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-7">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-7 min-h-[300px]">
         <div className="flex flex-col gap-3">
           <h3 className="text-start text-[34px] font-medium">
             Where do you want to store the domain data?
@@ -182,8 +182,9 @@ export const ENSResolverComponent = ({
           </button>
         </div>
       </div>
-
-      <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
+      <div className="w-full flex">
+        <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
+      </div>
     </div>
   );
 };
