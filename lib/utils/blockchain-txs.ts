@@ -25,6 +25,7 @@ import {
   Address,
   toHex,
   http,
+  fromBytes,
 } from "viem";
 import { isTestnet, SupportedNetwork } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
@@ -40,6 +41,8 @@ import { normalize, packetToBytes } from "viem/ens";
 import { cryptocurrencyToCoinType } from "./ensData";
 import { useEnsResolver } from "wagmi";
 import { universalResolverResolveAbi } from "viem/_types/constants/abis";
+import { getAddressInfo } from "bitcoin-address-validation";
+import { getCoderByCoinName } from "@ensdomains/address-encoder";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -418,20 +421,24 @@ export const setDomainRecords = async ({
     }
 
     for (let i = 0; i < Object.keys(addresses).length; i++) {
-      const [cryptoCurrencyName, address] = Object.entries(addresses)[i];
-      const [_, coinType] = Object.entries(cryptocurrencyToCoinType).find(
-        ([key, value]) => key == cryptoCurrencyName.toUpperCase()
-      ) ?? [undefined, undefined];
-      if(!coinType){
-        console.error("coinType ${}")
+      const [cryptocurrencyName, address] = Object.entries(addresses)[i];
+      const cryptocurrencyToCoinTypeEntry:
+        | [coinName: string, coinType: string]
+        | undefined = Object.entries(cryptocurrencyToCoinType).find(
+        ([key, _]) => key == cryptocurrencyName.toUpperCase()
+      );
+      if (cryptocurrencyToCoinTypeEntry === undefined) {
+        console.error(`coinType code for ${cryptocurrencyName} not found`);
+        continue;
       }
+      const coinType = cryptocurrencyToCoinTypeEntry[1];
+      const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
+      let addressEncoded = fromBytes(coder.decode(address), "hex");
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
-        // To be replaced when multiple coin types are supported
-        args: [namehash(publicAddress), coinType, address],
+        args: [namehash(publicAddress), coinType, addressEncoded],
       });
-
       calls.push(callData);
     }
 

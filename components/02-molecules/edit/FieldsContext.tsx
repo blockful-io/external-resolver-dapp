@@ -202,11 +202,48 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!validateBitcoinAddress(fieldValue);
+          typeof fieldValue === "string" &&
+          !!validateBitcoinAddress(fieldValue);
 
         return fieldIsEmpty || isValidAddress;
       },
     } as Field,
+    {
+      label: "arb1",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "opt",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "matic",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
   ]);
 
   // INITIAL ADDRESS STATE
@@ -225,7 +262,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
 
         return fieldIsEmpty || isAddressValid;
       },
-    } as Field,
+    },
     {
       label: "btc",
       placeholder: "bc1000000000000000000000000000000000000000",
@@ -234,10 +271,47 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!validateBitcoinAddress(fieldValue);
+          typeof fieldValue === "string" &&
+          !!validateBitcoinAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
-    } as Field,
+    },
+    {
+      label: "arb1",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "opt",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "matic",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
   ]);
 
   const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {

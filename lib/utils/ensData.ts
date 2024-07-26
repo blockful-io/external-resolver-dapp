@@ -14,8 +14,6 @@ import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 
 import { normalize } from "viem/ens";
-import assert from "assert";
-import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 // ENS Domain Data query
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -210,14 +208,13 @@ export async function getENSDomainData(
         texts: availableTextRecords?.length
           ? availableTextRecords
           : defaultTextRecords,
-        coins: ["ETH"],
+        coins: ["ETH","BTC", "ARB1", "OP", "MATIC"],
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
       getExpiry.batch({ name: domain })
     ),
   ]);
-
   const textRecords = batchResults[0];
   const owner = batchResults[1];
   const expiry = batchResults[2];
@@ -254,6 +251,5 @@ export async function getENSDomainData(
     owner: ownerName?.name ?? owner?.owner,
     expiry: expiry?.expiry?.date?.getTime(),
   };
-
   return updatedTextRecords;
 }
