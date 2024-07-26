@@ -27,3 +27,4 @@ export const formatDate = ({ unixTimestamp }: { unixTimestamp: number }) => {
   const formattedDate = date.format("D MMMM, YYYY");
   return formattedDate;
 };
+

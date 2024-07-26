@@ -4,8 +4,7 @@ import { useFields, Tab } from "./FieldsContext";
 import AddCustomTextRecord from "./AddCustomTextRecord";
 
 export const AccountsTab: React.FC = () => {
-  const { fields, updateField } = useFields();
-  const accountsFields = fields[Tab.Accounts];
+  const { accountsFields, updateField } = useFields();
 
   return (
     <div className="w-full flex flex-col">
