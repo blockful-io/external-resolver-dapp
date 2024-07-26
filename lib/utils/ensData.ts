@@ -48,6 +48,9 @@ export const cryptocurrencyToCoinType = {
   DOGE: "3",
   ETH: "60",
   BNB: "714",
+  ARB1: "9001",
+  OP: "614",
+  MATIC: "966",
 };
 
 export const cryptocurrenciesToSymbol = {
@@ -56,6 +59,9 @@ export const cryptocurrenciesToSymbol = {
   DOGE: "Ð",
   ETH: "Ξ",
   BNB: "₿",
+  ARB1: "ARB",
+  OP: "OP",
+  MATIC: "MATIC",
 };
 
 // // ENS Data network requests
