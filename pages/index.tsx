@@ -15,7 +15,7 @@ export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
   const [domainStatus, setDomainStatus] = useState<EnsDomainStatus>(
-    EnsDomainStatus.Available
+    EnsDomainStatus.Invalid
   );
 
   const updateDomainStatus = (searchedDomain: string) => {
