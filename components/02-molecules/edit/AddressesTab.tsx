@@ -3,8 +3,7 @@ import React from "react";
 import { Tab, useFields } from "./FieldsContext";
 
 export const AddressesTab = () => {
-  const { fields, updateField } = useFields();
-  const addressesFields = fields[Tab.Addresses];
+  const { addressesFields, updateField } = useFields();
 
   return (
     <div className="w-full">
