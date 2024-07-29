@@ -10,6 +10,7 @@ import Link from "next/link";
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { domainWithEth } from "@/lib/utils/formats";
 import { EnsDomainStatusComponents } from "@/components/02-molecules";
+import { toast } from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function Home() {
         }
       })
       .catch(() => {
-        setDomainStatus(EnsDomainStatus.Registered);
+        toast.error("There was an error, please try again.");
       });
   };
 
@@ -131,7 +132,7 @@ export default function Home() {
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
-                  {domain ? domainWithEth(domain) : <span />}
+                  {domain && domainWithEth(domain)}
                 </p>
                 {EnsDomainStatusComponents[domainStatus]}
               </Link>
