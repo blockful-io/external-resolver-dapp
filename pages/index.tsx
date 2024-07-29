@@ -10,6 +10,7 @@ import Link from "next/link";
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 import { DomainStatus } from "@/components/02-molecules";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
@@ -18,7 +19,20 @@ export default function Home() {
     EnsDomainStatus.Available
   );
 
-  const updateDomainStatus = (searchedDomain: string) => {
+  const checkDomainAvailability = async (ensName: ENSName) => {
+    try {
+      const isAvailable: boolean = await isNameAvailable(ensName);
+      if (isAvailable) {
+        setDomainStatus(EnsDomainStatus.Available);
+      } else {
+        setDomainStatus(EnsDomainStatus.Registered);
+      }
+    } catch (error) {
+      toast.error("An error has occurred. Please try again later");
+    }
+  };
+
+  const updateDomainStatus = async (searchedDomain: string) => {
     if (!searchedDomain) return EnsDomainStatus.Invalid;
 
     setDomainStatus(EnsDomainStatus.Searching);
@@ -41,18 +55,7 @@ export default function Home() {
       return;
     }
 
-    // check if domain is available
-    isNameAvailable(ensName)
-      .then((isAvailable: boolean) => {
-        if (isAvailable) {
-          setDomainStatus(EnsDomainStatus.Available);
-        } else {
-          setDomainStatus(EnsDomainStatus.Registered);
-        }
-      })
-      .catch(() => {
-        setDomainStatus(EnsDomainStatus.Registered);
-      });
+    await checkDomainAvailability(ensName);
   };
 
   const clearDomainSearch = () => {
@@ -61,7 +64,6 @@ export default function Home() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     let searchedDomain = e.target.value.toLocaleLowerCase();
-
     setDomain(searchedDomain);
     updateDomainStatus(searchedDomain);
   };
