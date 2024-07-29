@@ -32,7 +32,7 @@ export const domainWithEth = (domain: string): string => {
   return domain.endsWith(".eth") ? domain : `${domain}.eth`;
 };
 
-export const hasMoreThanOneDot = (domain: string): boolean => {
+export const stringHasMoreThanOneDot = (domain: string): boolean => {
   const dotCount = (domain.match(/\./g) || []).length;
   return dotCount > 1;
 };

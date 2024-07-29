@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
-import { domainWithEth, hasMoreThanOneDot } from "@/lib/utils/formats";
+import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 
 export async function getServerSideProps({
   params,
@@ -41,7 +41,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
     }
 
     // check if domain is supported
-    if (hasMoreThanOneDot(domainWithEth(name))) {
+    if (stringHasMoreThanOneDot(domainWithEth(name))) {
       router.push("/");
       toast.error("Name not supported");
     }

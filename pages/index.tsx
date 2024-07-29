@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
 import Link from "next/link";
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
-import { domainWithEth, hasMoreThanOneDot } from "@/lib/utils/formats";
+import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 import { DomainStatus } from "@/components/02-molecules";
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
     }
 
     // check if domain is supported
-    if (hasMoreThanOneDot(domainWithEth(searchedDomain))) {
+    if (stringHasMoreThanOneDot(domainWithEth(searchedDomain))) {
       setDomainStatus(EnsDomainStatus.NotSupported);
       return;
     }
