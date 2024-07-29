@@ -1,7 +1,7 @@
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { Spinner, Tag } from "@ensdomains/thorin";
 
-export const EnsDomainStatusComponents: {
+const EnsDomainStatusComponents: {
   [key in EnsDomainStatus]: React.ReactElement;
 } = {
   [EnsDomainStatus.NotSupported]: (
@@ -25,4 +25,12 @@ export const EnsDomainStatusComponents: {
     </Tag>
   ),
   [EnsDomainStatus.Searching]: <Spinner color="blue" />,
+};
+
+interface DomainStatusProps {
+  status: EnsDomainStatus;
+}
+
+export const DomainStatus = ({ status }: DomainStatusProps) => {
+  return EnsDomainStatusComponents[status];
 };

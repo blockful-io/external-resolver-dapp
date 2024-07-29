@@ -9,7 +9,7 @@ import { normalize } from "viem/ens";
 import Link from "next/link";
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { domainWithEth, hasMoreThanOneDot } from "@/lib/utils/formats";
-import { EnsDomainStatusComponents } from "@/components/02-molecules";
+import { DomainStatus } from "@/components/02-molecules";
 
 export default function Home() {
   const router = useRouter();
@@ -139,7 +139,7 @@ export default function Home() {
                 <p className="text-gray-500 min-h-6">
                   {domain ? domainWithEth(domain) : <span />}
                 </p>
-                {EnsDomainStatusComponents[domainStatus]}
+                <DomainStatus status={domainStatus} />
               </Link>
             </div>
           </div>
