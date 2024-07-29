@@ -1,9 +1,8 @@
 import cc from "classcat";
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
+import { HeaderLinkInterface } from "./DappHeader";
 
-interface HeaderLinkProps extends LinkProps {
-  icon: React.ElementType;
-  label: string;
+interface HeaderLinkProps extends HeaderLinkInterface {
   isActive: boolean;
 }
 

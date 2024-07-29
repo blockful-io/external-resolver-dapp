@@ -1,4 +1,4 @@
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useEffect, useState } from "react";
 import { DEFAULT_CHAIN_ID } from "@/lib/wallet/chains";
@@ -7,21 +7,22 @@ import { ConnectMetamask } from "./ConnectMetamask";
 import { PlusCircleIcon } from "./icons/plus-circle-icon";
 import { useRouter } from "next/router";
 import { HeaderLink } from "./HeaderLink";
+import { CogIcon } from "./icons/CogIcon";
 
-interface HeaderLink {
+export interface HeaderLinkInterface {
   icon: React.ElementType;
   label: string;
   href: string;
 }
 
-const links: HeaderLink[] = [
+const links: HeaderLinkInterface[] = [
   {
     icon: PlusCircleIcon,
     label: "Register",
     href: "/",
   },
   {
-    icon: PlusCircleIcon,
+    icon: CogIcon,
     label: "Manage",
     href: "/domains",
   },
