@@ -1,5 +1,5 @@
 export enum EnsDomainStatus {
-  NotOwned = "NotOwned",
+  NotSupported = "NotSupported",
   Registered = "Registered",
   Available = "Available",
   Invalid = "Invalid",

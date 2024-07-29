@@ -4,9 +4,9 @@ import { Spinner, Tag } from "@ensdomains/thorin";
 export const EnsDomainStatusComponents: {
   [key in EnsDomainStatus]: React.ReactElement;
 } = {
-  [EnsDomainStatus.NotOwned]: (
-    <Tag colorStyle="blueSecondary" size="small">
-      Not owned
+  [EnsDomainStatus.NotSupported]: (
+    <Tag colorStyle="redSecondary" size="small">
+      Not Supported
     </Tag>
   ),
   [EnsDomainStatus.Registered]: (
