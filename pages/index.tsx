@@ -68,7 +68,7 @@ export default function Home() {
     updateDomainStatus(searchedDomain);
   };
 
-  const getDomainRoute = (): string => {
+  const getDomainRedirectionRoute = (): string => {
     if (domainStatus === EnsDomainStatus.Available) {
       return `/register/${domain}`;
     } else if (domainStatus === EnsDomainStatus.Registered) {
@@ -79,7 +79,7 @@ export default function Home() {
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === "Enter" && domain) {
-      router.push(getDomainRoute());
+      router.push(getDomainRedirectionRoute());
     }
   };
 
@@ -135,7 +135,7 @@ export default function Home() {
               }`}
             >
               <Link
-                href={getDomainRoute()}
+                href={getDomainRedirectionRoute()}
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
