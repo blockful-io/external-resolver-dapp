@@ -5,7 +5,7 @@ import {
   PencilIcon,
   TwitterIcon,
 } from "@/components/01-atoms";
-import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
+import { FieldsProvider, ProfileRecordItem, useFields } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
@@ -34,12 +34,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [ensData, setEnsData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { updateFieldsWithEnsData } = useFields()
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
       const data = await getENSDomainData(name);
       setEnsData(data);
+      updateFieldsWithEnsData(data)
       setError(null);
     } catch (err) {
       console.log(err);
