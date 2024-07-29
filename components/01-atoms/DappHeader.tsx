@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { DEFAULT_CHAIN_ID } from "@/lib/wallet/chains";
 import { UserDropdown } from "@/components/02-molecules";
 import { ConnectMetamask } from "./ConnectMetamask";
-import { PlusCircleIcon } from "./icons/plus-circle-icon";
 import { useRouter } from "next/router";
+import { PlusCircleIcon } from "./icons/plus-circle-icon";
+import { CogIcon } from "./icons/cog-icon";
 import { HeaderLink } from "./HeaderLink";
-import { CogIcon } from "./icons/CogIcon";
 
 export interface HeaderLinkInterface {
   icon: React.ElementType;

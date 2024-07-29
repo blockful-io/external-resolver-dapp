@@ -22,3 +22,5 @@ export * from "./icons/info-circle";
 export * from "./icons/optimism";
 export * from "./icons/pencil-icon";
 export * from "./icons/plus-circle-icon";
+export * from "./icons/cog-icon";
+export * from "./icons/plus-circle-icon";
