@@ -139,7 +139,7 @@ export default function Home() {
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
-                  {domain ? domainWithEth(domain) : <span />}
+                  {domain ? domainWithEth(domain) : <></>}
                 </p>
                 <DomainStatus status={domainStatus} />
               </Link>
