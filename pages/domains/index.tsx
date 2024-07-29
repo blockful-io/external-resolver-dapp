@@ -2,8 +2,7 @@ import { ConnectMetamask } from "@/components/01-atoms";
 import { Table } from "@/components/02-molecules";
 import { client } from "@/lib/wallet/wallet-config";
 import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
-import { Button, Heading, Skeleton, WalletSVG } from "@ensdomains/thorin";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Heading, Skeleton } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
