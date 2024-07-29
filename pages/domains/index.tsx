@@ -1,3 +1,4 @@
+import { ConnectMetamask } from "@/components/01-atoms";
 import { Table } from "@/components/02-molecules";
 import { client } from "@/lib/wallet/wallet-config";
 import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
@@ -40,23 +41,7 @@ export default function RegisterNamePage() {
               You have to connect your wallet to see your domains 😉
             </Heading>
             <div>
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => {
-                  return (
-                    <Button
-                      onClick={(e: any) => {
-                        openConnectModal();
-                        e.preventDefault();
-                      }}
-                      size="small"
-                      colorStyle="blueSecondary"
-                      prefix={<WalletSVG />}
-                    >
-                      Connect
-                    </Button>
-                  );
-                }}
-              </ConnectButton.Custom>
+              <ConnectMetamask />
             </div>
           </div>
         ) : (
