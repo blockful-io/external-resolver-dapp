@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { WalletButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useSwitchChain } from "wagmi";
-import { Button, WalletSVG } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import { DEFAULT_CHAIN_ID } from "@/lib/wallet/chains";
 import { UserDropdown } from "@/components/02-molecules";

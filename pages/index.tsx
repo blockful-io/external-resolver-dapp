@@ -8,9 +8,9 @@ import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
 import Link from "next/link";
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
-import { domainWithEth } from "@/lib/utils/formats";
-import { EnsDomainStatusComponents } from "@/components/02-molecules";
-import { toast } from "react-hot-toast";
+import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
+import { DomainStatus } from "@/components/02-molecules";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
@@ -19,7 +19,20 @@ export default function Home() {
     EnsDomainStatus.Invalid
   );
 
-  const updateDomainStatus = (searchedDomain: string) => {
+  const checkDomainAvailability = async (ensName: ENSName) => {
+    try {
+      const isAvailable: boolean = await isNameAvailable(ensName);
+      if (isAvailable) {
+        setDomainStatus(EnsDomainStatus.Available);
+      } else {
+        setDomainStatus(EnsDomainStatus.Registered);
+      }
+    } catch (error) {
+      toast.error("An error has occurred. Please try again later");
+    }
+  };
+
+  const updateDomainStatus = async (searchedDomain: string) => {
     if (!searchedDomain) return EnsDomainStatus.Invalid;
 
     setDomainStatus(EnsDomainStatus.Searching);
@@ -36,18 +49,13 @@ export default function Home() {
       return;
     }
 
-    // check if domain is available
-    isNameAvailable(ensName)
-      .then((isAvailable: boolean) => {
-        if (isAvailable) {
-          setDomainStatus(EnsDomainStatus.Available);
-        } else {
-          setDomainStatus(EnsDomainStatus.Registered);
-        }
-      })
-      .catch(() => {
-        toast.error("There was an error, please try again.");
-      });
+    // check if domain is supported
+    if (stringHasMoreThanOneDot(domainWithEth(searchedDomain))) {
+      setDomainStatus(EnsDomainStatus.NotSupported);
+      return;
+    }
+
+    await checkDomainAvailability(ensName);
   };
 
   const clearDomainSearch = () => {
@@ -56,12 +64,11 @@ export default function Home() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     let searchedDomain = e.target.value.toLocaleLowerCase();
-
     setDomain(searchedDomain);
     updateDomainStatus(searchedDomain);
   };
 
-  const getDomainRoute = (): string => {
+  const getDomainRedirectionRoute = (): string => {
     if (domainStatus === EnsDomainStatus.Available) {
       return `/register/${domain}`;
     } else if (domainStatus === EnsDomainStatus.Registered) {
@@ -72,7 +79,7 @@ export default function Home() {
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === "Enter" && domain) {
-      router.push(getDomainRoute());
+      router.push(getDomainRedirectionRoute());
     }
   };
 
@@ -128,13 +135,13 @@ export default function Home() {
               }`}
             >
               <Link
-                href={getDomainRoute()}
+                href={getDomainRedirectionRoute()}
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
                   {domain && domainWithEth(domain)}
                 </p>
-                {EnsDomainStatusComponents[domainStatus]}
+                <DomainStatus status={domainStatus} />
               </Link>
             </div>
           </div>

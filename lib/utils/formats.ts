@@ -31,3 +31,8 @@ export const formatDate = ({ unixTimestamp }: { unixTimestamp: number }) => {
 export const domainWithEth = (domain: string): string => {
   return domain.endsWith(".eth") ? domain : `${domain}.eth`;
 };
+
+export const stringHasMoreThanOneDot = (domain: string): boolean => {
+  const dotCount = (domain.match(/\./g) || []).length;
+  return dotCount > 1;
+};
