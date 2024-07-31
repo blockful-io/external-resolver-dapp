@@ -1,5 +1,5 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { CrossCircleSVG, Spinner, Tag } from "@ensdomains/thorin";
+import { ChangeEvent, useState } from "react";
+import { CrossCircleSVG } from "@ensdomains/thorin";
 import { HomepageBg } from "@/components/01-atoms";
 import { isNameAvailable } from "@/lib/utils/blockchain-txs";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
@@ -7,58 +7,79 @@ import { DebounceInput } from "react-debounce-input";
 import { useRouter } from "next/router";
 import { normalize } from "viem/ens";
 import Link from "next/link";
+import { EnsDomainStatus } from "@/types/ensDomainStatus";
+import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
+import { DomainStatus } from "@/components/02-molecules";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [domainError, setDomainError] = useState(false);
+  const [domainStatus, setDomainStatus] = useState<EnsDomainStatus>(
+    EnsDomainStatus.Available
+  );
 
-  useEffect(() => {
-    if (!domain) return;
+  const checkDomainAvailability = async (ensName: ENSName) => {
+    try {
+      const isAvailable: boolean = await isNameAvailable(ensName);
+      if (isAvailable) {
+        setDomainStatus(EnsDomainStatus.Available);
+      } else {
+        setDomainStatus(EnsDomainStatus.Registered);
+      }
+    } catch (error) {
+      toast.error("An error has occurred. Please try again later");
+    }
+  };
 
-    setIsAvailable(null);
+  const updateDomainStatus = async (searchedDomain: string) => {
+    if (!searchedDomain) return EnsDomainStatus.Invalid;
+
+    setDomainStatus(EnsDomainStatus.Searching);
 
     let ensName: null | ENSName = null;
+
+    // check if the domain is valid
     try {
-      ensName = buildENSName(domain);
+      normalize(searchedDomain);
+      ensName = buildENSName(searchedDomain);
     } catch (error) {
       console.error(error);
-      setIsAvailable(false);
+      setDomainStatus(EnsDomainStatus.Invalid);
       return;
     }
 
-    isNameAvailable(ensName)
-      .then((isAvailable: boolean) => {
-        setIsAvailable(isAvailable);
-      })
-      .catch(() => {
-        setIsAvailable(false);
-      });
-  }, [domain]);
+    // check if domain is supported
+    if (stringHasMoreThanOneDot(domainWithEth(searchedDomain))) {
+      setDomainStatus(EnsDomainStatus.NotSupported);
+      return;
+    }
+
+    await checkDomainAvailability(ensName);
+  };
 
   const clearDomainSearch = () => {
     setDomain("");
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDomainError(false);
+    let searchedDomain = e.target.value.toLocaleLowerCase();
+    setDomain(searchedDomain);
+    updateDomainStatus(searchedDomain);
+  };
 
-    // handle errors
-    try {
-      normalize(e.target.value.trim().replace(" ", ""));
-    } catch (error) {
-      console.error(error);
-      setDomainError(true);
+  const getDomainRedirectionRoute = (): string => {
+    if (domainStatus === EnsDomainStatus.Available) {
+      return `/register/${domain}`;
+    } else if (domainStatus === EnsDomainStatus.Registered) {
+      return `/domains/${domainWithEth(domain)}`;
     }
-
-    // update domain
-    setDomain(e.target.value.toLocaleLowerCase());
+    return "";
   };
 
   const goToRegisterPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter" && domain && !domainError) {
-      router.push(`/register/${domain}`);
+    if (e.code === "Enter" && domain) {
+      router.push(getDomainRedirectionRoute());
     }
   };
 
@@ -114,35 +135,13 @@ export default function Home() {
               }`}
             >
               <Link
-                href={`/register/${domain}`}
+                href={getDomainRedirectionRoute()}
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
-                  {domain ? (
-                    domain.includes(".eth") ? (
-                      domain
-                    ) : (
-                      `${domain}.eth`
-                    )
-                  ) : (
-                    <span />
-                  )}
+                  {domain ? domainWithEth(domain) : <></>}
                 </p>
-                {domainError ? (
-                  <Tag colorStyle="redSecondary" size="small">
-                    Invalid name
-                  </Tag>
-                ) : isAvailable === null ? (
-                  <Spinner color="blue" />
-                ) : isAvailable ? (
-                  <Tag colorStyle="greenSecondary" size="small">
-                    Available
-                  </Tag>
-                ) : (
-                  <Tag colorStyle="blueSecondary" size="small">
-                    Registered
-                  </Tag>
-                )}
+                <DomainStatus status={domainStatus} />
               </Link>
             </div>
           </div>
