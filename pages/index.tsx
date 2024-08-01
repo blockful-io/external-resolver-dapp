@@ -16,7 +16,7 @@ export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
   const [domainStatus, setDomainStatus] = useState<EnsDomainStatus>(
-    EnsDomainStatus.Available
+    EnsDomainStatus.Invalid
   );
 
   const checkDomainAvailability = async (ensName: ENSName) => {
@@ -139,7 +139,7 @@ export default function Home() {
                 className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
               >
                 <p className="text-gray-500 min-h-6">
-                  {domain ? domainWithEth(domain) : <></>}
+                  {domain && domainWithEth(domain)}
                 </p>
                 <DomainStatus status={domainStatus} />
               </Link>
