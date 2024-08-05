@@ -48,9 +48,9 @@ export const cryptocurrencyToCoinType = {
   DOGE: "3",
   ETH: "60",
   BNB: "714",
-  ARB1: "9001",
-  OP: "614",
-  MATIC: "966",
+  ARB1: "2147525809",
+  OP: "2147483658",
+  MATIC: "2147483658",
 };
 
 export const cryptocurrenciesToSymbol = {
