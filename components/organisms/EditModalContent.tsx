@@ -63,7 +63,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       const initialProfileField = initialProfileFields.find(
         ({ label }) => label === field.label
       ) ?? { value: "" };
-      if (field.value !== initialProfileField.value && !!field.value) {
+      if (field.value !== initialProfileField.value) {
         changedFieldsKeys.push(field);
       }
     });
@@ -71,7 +71,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       const initialAccountField = initialAccountsFields.find(
         ({ label }) => label === field.label
       ) ?? { value: "" };
-      if (field.value !== initialAccountField.value && !!field.value) {
+      if (field.value !== initialAccountField.value) {
         changedFieldsKeys.push(field);
       }
     });
@@ -79,7 +79,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       const initialAddressField = initialAddressesFields.find(
         ({ label }) => label === field.label
       ) ?? { value: "" };
-      if (field.value !== initialAddressField.value && !!field.value) {
+      if (field.value !== initialAddressField.value) {
         changedFieldsKeys.push(field);
       }
     });
