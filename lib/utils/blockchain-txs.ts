@@ -38,7 +38,6 @@ import { cryptocurrencies, cryptocurrenciesToCoinType } from "./ensData";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import {
   CcipRequestParameters,
-  CryptocurrencyToCoinTypeEntry,
   DomainData,
   MessageData,
 } from "./types";
