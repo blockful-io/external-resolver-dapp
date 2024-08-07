@@ -425,7 +425,7 @@ export const setDomainRecords = async ({
       const cryptocurrencyToCoinTypeEntry:
         | [coinName: string, coinType: string]
         | undefined = Object.entries(cryptocurrencyToCoinType).find(
-        ([key, _]) => key == cryptocurrencyName.toUpperCase()
+        ([key]) => key == cryptocurrencyName.toUpperCase()
       );
       if (cryptocurrencyToCoinTypeEntry === undefined) {
         console.error(`coinType code for ${cryptocurrencyName} not found`);
