@@ -64,7 +64,7 @@ export const cryptocurrenciesToSymbol = {
   MATIC: "MATIC",
 };
 
-// // ENS Data network requests
+// ENS Data network requests
 // const fetchEnsDataRequest = async (domain: string) => {
 //   const res = await fetch(ENS_SUBGRAPH_ENDPOINT, {
 //     method: "POST",
