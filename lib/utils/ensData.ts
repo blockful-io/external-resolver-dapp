@@ -42,26 +42,37 @@ export interface ResolvedEnsData {
   owner?: string;
 }
 
-export const cryptocurrencyToCoinType = {
-  BTC: "0",
-  LTC: "2",
-  DOGE: "3",
-  ETH: "60",
-  BNB: "714",
-  ARB1: "2147525809",
-  OP: "2147483658",
-  MATIC: "2147483658",
-};
-
-export const cryptocurrenciesToSymbol = {
-  BTC: "₿",
-  LTC: "Ł",
-  DOGE: "Ð",
-  ETH: "Ξ",
-  BNB: "₿",
-  ARB1: "ARB",
+export const cryptocurrencies: { [k: string]: string } = {
+  BTC: "BTC",
+  LTC: "LTC",
+  DOGE: "DOGE",
+  ETH: "ETH",
+  BNB: "BNB",
+  ARB1: "ARB1",
   OP: "OP",
   MATIC: "MATIC",
+};
+
+export const cryptocurrenciesToCoinType: { [k: string]: string } = {
+  [cryptocurrencies.BTC]: "0",
+  [cryptocurrencies.LTC]: "2",
+  [cryptocurrencies.DOGE]: "3",
+  [cryptocurrencies.ETH]: "60",
+  [cryptocurrencies.BNB]: "714",
+  [cryptocurrencies.ARB1]: "2147525809",
+  [cryptocurrencies.OP]: "2147483658",
+  [cryptocurrencies.MATIC]: "2147483658",
+};
+
+export const cryptocurrenciesToSymbol: { [k: string]: string } = {
+  [cryptocurrencies.BTC]: "₿",
+  [cryptocurrencies.LTC]: "Ł",
+  [cryptocurrencies.DOGE]: "Ð",
+  [cryptocurrencies.ETH]: "Ξ",
+  [cryptocurrencies.BNB]: "₿",
+  [cryptocurrencies.ARB1]: "ARB",
+  [cryptocurrencies.OP]: "OP",
+  [cryptocurrencies.MATIC]: "MATIC",
 };
 
 // ENS Data network requests
@@ -214,7 +225,7 @@ export async function getENSDomainData(
         texts: availableTextRecords?.length
           ? availableTextRecords
           : defaultTextRecords,
-        coins: ["ETH","BTC", "ARB1", "OP", "MATIC"],
+        coins: ["ETH", "BTC", "ARB1", "OP", "MATIC"],
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
