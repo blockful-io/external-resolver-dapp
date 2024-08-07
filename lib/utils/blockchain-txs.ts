@@ -577,19 +577,16 @@ export const getNamePrice = async ({
   ensName: ENSName;
   durationInYears: bigint;
 }) => {
-  return publicClient
-    .readContract({
-      args: [ensName.name, durationInYears * SECONDS_PER_YEAR.seconds],
-      address: nameRegistrationContracts.ETH_REGISTRAR,
-      functionName: "rentPrice",
-      abi: ETHRegistrarABI,
-    })
-    .then((price: unknown) => {
-      return (price as NamePrice).base + (price as NamePrice).premium;
-    })
-    .catch((error) => {
-      return error;
-    });
+  const price = await publicClient.readContract({
+    args: [
+      ensName.name.split(".eth")[0],
+      durationInYears * SECONDS_PER_YEAR.seconds,
+    ],
+    address: nameRegistrationContracts.ETH_REGISTRAR,
+    functionName: "rentPrice",
+    abi: ETHRegistrarABI,
+  });
+  return (price as NamePrice).base + (price as NamePrice).premium;
 };
 
 export const getGasPrice = async (): Promise<bigint> => {
