@@ -577,11 +577,9 @@ export const getNamePrice = async ({
   ensName: ENSName;
   durationInYears: bigint;
 }) => {
+  const ensNameDirectSubname = ensName.name.split(".eth")[0];
   const price = await publicClient.readContract({
-    args: [
-      ensName.name.split(".eth")[0],
-      durationInYears * SECONDS_PER_YEAR.seconds,
-    ],
+    args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
     address: nameRegistrationContracts.ETH_REGISTRAR,
     functionName: "rentPrice",
     abi: ETHRegistrarABI,
