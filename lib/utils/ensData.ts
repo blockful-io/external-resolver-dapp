@@ -225,7 +225,13 @@ export async function getENSDomainData(
         texts: availableTextRecords?.length
           ? availableTextRecords
           : defaultTextRecords,
-        coins: ["ETH", "BTC", "ARB1", "OP", "MATIC"],
+        coins: [
+          cryptocurrencies.ETH,
+          cryptocurrencies.BTC,
+          cryptocurrencies.ARB1,
+          cryptocurrencies.OP,
+          cryptocurrencies.MATIC,
+        ],
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
