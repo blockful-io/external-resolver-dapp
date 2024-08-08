@@ -584,7 +584,11 @@ export const getNamePrice = async ({
     functionName: "rentPrice",
     abi: ETHRegistrarABI,
   });
-  return (price as NamePrice).base + (price as NamePrice).premium;
+  if (price) {
+    return (price as NamePrice).base + (price as NamePrice).premium;
+  } else {
+    throw new Error("Error getting name price");
+  }
 };
 
 export const getGasPrice = async (): Promise<bigint> => {
