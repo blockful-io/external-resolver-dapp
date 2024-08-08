@@ -409,7 +409,7 @@ export const setDomainRecords = async ({
       const key = Object.keys(textRecords)[i];
       const value = textRecords[key];
 
-      if (value) {
+      if (value !== null && value !== undefined) {
         const callData = encodeFunctionData({
           functionName: "setText",
           abi: DomainResolverABI,
