@@ -5,7 +5,11 @@ import {
   PencilIcon,
   TwitterIcon,
 } from "@/components/01-atoms";
-import { FieldsProvider, ProfileRecordItem, useFields } from "@/components/02-molecules";
+import {
+  FieldsProvider,
+  ProfileRecordItem,
+  useFields,
+} from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
@@ -34,13 +38,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [ensData, setEnsData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { updateFieldsWithEnsData } = useFields()
+  const { updateFieldsWithEnsData } = useFields();
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
       const data = await getENSDomainData(name);
       setEnsData(data);
-      updateFieldsWithEnsData(data)
+      updateFieldsWithEnsData(data);
       setError(null);
     } catch (err) {
       console.log(err);
@@ -58,6 +62,12 @@ export function ManageNamePageContent({ name }: { name: string }) {
   useEffect(() => {
     handleFetchENSDomainData();
   }, []);
+
+  useEffect(() => {
+    if (!modalOpen) {
+      handleFetchENSDomainData();
+    }
+  }, [modalOpen]);
 
   const excludeKeys = [
     "com.twitter",
@@ -101,7 +111,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
         obj[text.key] = text.value;
         return obj;
       }, {});
-
   }
 
   if (!ensData && !isLoading) {
@@ -117,7 +126,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </div>
     );
   }
-
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
