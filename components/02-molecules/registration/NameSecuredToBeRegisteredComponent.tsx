@@ -2,10 +2,13 @@ import { BackButton, BlockchainCTA } from "@/components/01-atoms";
 import { register } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-import { Button, WalletSVG } from "@ensdomains/thorin";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
+import {
+  EnsResolver,
+  ensResolverAddress,
+} from "@/lib/name-registration/constants";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -33,10 +36,16 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
+    let resolverAddress =
+      nameRegistrationData.ensResolver === EnsResolver.Custom &&
+      nameRegistrationData.customResolverAddress
+        ? nameRegistrationData.customResolverAddress
+        : ensResolverAddress[nameRegistrationData.ensResolver];
+
     return await register({
       authenticatedAddress: address,
       ensName: nameRegistrationData.name,
-      domainResolver: nameRegistrationData.ensResolver,
+      resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });

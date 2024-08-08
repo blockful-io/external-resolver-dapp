@@ -8,6 +8,10 @@ import {
 import { useEffect } from "react";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
+import {
+  EnsResolver,
+  ensResolverAddress,
+} from "@/lib/name-registration/constants";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;
@@ -43,12 +47,18 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
       handleNextStep();
     }
 
+    let resolverAddress =
+      nameRegistrationData.ensResolver === EnsResolver.Custom &&
+      nameRegistrationData.customResolverAddress
+        ? nameRegistrationData.customResolverAddress
+        : ensResolverAddress[nameRegistrationData.ensResolver];
+
     try {
       const setDomainRecordsRes = await setDomainRecords({
         authenticatedAddress: address,
         ensName: nameRegistrationData.name,
         textRecords: nameRegistrationData.textRecords,
-        domainResolver: nameRegistrationData.ensResolver,
+        resolverAddress: resolverAddress,
         addresses: nameRegistrationData.domainAddresses,
       });
 

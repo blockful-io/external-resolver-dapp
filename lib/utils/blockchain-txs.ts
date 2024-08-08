@@ -250,14 +250,14 @@ export async function handleDBStorage({
 */
 export const commit = async ({
   ensName,
-  domainResolver,
   durationInYears,
+  resolverAddress,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
   durationInYears: bigint;
-  domainResolver: EnsResolver;
+  resolverAddress: Address;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -277,7 +277,7 @@ export const commit = async ({
       durationInYears: durationInYears,
       secret: getNameRegistrationSecret(),
       reverseRecord: registerAndSetAsPrimaryName,
-      resolverAddress: ensResolverAddress[domainResolver],
+      resolverAddress: resolverAddress,
       ownerControlledFuses: DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
     });
 
@@ -305,14 +305,14 @@ export const commit = async ({
 */
 export const register = async ({
   ensName,
-  domainResolver,
+  resolverAddress,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
+  resolverAddress: Address;
   durationInYears: bigint;
-  domainResolver: EnsResolver;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -336,7 +336,7 @@ export const register = async ({
         authenticatedAddress,
         durationInYears * SECONDS_PER_YEAR.seconds,
         getNameRegistrationSecret(),
-        ensResolverAddress[domainResolver],
+        resolverAddress,
         [],
         registerAndSetAsPrimaryName,
         DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
@@ -383,14 +383,14 @@ export const register = async ({
 */
 export const setDomainRecords = async ({
   ensName,
-  domainResolver,
+  resolverAddress,
   domainResolverAddress,
   authenticatedAddress,
   textRecords,
   addresses,
 }: {
   ensName: ENSName;
-  domainResolver?: EnsResolver;
+  resolverAddress?: Address;
   domainResolverAddress?: `0x${string}`;
   authenticatedAddress: `0x${string}`;
   textRecords: Record<string, string>;
@@ -440,11 +440,12 @@ export const setDomainRecords = async ({
     }
 
     try {
-      let resolverAddress;
-      if (domainResolver) {
-        resolverAddress = ensResolverAddress[domainResolver];
+      let localResolverAddress;
+
+      if (resolverAddress) {
+        localResolverAddress = resolverAddress;
       } else if (domainResolverAddress) {
-        resolverAddress = domainResolverAddress;
+        localResolverAddress = domainResolverAddress;
       } else {
         throw new Error("No domain resolver informed");
       }
@@ -454,7 +455,7 @@ export const setDomainRecords = async ({
         abi: DomainResolverABI,
         args: [calls],
         account: authenticatedAddress,
-        address: resolverAddress,
+        address: localResolverAddress,
       });
     } catch (err) {
       const data = getRevertErrorData(err);
