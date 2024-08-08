@@ -576,7 +576,7 @@ export const getNamePrice = async ({
 }: {
   ensName: ENSName;
   durationInYears: bigint;
-}) => {
+}): Promise<bigint> => {
   const ensNameDirectSubname = ensName.name.split(".eth")[0];
   const price = await publicClient.readContract({
     args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
