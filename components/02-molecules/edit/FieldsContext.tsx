@@ -188,8 +188,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
 
         return fieldIsEmpty || isValidAddress;
       },
@@ -202,7 +201,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" &&
           !!validateBitcoinAddress(fieldValue);
 
         return fieldIsEmpty || isValidAddress;
@@ -215,8 +213,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     },
@@ -227,8 +224,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     },
@@ -239,8 +235,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     },
@@ -257,8 +252,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: boolean = fieldValue === "";
-        const isAddressValid: boolean =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isAddressValid: boolean = !!isAddress(fieldValue);
 
         return fieldIsEmpty || isAddressValid;
       },
@@ -271,7 +265,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
         const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" &&
           !!validateBitcoinAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
@@ -283,8 +276,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     },
@@ -295,8 +287,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     },
@@ -307,8 +298,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
         return fieldIsEmpty || isValidAddress;
       },
     },
