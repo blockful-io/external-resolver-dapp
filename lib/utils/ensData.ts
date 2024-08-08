@@ -14,8 +14,6 @@ import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 
 import { normalize } from "viem/ens";
-import assert from "assert";
-import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 // ENS Domain Data query
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
