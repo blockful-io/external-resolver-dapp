@@ -9,7 +9,8 @@ import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { Input, RadioButton, Typography } from "@ensdomains/thorin";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isAddress } from "viem";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -24,8 +25,12 @@ export const ENSResolverComponent = ({
   const radioButtonRefCustomDatabase = useRef(null);
   const radioButtonRefArbitrum = useRef(null);
   const radioButtonRefOptimism = useRef(null);
+  const [customAddress, setCustomAddress] = useState("");
 
-  const { nameRegistrationData, setEnsResolver } = useNameRegistration();
+  const { nameRegistrationData, setEnsResolver, setCustomResolverAddress } =
+    useNameRegistration();
+
+  console.log(nameRegistrationData.customResolverAddress);
 
   const { ensResolver } = nameRegistrationData;
 
@@ -191,13 +196,27 @@ export const ENSResolverComponent = ({
             placeholder={"Resolver address"}
             type="text"
             className="text-left"
-            // value={field.value}
-            // onChange={(e) => updateField(Tab.Accounts, index, e.target.value)}
+            value={customAddress}
+            onChange={(e) => {
+              setCustomAddress(e.target.value);
+            }}
           />
         </div>
       )}
       <div className="w-full flex">
-        <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
+        <NextButton
+          disabled={ensResolver === null}
+          onClick={() => {
+            if (ensResolver === EnsResolver.Custom) {
+              if (isAddress(customAddress)) {
+                setCustomResolverAddress(customAddress);
+                handleNextStep();
+              }
+            } else {
+              handleNextStep();
+            }
+          }}
+        />
       </div>
     </div>
   );
