@@ -10,11 +10,11 @@ import { Button } from "@ensdomains/thorin";
 export const ContinueRegistrationModalContent = ({
   name,
   localNameRegistrationData,
-  setModalForContinuingRegistrationIsOpen,
+  onClose,
 }: {
   name: string;
   localNameRegistrationData: LocalNameRegistrationData;
-  setModalForContinuingRegistrationIsOpen: Dispatch<SetStateAction<boolean>>;
+  onClose: Dispatch<SetStateAction<boolean>>;
 }) => {
   const {
     setRegistrationYears,
@@ -140,7 +140,7 @@ export const ContinueRegistrationModalContent = ({
           <Button
             onClick={() => {
               clearRegistrationOfCurrentName();
-              setModalForContinuingRegistrationIsOpen(false);
+              onClose();
             }}
             colorStyle="greySecondary"
           >

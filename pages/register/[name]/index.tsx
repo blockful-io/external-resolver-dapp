@@ -102,7 +102,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
         <ContinueRegistrationModalContent
           name={name}
           localNameRegistrationData={localNameRegistrationData}
-          setModalForContinuingRegistrationIsOpen={setModalForContinuingRegistrationIsOpen}
+          onClose={setModalForContinuingRegistrationIsOpen}
         />
       </Modal>
     </div>
