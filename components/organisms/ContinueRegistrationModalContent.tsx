@@ -10,11 +10,11 @@ import { Button } from "@ensdomains/thorin";
 export const ContinueRegistrationModalContent = ({
   name,
   localNameRegistrationData,
-  setIsModalContinueRegistrationOpen,
+  setModalForContinuingRegistrationIsOpen,
 }: {
   name: string;
   localNameRegistrationData: LocalNameRegistrationData;
-  setIsModalContinueRegistrationOpen: Dispatch<SetStateAction<boolean>>;
+  setModalForContinuingRegistrationIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const {
     setRegistrationYears,
@@ -131,16 +131,16 @@ export const ContinueRegistrationModalContent = ({
         <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
           <Button
             onClick={() => {
-              setIsModalContinueRegistrationOpen(false);
               continueRegistration();
+              setModalForContinuingRegistrationIsOpen(false);
             }}
           >
             Continue
           </Button>
           <Button
             onClick={() => {
-              setIsModalContinueRegistrationOpen(false);
               clearRegistrationOfCurrentName();
+              setModalForContinuingRegistrationIsOpen(false);
             }}
             colorStyle="greySecondary"
           >

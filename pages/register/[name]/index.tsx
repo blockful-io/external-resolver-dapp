@@ -37,7 +37,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
   const { setNameToRegister } = useNameRegistration();
   const router = useRouter();
   const { address } = useAccount();
-  const [isModalContinueRegistrationOpen, setIsModalContinueRegistrationOpen] =
+  const [modalContinueRegistrationIsOpen, setModalForContinuingRegistrationIsOpen] =
     useState(false);
   const [localNameRegistrationData, setLocalNameRegistrationData] =
     useState<LocalNameRegistrationData>({ timerDone: false });
@@ -71,7 +71,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
           getOpenNameRegistrationsOfNameByWallet(address, ensName);
 
         if (!isEmpty(localStorageNameRegistrationData)) {
-          setIsModalContinueRegistrationOpen(true);
+          setModalForContinuingRegistrationIsOpen(true);
           setLocalNameRegistrationData(localStorageNameRegistrationData);
         }
       }
@@ -98,11 +98,11 @@ export default function RegisterNamePage({ name }: { name: string }) {
           <RegistrationSummary />
         </div>
       </div>
-      <Modal open={isModalContinueRegistrationOpen} onDismiss={() => {}}>
+      <Modal open={modalContinueRegistrationIsOpen} onDismiss={() => {}}>
         <ContinueRegistrationModalContent
           name={name}
           localNameRegistrationData={localNameRegistrationData}
-          setIsModalContinueRegistrationOpen={setIsModalContinueRegistrationOpen}
+          setModalForContinuingRegistrationIsOpen={setModalForContinuingRegistrationIsOpen}
         />
       </Modal>
     </div>
