@@ -17,7 +17,7 @@ import { Modal } from "@ensdomains/thorin";
 import { useAccount } from "wagmi";
 import { getOpenNameRegistrationsOfNameByWallet } from "@/lib/name-registration/localStorage";
 import { isEmpty } from "lodash";
-import { LocalRegistrationNameData } from "@/lib/name-registration/types";
+import { LocalNameRegistrationData } from "@/lib/name-registration/types";
 import { ContinueRegistrationModalContent } from "@/components/organisms/ContinueRegistrationModalContent";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 
@@ -40,7 +40,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
   const [isModalContinueRegistrationOpen, setIsModalContinueRegistrationOpen] =
     useState(false);
   const [localNameRegistrationData, setLocalNameRegistrationData] =
-    useState<LocalRegistrationNameData>({ timerDone: false });
+    useState<LocalNameRegistrationData>({ timerDone: false });
 
   const handleNameChange = useCallback(async () => {
     try {

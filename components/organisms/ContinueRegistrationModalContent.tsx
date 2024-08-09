@@ -1,5 +1,5 @@
 import { RegistrationStep } from "@/lib/name-registration/constants";
-import { LocalRegistrationNameData } from "@/lib/name-registration/types";
+import { LocalNameRegistrationData } from "@/lib/name-registration/types";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { BasicInfoKey, SocialAccountsKeys } from "../02-molecules";
 import { endNameRegistrationPreviouslyOpen } from "@/lib/name-registration/localStorage";
@@ -13,7 +13,7 @@ export const ContinueRegistrationModalContent = ({
   setIsModalContinueRegistrationOpen,
 }: {
   name: string;
-  localNameRegistrationData: LocalRegistrationNameData;
+  localNameRegistrationData: LocalNameRegistrationData;
   setIsModalContinueRegistrationOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const {

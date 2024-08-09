@@ -2,7 +2,7 @@ import { ENSName } from "@namehash/ens-utils";
 import { TransactionReceipt } from "viem";
 import { EnsResolver } from "./constants";
 
-export type LocalRegistrationNameData = {
+export type LocalNameRegistrationData = {
   name?: ENSName;
   commitTxReceipt?: TransactionReceipt;
   recordsTxReceipt?: TransactionReceipt;
