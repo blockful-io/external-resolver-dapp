@@ -54,7 +54,7 @@ export const ContinueRegistrationModal = ({
       return;
     }
 
-    //Set State of ENS Resolver
+    // Set State of ENS Resolver
     if (localNameRegistrationData.ensResolver !== undefined) {
       setEnsResolver(localNameRegistrationData.ensResolver);
     } else {
