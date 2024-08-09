@@ -22,6 +22,7 @@ import {
   RawContractError,
   Hash,
   fromBytes,
+  Address,
 } from "viem";
 import { isTestnet, SupportedNetwork } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
@@ -36,11 +37,7 @@ import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
 import { cryptocurrencies, cryptocurrenciesToCoinType } from "./ensData";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
-import {
-  CcipRequestParameters,
-  DomainData,
-  MessageData,
-} from "./types";
+import { CcipRequestParameters, DomainData, MessageData } from "./types";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
