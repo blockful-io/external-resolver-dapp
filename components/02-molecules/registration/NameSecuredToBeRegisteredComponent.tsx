@@ -2,10 +2,8 @@ import { BackButton, BlockchainCTA } from "@/components/01-atoms";
 import { register } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
-import { getResolverAddress } from "@/lib/name-registration/utils";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -17,8 +15,8 @@ export const NameSecuredToBeRegisteredComponent = ({
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) => {
   const { address } = useAccount();
-  const { nameRegistrationData, setCommitTxReceipt } = useNameRegistration();
-  const { openConnectModal } = useConnectModal();
+  const { nameRegistrationData, setCommitTxReceipt, getResolverAddress } =
+    useNameRegistration();
 
   const registerName = async (): Promise<
     `0x${string}` | TransactionErrorType
@@ -33,10 +31,7 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
-    let resolverAddress = getResolverAddress(
-      nameRegistrationData.ensResolver,
-      nameRegistrationData.customResolverAddress
-    );
+    let resolverAddress = getResolverAddress();
 
     return await register({
       authenticatedAddress: address,

@@ -12,7 +12,6 @@ import { Input, RadioButton, Typography } from "@ensdomains/thorin";
 import { useEffect, useRef, useState } from "react";
 import { isAddress } from "viem";
 import toast from "react-hot-toast";
-import { getResolverAddress } from "@/lib/name-registration/utils";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -29,8 +28,12 @@ export const ENSResolverComponent = ({
   const radioButtonRefOptimism = useRef(null);
   const [customAddress, setCustomAddress] = useState("");
 
-  const { nameRegistrationData, setEnsResolver, setCustomResolverAddress } =
-    useNameRegistration();
+  const {
+    nameRegistrationData,
+    setEnsResolver,
+    setCustomResolverAddress,
+    getResolverAddress,
+  } = useNameRegistration();
 
   const { ensResolver } = nameRegistrationData;
 
@@ -210,7 +213,7 @@ export const ENSResolverComponent = ({
           onClick={() => {
             if (ensResolver === EnsResolver.Custom) {
               if (isAddress(customAddress)) {
-                let resAddress = getResolverAddress(ensResolver, customAddress);
+                let resAddress = getResolverAddress();
                 setCustomResolverAddress(resAddress);
               } else {
                 toast.error("Resolver address is invalid");

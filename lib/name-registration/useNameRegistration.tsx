@@ -16,7 +16,7 @@ import {
   updateRegistrationYears,
   updateTextRecords,
 } from "./actions";
-import { EnsResolver, RegistrationStep } from "./constants";
+import { EnsResolver, ensResolverAddress, RegistrationStep } from "./constants";
 import { ENSName } from "@namehash/ens-utils";
 import { Address, TransactionReceipt } from "viem";
 import {
@@ -59,6 +59,7 @@ interface NameRegistrationData {
   setEnsResolver: (ensResolver: EnsResolver) => void;
   setTextRecords: (textRecords: Record<string, string>) => void;
   setDomainAddresses: (domainAddresses: Record<string, string>) => void;
+  getResolverAddress: () => Address;
 }
 
 export const useNameRegistration = (): NameRegistrationData => {
@@ -159,6 +160,12 @@ export const useNameRegistration = (): NameRegistrationData => {
     dispatch(updateDomainAddresses(domainAddresses));
   };
 
+  const getResolverAddress = (): Address => {
+    return ensResolver === EnsResolver.Custom && customResolverAddress
+      ? customResolverAddress
+      : ensResolverAddress[ensResolver as EnsResolver];
+  };
+
   return {
     nameRegistrationData:
       {
@@ -191,5 +198,6 @@ export const useNameRegistration = (): NameRegistrationData => {
     setDomainAddresses,
     setEnsResolver,
     setNamePrice,
+    getResolverAddress,
   };
 };
