@@ -30,8 +30,6 @@ export const ENSResolverComponent = ({
   const { nameRegistrationData, setEnsResolver, setCustomResolverAddress } =
     useNameRegistration();
 
-  console.log(nameRegistrationData.customResolverAddress);
-
   const { ensResolver } = nameRegistrationData;
 
   const handleENSResolverSelection = (
