@@ -40,7 +40,7 @@ export const RequestToRegisterComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
-    let resolverAddress = getResolverAddress();
+    const resolverAddress = getResolverAddress();
 
     return await commit({
       authenticatedAddress: address,

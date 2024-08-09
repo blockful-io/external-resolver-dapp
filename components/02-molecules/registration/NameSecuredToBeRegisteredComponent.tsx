@@ -31,7 +31,7 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
-    let resolverAddress = getResolverAddress();
+    const resolverAddress = getResolverAddress();
 
     return await register({
       authenticatedAddress: address,
