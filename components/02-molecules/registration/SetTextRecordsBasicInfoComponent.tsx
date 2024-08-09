@@ -61,13 +61,11 @@ export const SetTextRecordsBasicInfoComponent = ({
     if (!hasErrorInKeyValues[BasicInfoKey.WEBSITE]) {
       setTextRecords({
         ...nameRegistrationData.textRecords,
-        [BasicInfoKey.WEBSITE]: basicInfo[BasicInfoKey.WEBSITE],
-        [BasicInfoKey.DESCRIPTION]: basicInfo[BasicInfoKey.DESCRIPTION],
+        ...basicInfo,
       });
       saveTextRecordsInLocalStorage({
         ...nameRegistrationData.textRecords,
-        [BasicInfoKey.WEBSITE]: basicInfo[BasicInfoKey.WEBSITE],
-        [BasicInfoKey.DESCRIPTION]: basicInfo[BasicInfoKey.DESCRIPTION],
+        ...basicInfo,
       });
       handleNextStep();
     }

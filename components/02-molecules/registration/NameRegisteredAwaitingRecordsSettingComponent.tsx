@@ -8,7 +8,6 @@ import {
 import { useEffect } from "react";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
-import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;

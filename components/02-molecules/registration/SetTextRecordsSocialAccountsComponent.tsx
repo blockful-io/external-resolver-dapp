@@ -83,17 +83,6 @@ export const SetTextRecordsSocialAccountsComponent = ({
                   </p>
                 </button> */}
               </div>
-              {/* <Input
-                key={field.label}
-                clearable
-                label={field.label}
-                placeholder={field.placeholder}
-                type="text"
-                value={field.value}
-                onChange={(e) =>
-                  updateField(Tab.Profile, index, e.target.value)
-                }
-              /> */}
               <input
                 type="text"
                 id={socialAccount}
@@ -114,14 +103,16 @@ export const SetTextRecordsSocialAccountsComponent = ({
         </form>
       </div>
       <div className="w-[500px] flex">
-        <NextButton onClick={() => {
-          setTextRecords({
-            ...nameRegistrationData.textRecords,
-            ...socialAccounts,
-          });
-          saveSocialAccountsTextRecordsInLocalStorage();
-          handleNextStep();
-        }} />
+        <NextButton
+          onClick={() => {
+            setTextRecords({
+              ...nameRegistrationData.textRecords,
+              ...socialAccounts,
+            });
+            saveSocialAccountsTextRecordsInLocalStorage();
+            handleNextStep();
+          }}
+        />
       </div>
     </div>
   );

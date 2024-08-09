@@ -33,7 +33,7 @@ export const SetTextRecordsAddressesComponent = ({
   handleNextStep,
 }: SetTextRecordsAddressesComponentProps) => {
   const { setDomainAddresses, nameRegistrationData } = useNameRegistration();
-  const { address: authedAddress } = useAccount();
+  const { address } = useAccount();
   const [addresses, setAddresses] = useState<Addresses>({
     ETH: { address: "", isValid: true },
   });
@@ -61,21 +61,22 @@ export const SetTextRecordsAddressesComponent = ({
   };
 
   useEffect(() => {
-    if (authedAddress) {
+    if (address) {
       setAddresses({
-        ETH: { address: authedAddress, isValid: true },
+        ETH: { address, isValid: true },
       });
     }
-  }, [authedAddress]);
+  }, [address]);
 
   useEffect(() => {
-    if (
-      nameRegistrationData?.domainAddresses &&
-      Object.keys(nameRegistrationData?.domainAddresses).length > 0
-    ) {
-      const addresses = Object.keys(
+    const domainsAddressesKeys = Object.keys(
         nameRegistrationData.domainAddresses
-      ).reduce((acc, key) => {
+      )
+  
+    if (
+      domainsAddressesKeys.length > 0
+    ) {
+      const addresses = domainsAddressesKeys.reduce((acc, key) => {
         return {
           ...acc,
           [key]: {
@@ -84,7 +85,6 @@ export const SetTextRecordsAddressesComponent = ({
           },
         };
       }, {});
-
       setAddresses(addresses);
     }
   }, []);
@@ -92,9 +92,9 @@ export const SetTextRecordsAddressesComponent = ({
   const saveDomainAddressesInLocalStorage = (
     domainAddresses: Record<string, string>
   ) => {
-    if (authedAddress && nameRegistrationData.name) {
+    if (address && nameRegistrationData.name) {
       setNameRegistrationInLocalStorage(
-        authedAddress,
+        address,
         nameRegistrationData.name,
         {
           domainAddresses,
@@ -148,7 +148,7 @@ export const SetTextRecordsAddressesComponent = ({
                 disabled={!!nameRegistrationData.asPrimaryName}
                 value={
                   !!nameRegistrationData.asPrimaryName
-                    ? authedAddress
+                    ? address
                     : addresses[address].address
                 }
                 onChange={(e) =>
