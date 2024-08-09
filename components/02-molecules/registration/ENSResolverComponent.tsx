@@ -194,7 +194,9 @@ export const ENSResolverComponent = ({
       {ensResolver === EnsResolver.Custom && (
         <Input
           clearable
-          label={<div className="w-full flex justify-start">Ens Resolver</div>}
+          label={
+            <span className="w-full flex justify-start">Ens Resolver</span>
+          }
           placeholder="Resolver address"
           type="text"
           className="!flex !items-start !justify-start"
