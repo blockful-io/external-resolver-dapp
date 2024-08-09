@@ -2,6 +2,7 @@ import { BackButton, NextButton } from "@/components/01-atoms";
 import { useEffect, useState } from "react";
 import cc from "classcat";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { capitalizeString } from "@/lib/utils/formats";
 
 interface SetTextRecordsBasicInfoComponentProps {
   handlePreviousStep: () => void;
@@ -82,7 +83,7 @@ export const SetTextRecordsBasicInfoComponent = ({
               className="flex flex-col items-start space-y-2 w-full"
             >
               <label htmlFor={key} className="text-[#1E2122] text-sm">
-                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {capitalizeString(key)}
               </label>
               <input
                 type="text"

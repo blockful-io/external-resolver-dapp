@@ -36,3 +36,7 @@ export const stringHasMoreThanOneDot = (domain: string): boolean => {
   const dotCount = (domain.match(/\./g) || []).length;
   return dotCount > 1;
 };
+
+export const capitalizeString = (text: string): string => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
