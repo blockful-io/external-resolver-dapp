@@ -8,10 +8,7 @@ import {
 import { useEffect } from "react";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
-import {
-  EnsResolver,
-  ensResolverAddress,
-} from "@/lib/name-registration/constants";
+import { getResolverAddress } from "@/lib/name-registration/utils";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;
@@ -47,11 +44,10 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
       handleNextStep();
     }
 
-    let resolverAddress =
-      nameRegistrationData.ensResolver === EnsResolver.Custom &&
+    let resolverAddress = getResolverAddress(
+      nameRegistrationData.ensResolver,
       nameRegistrationData.customResolverAddress
-        ? nameRegistrationData.customResolverAddress
-        : ensResolverAddress[nameRegistrationData.ensResolver];
+    );
 
     try {
       const setDomainRecordsRes = await setDomainRecords({

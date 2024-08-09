@@ -5,10 +5,7 @@ import { TransactionErrorType } from "@/lib/wallet/txError";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
-import {
-  EnsResolver,
-  ensResolverAddress,
-} from "@/lib/name-registration/constants";
+import { getResolverAddress } from "@/lib/name-registration/utils";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -36,11 +33,10 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
-    let resolverAddress =
-      nameRegistrationData.ensResolver === EnsResolver.Custom &&
+    let resolverAddress = getResolverAddress(
+      nameRegistrationData.ensResolver,
       nameRegistrationData.customResolverAddress
-        ? nameRegistrationData.customResolverAddress
-        : ensResolverAddress[nameRegistrationData.ensResolver];
+    );
 
     return await register({
       authenticatedAddress: address,

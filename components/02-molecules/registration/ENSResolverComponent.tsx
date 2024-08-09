@@ -11,6 +11,8 @@ import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { Input, RadioButton, Typography } from "@ensdomains/thorin";
 import { useEffect, useRef, useState } from "react";
 import { isAddress } from "viem";
+import toast from "react-hot-toast";
+import { getResolverAddress } from "@/lib/name-registration/utils";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -206,6 +208,16 @@ export const ENSResolverComponent = ({
             (ensResolver === EnsResolver.Custom && !isAddress(customAddress))
           }
           onClick={() => {
+            if (ensResolver === EnsResolver.Custom) {
+              if (isAddress(customAddress)) {
+                let resAddress = getResolverAddress(ensResolver, customAddress);
+                setCustomResolverAddress(resAddress);
+              } else {
+                toast.error("Resolver address is invalid");
+                return;
+              }
+            }
+
             handleNextStep();
           }}
         />
