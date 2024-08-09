@@ -201,7 +201,10 @@ export const ENSResolverComponent = ({
       )}
       <div className="w-full flex">
         <NextButton
-          disabled={ensResolver === null}
+          disabled={
+            ensResolver === null ||
+            (ensResolver === EnsResolver.Custom && !isAddress(customAddress))
+          }
           onClick={() => {
             if (ensResolver === EnsResolver.Custom) {
               if (isAddress(customAddress)) {
