@@ -374,6 +374,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </SkeletonGroup>
       <Modal open={modalOpen} onDismiss={() => {}}>
         <EditModalContent
+          onRecordsEdited={handleFetchENSDomainData}
           closeModal={() => {
             setModalOpen(false);
           }}

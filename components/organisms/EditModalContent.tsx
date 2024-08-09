@@ -36,9 +36,13 @@ const tabComponents: Record<Tab, React.FC> = {
 
 interface EditModalContentProps {
   closeModal: () => void;
+  onRecordsEdited?: () => void;
 }
 
-export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
+export const EditModalContent = ({
+  closeModal,
+  onRecordsEdited,
+}: EditModalContentProps) => {
   const [selectedTab, setSelectedTab] = useState(Tab.Profile);
   const [isSaving, setIsSaving] = useState(false);
   const [recordsEdited, setRecordsEdited] = useState(false);
@@ -127,6 +131,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       <SaveModalEdits
         changedFields={changedFields}
         nextStep={() => {
+          onRecordsEdited && onRecordsEdited();
           setRecordsEdited(true);
         }}
         back={() => {
@@ -151,8 +156,8 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
               "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
               {
                 "text-blue-500 border-blue-500": selectedTab === Tab.Profile,
-                "text-gray-500 border-gray-200": selectedTab !== Tab.Profile
-              }
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Profile,
+              },
             ])}
           >
             Profile
@@ -161,15 +166,13 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Accounts);
             }}
-            className={
-              cc([
-                "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
-                {
-                  "text-blue-500 border-blue-500": selectedTab === Tab.Accounts,
-                  "text-gray-500 border-gray-200": selectedTab !== Tab.Accounts
-                }
-              ])
-            }
+            className={cc([
+              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              {
+                "text-blue-500 border-blue-500": selectedTab === Tab.Accounts,
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Accounts,
+              },
+            ])}
           >
             Accounts
           </button>
@@ -177,15 +180,13 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Addresses);
             }}
-            className={
-              cc(["py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
-                {
-
-                  "text-blue-500 border-blue-500": selectedTab === Tab.Addresses,
-                  "text-gray-500 border-gray-200": selectedTab !== Tab.Addresses
-                }
-              ])
-            }
+            className={cc([
+              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              {
+                "text-blue-500 border-blue-500": selectedTab === Tab.Addresses,
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Addresses,
+              },
+            ])}
           >
             Addresses
           </button>
