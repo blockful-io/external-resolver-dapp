@@ -1,10 +1,16 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { useEffect, useState } from "react";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
+import { useAccount } from "wagmi";
 
 interface SetTextRecordsSocialAccountsComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
+}
+
+export enum SocialAccountsKeys {
+  EMAIL = "email",
 }
 
 export const SetTextRecordsSocialAccountsComponent = ({
@@ -13,13 +19,28 @@ export const SetTextRecordsSocialAccountsComponent = ({
 }: SetTextRecordsSocialAccountsComponentProps) => {
   const { setTextRecords, nameRegistrationData } = useNameRegistration();
   const [socialAccounts, setSocialAccounts] = useState({
-    email: "",
+    [SocialAccountsKeys.EMAIL]: "",
   });
+  const { address } = useAccount();
 
   useEffect(() => {
-    setTextRecords({ ...nameRegistrationData.textRecords, ...socialAccounts });
-  }, [socialAccounts]);
+    const socialAccountsTextRecords = Object.values(SocialAccountsKeys).reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: nameRegistrationData?.textRecords[key],
+      }),
+      {}
+    );
+    setSocialAccounts({ ...socialAccounts, ...socialAccountsTextRecords });
+  }, []);
 
+  const saveSocialAccountsTextRecordsInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        textRecords: { ...nameRegistrationData.textRecords, ...socialAccounts },
+      });
+    }
+  };
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -32,11 +53,8 @@ export const SetTextRecordsSocialAccountsComponent = ({
             Social accounts
           </h1>
         </div>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col space-y-[22px] mb-[10px] w-full"
-        >
-          {Object.keys(socialAccounts).map((socialAccount) => (
+        <form className="flex flex-col space-y-[22px] mb-[10px] w-full">
+          {Object.values(SocialAccountsKeys).map((socialAccount) => (
             <div
               key={socialAccount}
               className="flex flex-col items-start space-y-2 w-full"
@@ -65,9 +83,21 @@ export const SetTextRecordsSocialAccountsComponent = ({
                   </p>
                 </button> */}
               </div>
+              {/* <Input
+                key={field.label}
+                clearable
+                label={field.label}
+                placeholder={field.placeholder}
+                type="text"
+                value={field.value}
+                onChange={(e) =>
+                  updateField(Tab.Profile, index, e.target.value)
+                }
+              /> */}
               <input
                 type="text"
                 id={socialAccount}
+                value={socialAccounts[socialAccount as SocialAccountsKeys]}
                 onChange={(e) =>
                   setSocialAccounts({
                     ...socialAccounts,
@@ -83,7 +113,16 @@ export const SetTextRecordsSocialAccountsComponent = ({
           </Button> */}
         </form>
       </div>
-      <NextButton onClick={handleNextStep} />
+      <NextButton
+        onClick={() => {
+          setTextRecords({
+            ...nameRegistrationData.textRecords,
+            ...socialAccounts,
+          });
+          saveSocialAccountsTextRecordsInLocalStorage();
+          handleNextStep();
+        }}
+      />
     </div>
   );
 };

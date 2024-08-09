@@ -9,10 +9,16 @@ import {
 } from "@/components/02-molecules";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
+import { Modal } from "@ensdomains/thorin";
+import { useAccount } from "wagmi";
+import { getOpenNameRegistrationsOfNameByWallet } from "@/lib/name-registration/localStorage";
+import { isEmpty } from "lodash";
+import { LocalRegistrationNameData } from "@/lib/name-registration/types";
+import { ContinueRegistrationModalContent } from "@/components/organisms/ContinueRegistrationModalContent";
 
 export async function getServerSideProps({
   params,
@@ -29,8 +35,13 @@ export async function getServerSideProps({
 export default function RegisterNamePage({ name }: { name: string }) {
   const { setNameToRegister } = useNameRegistration();
   const router = useRouter();
+  const { address } = useAccount();
+  const [isModalContinueRegistrationOpen, setIsModalContinueRegistrationOpen] =
+    useState(false);
+  const [localNameRegistrationData, setLocalNameRegistrationData] =
+    useState<LocalRegistrationNameData>({ timerDone: false });
 
-  useEffect(() => {
+  const handleNameChange = useCallback(async () => {
     try {
       normalize(name);
     } catch {
@@ -47,16 +58,28 @@ export default function RegisterNamePage({ name }: { name: string }) {
 
       setNameToRegister(ensName);
 
-      isNameAvailable(ensName).then((isAvailable) => {
-        if (!isAvailable) {
-          router.push("/");
-          toast.error("Name is not available");
+      const isAvailable = await isNameAvailable(ensName);
+      if (address) {
+        const localStorageNameRegistrationData =
+          getOpenNameRegistrationsOfNameByWallet(address, ensName);
+
+        if (!isEmpty(localStorageNameRegistrationData)) {
+          setIsModalContinueRegistrationOpen(true);
+          setLocalNameRegistrationData(localStorageNameRegistrationData);
         }
-      });
+      }
+      if (!isAvailable) {
+        router.push("/");
+        toast.error("Name is not available");
+      }
     } catch {
       ensName = null;
     }
   }, [name]);
+
+  useEffect(() => {
+    handleNameChange();
+  }, [handleNameChange]);
 
   return (
     <div className="text-black flex h-full flex-col items-center justify-start bg-white">
@@ -68,6 +91,13 @@ export default function RegisterNamePage({ name }: { name: string }) {
           <RegistrationSummary />
         </div>
       </div>
+      <Modal open={isModalContinueRegistrationOpen} onDismiss={() => {}}>
+        <ContinueRegistrationModalContent
+          name={name}
+          localNameRegistrationData={localNameRegistrationData}
+          setIsModalContinueRegistrationOpen={setIsModalContinueRegistrationOpen}
+        />
+      </Modal>
     </div>
   );
 }

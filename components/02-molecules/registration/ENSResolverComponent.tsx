@@ -11,6 +11,8 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
 import { RadioButton, Typography } from "@ensdomains/thorin";
 import { useEffect, useRef } from "react";
+import { useAccount } from "wagmi";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -28,6 +30,8 @@ export const ENSResolverComponent = ({
 
   const { nameRegistrationData, setEnsResolver } = useNameRegistration();
 
+  const { address } = useAccount();
+
   const { ensResolver } = nameRegistrationData;
 
   const handleENSResolverSelection = (
@@ -39,6 +43,14 @@ export const ENSResolverComponent = ({
   useEffect(() => {
     setEnsResolver(EnsResolver.Database);
   }, []);
+
+  const saveEnsResolverInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        ensResolver,
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
@@ -183,7 +195,13 @@ export const ENSResolverComponent = ({
         </div>
       </div>
 
-      <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
+      <NextButton
+        disabled={ensResolver === null}
+        onClick={() => {
+          saveEnsResolverInLocalStorage();
+          handleNextStep();
+        }}
+      />
     </div>
   );
 };

@@ -2,13 +2,15 @@ import { BackButton, NextButton } from "@/components/01-atoms";
 import { useEffect, useState } from "react";
 import cc from "classcat";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { useAccount } from "wagmi";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface SetTextRecordsBasicInfoComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
-enum BasicInfoKey {
+export enum BasicInfoKey {
   WEBSITE = "url",
   DESCRIPTION = "description",
 }
@@ -26,8 +28,8 @@ export const SetTextRecordsBasicInfoComponent = ({
     [BasicInfoKey.WEBSITE]: false,
     [BasicInfoKey.DESCRIPTION]: false,
   });
-
-  const { setTextRecords } = useNameRegistration();
+  const { address } = useAccount();
+  const { setTextRecords, nameRegistrationData } = useNameRegistration();
 
   const validateForm = () => {
     let websiteIsValid = true;
@@ -51,11 +53,37 @@ export const SetTextRecordsBasicInfoComponent = ({
 
     if (websiteIsValid && descriptionIsValid) {
       setTextRecords({
+        ...nameRegistrationData.textRecords,
         [BasicInfoKey.WEBSITE]: basicInfo[BasicInfoKey.WEBSITE],
         [BasicInfoKey.DESCRIPTION]: basicInfo[BasicInfoKey.DESCRIPTION],
       });
-
+      saveTextRecordsInLocalStorage({
+        ...nameRegistrationData.textRecords,
+        [BasicInfoKey.WEBSITE]: basicInfo[BasicInfoKey.WEBSITE],
+        [BasicInfoKey.DESCRIPTION]: basicInfo[BasicInfoKey.DESCRIPTION],
+      });
       handleNextStep();
+    }
+  };
+
+  useEffect(() => {
+    const basicInfoTextRecords = Object.values(BasicInfoKey).reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: nameRegistrationData?.textRecords[key] || "",
+      }),
+      {}
+    );
+    setBasicInfo({ ...basicInfo, ...basicInfoTextRecords });
+  }, []);
+
+  const saveTextRecordsInLocalStorage = (
+    textRecords: Record<string, string>
+  ) => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        textRecords,
+      });
     }
   };
 
@@ -70,7 +98,7 @@ export const SetTextRecordsBasicInfoComponent = ({
           <h1 className="text-[30px] text-[#1E2122] font-bold">Basic info</h1>
         </div>
         <form className="flex flex-col space-y-[22px] mb-[10px] w-full">
-          {Object.keys(basicInfo).map((key) => (
+          {Object.values(BasicInfoKey).map((key) => (
             <div
               key={key}
               className="flex flex-col items-start space-y-2 w-full"
@@ -81,6 +109,7 @@ export const SetTextRecordsBasicInfoComponent = ({
               <input
                 type="text"
                 id={key}
+                value={basicInfo[key as BasicInfoKey]}
                 onChange={(e) =>
                   setBasicInfo({
                     ...basicInfo,

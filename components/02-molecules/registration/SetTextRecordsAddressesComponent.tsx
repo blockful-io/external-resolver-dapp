@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { isAddress } from "viem";
 import { Input } from "@ensdomains/thorin";
 import { useAccount } from "wagmi";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 interface SetTextRecordsAddressesComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
@@ -14,11 +15,11 @@ type Address = {
   isValid: boolean;
 };
 
-type Addresses = {
+export type Addresses = {
   [key: string]: Address;
 };
 
-const convertAddressesToRecord = (
+export const convertAddressesToRecord = (
   addresses: Addresses
 ): Record<string, string> => {
   return Object.keys(addresses).reduce((acc, key) => {
@@ -31,8 +32,8 @@ export const SetTextRecordsAddressesComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: SetTextRecordsAddressesComponentProps) => {
-  const { address: authedAddress } = useAccount();
   const { setDomainAddresses, nameRegistrationData } = useNameRegistration();
+  const { address: authedAddress } = useAccount();
   const [addresses, setAddresses] = useState<Addresses>({
     ETH: { address: "", isValid: true },
   });
@@ -67,6 +68,40 @@ export const SetTextRecordsAddressesComponent = ({
     }
   }, [authedAddress]);
 
+  useEffect(() => {
+    if (
+      nameRegistrationData?.domainAddresses &&
+      Object.keys(nameRegistrationData?.domainAddresses).length > 0
+    ) {
+      const addresses = Object.keys(
+        nameRegistrationData.domainAddresses
+      ).reduce((acc, key) => {
+        return {
+          ...acc,
+          [key]: {
+            address: nameRegistrationData.domainAddresses[key],
+            isValid: true,
+          },
+        };
+      }, {});
+
+      setAddresses(addresses);
+    }
+  }, []);
+
+  const saveDomainAddressesInLocalStorage = (
+    domainAddresses: Record<string, string>
+  ) => {
+    if (authedAddress && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(
+        authedAddress,
+        nameRegistrationData.name,
+        {
+          domainAddresses,
+        }
+      );
+    }
+  };
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
@@ -138,6 +173,9 @@ export const SetTextRecordsAddressesComponent = ({
         onClick={() => {
           if (!anyInvalidAddresses()) {
             setDomainAddresses(convertAddressesToRecord(addresses));
+            saveDomainAddressesInLocalStorage(
+              convertAddressesToRecord(addresses)
+            );
             handleNextStep();
           } else {
             validateAddressesInputs();
