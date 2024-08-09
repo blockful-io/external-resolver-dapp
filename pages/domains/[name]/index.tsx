@@ -101,7 +101,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
         obj[text.key] = text.value;
         return obj;
       }, {});
-
   }
 
   if (!ensData && !isLoading) {

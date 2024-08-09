@@ -14,8 +14,6 @@ import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 
 import { normalize } from "viem/ens";
-import assert from "assert";
-import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 // ENS Domain Data query
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -44,32 +42,40 @@ export interface ResolvedEnsData {
   owner?: string;
 }
 
-// ENS Domain Coins utils
-export enum DomainAddressesSupportedCryptocurrencies {
-  BTC = "BTC",
-  LTC = "LTC",
-  DOGE = "DOGE",
-  ETH = "ETH",
-  BNB = "BNB",
-}
-
-export const cryptocurrencyToCoinType = {
-  [DomainAddressesSupportedCryptocurrencies.BTC]: "0",
-  [DomainAddressesSupportedCryptocurrencies.LTC]: "2",
-  [DomainAddressesSupportedCryptocurrencies.DOGE]: "3",
-  [DomainAddressesSupportedCryptocurrencies.ETH]: "60",
-  [DomainAddressesSupportedCryptocurrencies.BNB]: "714",
+export const cryptocurrencies: { [k: string]: string } = {
+  BTC: "BTC",
+  LTC: "LTC",
+  DOGE: "DOGE",
+  ETH: "ETH",
+  BNB: "BNB",
+  ARB1: "ARB1",
+  OP: "OP",
+  MATIC: "MATIC",
 };
 
-export const cryptocurrenciesToSymbol = {
-  [DomainAddressesSupportedCryptocurrencies.BTC]: "₿",
-  [DomainAddressesSupportedCryptocurrencies.LTC]: "Ł",
-  [DomainAddressesSupportedCryptocurrencies.DOGE]: "Ð",
-  [DomainAddressesSupportedCryptocurrencies.ETH]: "Ξ",
-  [DomainAddressesSupportedCryptocurrencies.BNB]: "₿",
+export const cryptocurrenciesToCoinType: { [k: string]: string } = {
+  [cryptocurrencies.BTC]: "0",
+  [cryptocurrencies.LTC]: "2",
+  [cryptocurrencies.DOGE]: "3",
+  [cryptocurrencies.ETH]: "60",
+  [cryptocurrencies.BNB]: "714",
+  [cryptocurrencies.ARB1]: "2147525809",
+  [cryptocurrencies.OP]: "2147483658",
+  [cryptocurrencies.MATIC]: "2147483658",
 };
 
-// // ENS Data network requests
+export const cryptocurrenciesToSymbol: { [k: string]: string } = {
+  [cryptocurrencies.BTC]: "₿",
+  [cryptocurrencies.LTC]: "Ł",
+  [cryptocurrencies.DOGE]: "Ð",
+  [cryptocurrencies.ETH]: "Ξ",
+  [cryptocurrencies.BNB]: "₿",
+  [cryptocurrencies.ARB1]: "ARB",
+  [cryptocurrencies.OP]: "OP",
+  [cryptocurrencies.MATIC]: "MATIC",
+};
+
+// ENS Data network requests
 // const fetchEnsDataRequest = async (domain: string) => {
 //   const res = await fetch(ENS_SUBGRAPH_ENDPOINT, {
 //     method: "POST",
@@ -219,14 +225,19 @@ export async function getENSDomainData(
         texts: availableTextRecords?.length
           ? availableTextRecords
           : defaultTextRecords,
-        coins: ["ETH"],
+        coins: [
+          cryptocurrencies.ETH,
+          cryptocurrencies.BTC,
+          cryptocurrencies.ARB1,
+          cryptocurrencies.OP,
+          cryptocurrencies.MATIC,
+        ],
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
       getExpiry.batch({ name: domain })
     ),
   ]);
-
   const textRecords = batchResults[0];
   const owner = batchResults[1];
   const expiry = batchResults[2];
@@ -263,6 +274,5 @@ export async function getENSDomainData(
     owner: ownerName?.name ?? owner?.owner,
     expiry: expiry?.expiry?.date?.getTime(),
   };
-
   return updatedTextRecords;
 }
