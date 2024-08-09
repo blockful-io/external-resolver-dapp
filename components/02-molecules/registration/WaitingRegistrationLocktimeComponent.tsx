@@ -1,7 +1,9 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import CountdownTimer from "@/components/01-atoms/CountdownTimer";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 interface WaitingRegistrationLocktimeComponentProps {
   handlePreviousStep: () => void;
@@ -17,10 +19,9 @@ export const WaitingRegistrationLocktimeComponent = ({
   const { nameRegistrationData } = useNameRegistration();
   const [timerDone, setTimerDone] = useState(false);
   const [timer, setTimer] = useState<number | null>(null);
-
+  const { address } = useAccount();
   useEffect(() => {
     if (nameRegistrationData.commitSubmitTimestamp === null) return;
-
     const date = new Date();
 
     const remainingTimer = Math.round(
@@ -42,6 +43,11 @@ export const WaitingRegistrationLocktimeComponent = ({
   useEffect(() => {
     if (timer !== null && !timer) {
       setTimerDone(true);
+      if (address && nameRegistrationData.name) {
+        setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+          timerDone: true,
+        });
+      }
     }
   }, [timer]);
 

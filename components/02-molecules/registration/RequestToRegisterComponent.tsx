@@ -10,6 +10,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useBalance } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
@@ -28,7 +29,6 @@ export const RequestToRegisterComponent = ({
   const { nameRegistrationData, setCommitSubmitTimestamp } =
     useNameRegistration();
   const { openConnectModal } = useConnectModal();
-
   const commitToRegister = async (): Promise<
     `0x${string}` | TransactionErrorType
   > => {
@@ -49,6 +49,14 @@ export const RequestToRegisterComponent = ({
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });
+  };
+
+  const saveCommitSubmitTimestampInLocalStorage = (date: Date) => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        commitTimestamp: date,
+      });
+    }
   };
 
   return (
@@ -83,7 +91,9 @@ export const RequestToRegisterComponent = ({
         ) : (
           <BlockchainCTA
             onSuccess={() => {
-              setCommitSubmitTimestamp(new Date());
+              const commitTimestamp = new Date();
+              setCommitSubmitTimestamp(commitTimestamp);
+              saveCommitSubmitTimestampInLocalStorage(commitTimestamp);
               handleNextStep();
             }}
             transactionRequest={commitToRegister}
