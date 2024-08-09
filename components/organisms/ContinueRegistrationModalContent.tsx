@@ -59,7 +59,7 @@ export const ContinueRegistrationModal = ({
       return;
     }
 
-    //Verifying if the commit timestamp was already saved
+    // Verifying if the commit timestamp was already saved
     if (localNameRegistrationData.commitTimestamp === undefined) {
       setCurrentRegistrationStep(RegistrationStep.RequestToRegister);
       return;
