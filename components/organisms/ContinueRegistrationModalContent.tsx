@@ -115,6 +115,7 @@ export const ContinueRegistrationModalContent = ({
       endNameRegistrationPreviouslyOpen(address, nameRegistrationData.name);
     }
   };
+  
   return (
     <div className="w-[480px] border rounded-xl overflow-hidden">
       <div className="border-b border-gray-200">
