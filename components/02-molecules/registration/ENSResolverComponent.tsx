@@ -187,19 +187,17 @@ export const ENSResolverComponent = ({
         </div>
       </div>
       {ensResolver === EnsResolver.Custom && (
-        <div className="flex w-full">
-          <Input
-            clearable
-            label={"Ens Resolver"}
-            placeholder={"Resolver address"}
-            type="text"
-            className="text-left"
-            value={customAddress}
-            onChange={(e) => {
-              setCustomAddress(e.target.value);
-            }}
-          />
-        </div>
+        <Input
+          clearable
+          label={<div className="w-full flex justify-start">Ens Resolver</div>}
+          placeholder="Resolver address"
+          type="text"
+          className="!flex !items-start !justify-start"
+          value={customAddress}
+          onChange={(e) => {
+            setCustomAddress(e.target.value);
+          }}
+        />
       )}
       <div className="w-full flex">
         <NextButton
