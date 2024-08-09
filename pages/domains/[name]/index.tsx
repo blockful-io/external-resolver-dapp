@@ -63,12 +63,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
     handleFetchENSDomainData();
   }, []);
 
-  useEffect(() => {
-    if (!modalOpen) {
-      handleFetchENSDomainData();
-    }
-  }, [modalOpen]);
-
   const excludeKeys = [
     "com.twitter",
     "com.telegram",
@@ -365,6 +359,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </SkeletonGroup>
       <Modal open={modalOpen} onDismiss={() => {}}>
         <EditModalContent
+          onRecordsEdited={handleFetchENSDomainData}
           closeModal={() => {
             setModalOpen(false);
           }}
