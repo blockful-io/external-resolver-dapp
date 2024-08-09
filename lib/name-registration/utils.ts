@@ -41,13 +41,3 @@ export const getRegistrationStepBlock = (
       throw new Error("Invalid registration step");
   }
 };
-
-// Utility function to get the resolver address
-export const getResolverAddress = (
-  ensResolver: EnsResolver,
-  customResolverAddress: Address | null
-): Address => {
-  return ensResolver === EnsResolver.Custom && customResolverAddress
-    ? customResolverAddress
-    : ensResolverAddress[ensResolver];
-};
