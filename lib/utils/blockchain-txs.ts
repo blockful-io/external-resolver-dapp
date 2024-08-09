@@ -21,10 +21,7 @@ import {
   BaseError,
   RawContractError,
   Hash,
-  Hex,
-  Address,
-  toHex,
-  http,
+  fromBytes,
 } from "viem";
 import { isTestnet, SupportedNetwork } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
@@ -36,13 +33,14 @@ import {
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
-import { normalize, packetToBytes } from "viem/ens";
+import { normalize } from "viem/ens";
+import { cryptocurrencies, cryptocurrenciesToCoinType } from "./ensData";
+import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import {
-  DomainAddressesSupportedCryptocurrencies,
-  cryptocurrencyToCoinType,
-} from "./ensData";
-import { useEnsResolver } from "wagmi";
-import { universalResolverResolveAbi } from "viem/_types/constants/abis";
+  CcipRequestParameters,
+  DomainData,
+  MessageData,
+} from "./types";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -50,44 +48,6 @@ const walletConnectProjectId =
 if (!walletConnectProjectId) {
   throw new Error("No wallet connect project ID informed");
 }
-
-/**
- * @notice Struct used to define the domain of the typed data signature, defined in EIP-712.
- * @param name The user friendly name of the contract that the signature corresponds to.
- * @param version The version of domain object being used.
- * @param chainId The ID of the chain that the signature corresponds to (ie Ethereum mainnet: 1, Goerli testnet: 5, ...).
- * @param verifyingContract The address of the contract that the signature pertains to.
- */
-export type DomainData = {
-  name: string;
-  version: string;
-  chainId: number;
-  verifyingContract: `0x${string}`;
-};
-
-/**
- * @notice Struct used to define a parameter for off-chain Database Handler deferral.
- * @param name The variable name of the parameter.
- * @param value The string encoded value representation of the parameter.
- */
-export type Parameter = {
-  name: string;
-  value: string;
-};
-
-/**
- * @notice Struct used to define the message context used to construct a typed data signature, defined in EIP-712,
- * to authorize and define the deferred mutation being performed.
- * @param functionSelector The function selector of the corresponding mutation.
- * @param sender The address of the user performing the mutation (msg.sender).
- * @param parameter[] A list of <key, value> pairs defining the inputs used to perform the deferred mutation.
- */
-export type MessageData = {
-  functionSelector: `0x${string}`;
-  sender: `0x${string}`;
-  parameters: Parameter[];
-  expirationTimestamp: bigint;
-};
 
 const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
   return createWalletClient({
@@ -148,17 +108,6 @@ export async function makeCommitment({
       return errorType || error;
     });
 }
-
-export type TypedSignature = {
-  signature: `0x${string}`;
-  domain: DomainData;
-  message: MessageData;
-};
-
-export type CcipRequestParameters = {
-  body: { data: Hex; signature: TypedSignature; sender: Address };
-  url: string;
-};
 
 export async function ccipRequest({
   body,
@@ -421,21 +370,24 @@ export const setDomainRecords = async ({
     }
 
     for (let i = 0; i < Object.keys(addresses).length; i++) {
-      const value = Object.values(addresses)[i];
-
+      const [cryptocurrencyName, address] = Object.entries(addresses)[i];
+      if (
+        !Object.keys(cryptocurrencies).includes(
+          cryptocurrencyName.toUpperCase()
+        )
+      ) {
+        console.error(`cryptocurrency ${cryptocurrencyName} not supported`);
+        continue;
+      }
+      const coinType =
+        cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
+      const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
+      const addressEncoded = fromBytes(coder.decode(address), "hex");
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
-        // To be replaced when multiple coin types are supported
-        args: [
-          namehash(publicAddress),
-          cryptocurrencyToCoinType[
-            DomainAddressesSupportedCryptocurrencies.ETH
-          ],
-          value,
-        ],
+        args: [namehash(publicAddress), coinType, addressEncoded],
       });
-
       calls.push(callData);
     }
 

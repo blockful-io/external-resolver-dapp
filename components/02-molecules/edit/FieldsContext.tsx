@@ -4,6 +4,7 @@ import { isAddress } from "viem";
 import _ from "lodash";
 import { ResolvedEnsData, TextRecords } from "@/lib/utils/ensData";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
+import validateBitcoinAddress from "bitcoin-address-validation";
 
 interface FieldsContextType {
   profileFields: Field[];
@@ -187,12 +188,57 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
 
         return fieldIsEmpty || isValidAddress;
       },
     } as Field,
+    {
+      label: "btc",
+      placeholder: "bc1000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          !!validateBitcoinAddress(fieldValue);
+
+        return fieldIsEmpty || isValidAddress;
+      },
+    } as Field,
+    {
+      label: "arb1",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "opt",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "matic",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
   ]);
 
   // INITIAL ADDRESS STATE
@@ -206,12 +252,56 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       validationFunction: (fieldValue: string) => {
         const fieldIsEmpty: boolean = fieldValue === "";
-        const isAddressValid: boolean =
-          typeof fieldValue === "string" && !!isAddress(fieldValue);
+        const isAddressValid: boolean = !!isAddress(fieldValue);
 
         return fieldIsEmpty || isAddressValid;
       },
-    } as Field,
+    },
+    {
+      label: "btc",
+      placeholder: "bc1000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> =
+          !!validateBitcoinAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "arb1",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "opt",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
+    {
+      label: "matic",
+      placeholder: "0x0000000000000000000000000000000000000000",
+      fieldType: FieldType.Address,
+      value: "",
+      validationFunction: (fieldValue: string) => {
+        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+        return fieldIsEmpty || isValidAddress;
+      },
+    },
   ]);
 
   const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {
@@ -239,7 +329,9 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       if (coinNames.includes(field.label)) {
         return {
           ...field,
-          value: (ensData.coins as DecodedAddr[]).find((coin)=>coin.name===field.label)?.value as string,
+          value: (ensData.coins as DecodedAddr[]).find(
+            (coin) => coin.name === field.label
+          )?.value as string,
         };
       }
       return field;
