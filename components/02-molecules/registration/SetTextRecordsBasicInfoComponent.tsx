@@ -32,11 +32,9 @@ export const SetTextRecordsBasicInfoComponent = ({
 
   const validateForm = () => {
     const websiteInfo = basicInfo[BasicInfoKey.WEBSITE];
-    const websiteIsValid =
-      !websiteInfo ||
-      /^(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/g.test(
-        websiteInfo
-      );
+    var urlR =
+      /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
+    const websiteIsValid = !websiteInfo || websiteInfo.match(urlR);
 
     setHasErrorInKeyValues((prev) => ({
       ...prev,
