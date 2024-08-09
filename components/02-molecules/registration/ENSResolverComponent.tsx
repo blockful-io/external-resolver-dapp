@@ -206,14 +206,7 @@ export const ENSResolverComponent = ({
             (ensResolver === EnsResolver.Custom && !isAddress(customAddress))
           }
           onClick={() => {
-            if (ensResolver === EnsResolver.Custom) {
-              if (isAddress(customAddress)) {
-                setCustomResolverAddress(customAddress);
-                handleNextStep();
-              }
-            } else {
-              handleNextStep();
-            }
+            handleNextStep();
           }}
         />
       </div>
