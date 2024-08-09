@@ -35,7 +35,7 @@ export const ContinueRegistrationModal = ({
   const { address } = useAccount();
 
   const continueRegistration = () => {
-    //Set State of Registration Years
+    // Set State of Registration Years
     if (
       localNameRegistrationData.registrationYears !== undefined &&
       localNameRegistrationData.registrationYears >= 1
@@ -46,7 +46,7 @@ export const ContinueRegistrationModal = ({
       return;
     }
 
-    //Set State of As Primary Name
+    // Set State of As Primary Name
     if (localNameRegistrationData.asPrimaryName !== undefined) {
       setAsPrimaryName(localNameRegistrationData.asPrimaryName as boolean);
     } else {
@@ -77,7 +77,7 @@ export const ContinueRegistrationModal = ({
     }
     setTextRecords(localNameRegistrationData.textRecords);
     if (
-      //Checking if some of the basic info is already saved in the text records
+      // Checking if some of the basic info is already saved in the text records
       !Object.values(BasicInfoKey).some((key) =>
         Object.keys(
           localNameRegistrationData.textRecords as Record<string, string>
@@ -88,7 +88,7 @@ export const ContinueRegistrationModal = ({
       return;
     }
     if (
-      //Checking if some of the social accounts is already saved in the text records
+      // Checking if some of the social accounts is already saved in the text records
       !Object.values(SocialAccountsKeys).some((key) =>
         Object.keys(
           localNameRegistrationData.textRecords as Record<string, string>
@@ -103,7 +103,7 @@ export const ContinueRegistrationModal = ({
       setCurrentRegistrationStep(RegistrationStep.SetTextRecordsAddresses);
       return;
     }
-    //Setting up Domain Addresses
+    // Setting up Domain Addresses
     setDomainAddresses(localNameRegistrationData.domainAddresses);
 
     const remainingTimer = Math.round(
