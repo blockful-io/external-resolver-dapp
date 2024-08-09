@@ -70,12 +70,9 @@ export const SetTextRecordsAddressesComponent = ({
 
   useEffect(() => {
     const domainsAddressesKeys = Object.keys(
-        nameRegistrationData.domainAddresses
-      )
-  
-    if (
-      domainsAddressesKeys.length > 0
-    ) {
+      nameRegistrationData.domainAddresses
+    );
+    if (domainsAddressesKeys.length > 0) {
       const addresses = domainsAddressesKeys.reduce((acc, key) => {
         return {
           ...acc,
@@ -93,13 +90,9 @@ export const SetTextRecordsAddressesComponent = ({
     domainAddresses: Record<string, string>
   ) => {
     if (address && nameRegistrationData.name) {
-      setNameRegistrationInLocalStorage(
-        address,
-        nameRegistrationData.name,
-        {
-          domainAddresses,
-        }
-      );
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        domainAddresses,
+      });
     }
   };
   return (
@@ -146,11 +139,7 @@ export const SetTextRecordsAddressesComponent = ({
                 label={address}
                 placeholder="Your address"
                 disabled={!!nameRegistrationData.asPrimaryName}
-                value={
-                  !!nameRegistrationData.asPrimaryName
-                    ? address
-                    : addresses[address].address
-                }
+                value={addresses[address].address}
                 onChange={(e) =>
                   setAddresses((prevAddresses) => ({
                     ...prevAddresses,

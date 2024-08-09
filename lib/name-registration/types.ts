@@ -13,5 +13,4 @@ export type LocalNameRegistrationData = {
   commitTimestamp?: Date;
   textRecords?: Record<string, string>;
   domainAddresses?: Record<string, string>;
-  timerDone: boolean;
 };

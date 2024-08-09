@@ -41,7 +41,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
     setModalForContinuingRegistrationIsOpen,
   ] = useState(false);
   const [localNameRegistrationData, setLocalNameRegistrationData] =
-    useState<LocalNameRegistrationData>({ timerDone: false });
+    useState<LocalNameRegistrationData>({});
 
   const handleNameChange = useCallback(async () => {
     try {

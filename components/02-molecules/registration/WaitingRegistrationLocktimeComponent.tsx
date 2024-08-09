@@ -1,5 +1,6 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import CountdownTimer from "@/components/01-atoms/CountdownTimer";
+import { ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME } from "@/lib/name-registration/constants";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useEffect, useState } from "react";
@@ -10,8 +11,6 @@ interface WaitingRegistrationLocktimeComponentProps {
   handleNextStep: () => void;
 }
 
-const ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME = 60000;
-
 export const WaitingRegistrationLocktimeComponent = ({
   handlePreviousStep,
   handleNextStep,
@@ -19,7 +18,6 @@ export const WaitingRegistrationLocktimeComponent = ({
   const { nameRegistrationData } = useNameRegistration();
   const [timerDone, setTimerDone] = useState(false);
   const [timer, setTimer] = useState<number | null>(null);
-  const { address } = useAccount();
   useEffect(() => {
     if (nameRegistrationData.commitSubmitTimestamp === null) return;
     const date = new Date();
@@ -43,11 +41,6 @@ export const WaitingRegistrationLocktimeComponent = ({
   useEffect(() => {
     if (timer !== null && !timer) {
       setTimerDone(true);
-      if (address && nameRegistrationData.name) {
-        setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
-          timerDone: true,
-        });
-      }
     }
   }, [timer]);
 
