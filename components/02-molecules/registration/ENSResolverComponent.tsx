@@ -121,7 +121,7 @@ export const ENSResolverComponent = ({
             </div>
             <div className="flex items-center justify-center gap-2">
               <DatabaseIcon className="h-6 w-6" />
-              Custom Off-chain Resolver
+              Custom Resolver
             </div>
           </div>
 
