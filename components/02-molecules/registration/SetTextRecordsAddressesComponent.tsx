@@ -60,7 +60,7 @@ export const SetTextRecordsAddressesComponent = ({
   };
 
   useEffect(() => {
-    if (authedAddress && nameRegistrationData.asPrimaryName) {
+    if (authedAddress) {
       setAddresses({
         ETH: { address: authedAddress, isValid: true },
       });
