@@ -1,4 +1,10 @@
-import { RegistrationBlock, RegistrationStep } from "./constants";
+import { Address } from "viem";
+import {
+  EnsResolver,
+  ensResolverAddress,
+  RegistrationBlock,
+  RegistrationStep,
+} from "./constants";
 
 /* NAME REGISTRATION UI RELATED LOGIC ⬇️ */
 
@@ -34,4 +40,14 @@ export const getRegistrationStepBlock = (
     default:
       throw new Error("Invalid registration step");
   }
+};
+
+// Utility function to get the resolver address
+export const getResolverAddress = (
+  ensResolver: EnsResolver,
+  customResolverAddress: Address | null
+): Address => {
+  return ensResolver === EnsResolver.Custom && customResolverAddress
+    ? customResolverAddress
+    : ensResolverAddress[ensResolver];
 };

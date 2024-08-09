@@ -9,11 +9,13 @@ import {
   getName,
   getOwner,
   getRecords,
+  getResolver,
 } from "@ensdomains/ensjs/public";
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 
 import { normalize } from "viem/ens";
+import assert from "assert";
 
 // ENS Domain Data query
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -235,7 +237,8 @@ export async function getENSDomainData(
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
-      getExpiry.batch({ name: domain })
+      getExpiry.batch({ name: domain }),
+      getResolver.batch({ name: domain })
     ),
   ]);
   const textRecords = batchResults[0];

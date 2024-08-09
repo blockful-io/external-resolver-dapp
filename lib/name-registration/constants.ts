@@ -37,6 +37,7 @@ export enum EnsResolver {
   Database = "Database",
   Arbitrum = "Arbitrum",
   Optimism = "Optimism",
+  Custom = "Custom",
 }
 
 export const ENSResolverToNetwork = {
@@ -77,6 +78,7 @@ const databaseResolverAddress =
 
 export const ensResolverAddress: Record<EnsResolver, `0x${string}`> = {
   [EnsResolver.Database]: databaseResolverAddress,
+  [EnsResolver.Custom]: databaseResolverAddress,
   [EnsResolver.Arbitrum]: "0xfE47e2f223e4D098B84E79AF5fC5faA33bf6Da4D",
   [EnsResolver.Optimism]: "0x55b00cD5e9Bd2Bb5eB001969E0BE7ac17b505c2f",
   // [EnsResolver.Mainnet]: "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63",

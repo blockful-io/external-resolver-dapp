@@ -10,6 +10,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useBalance } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
+import { getResolverAddress } from "@/lib/name-registration/utils";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
@@ -42,10 +43,15 @@ export const RequestToRegisterComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
+    let resolverAddress = getResolverAddress(
+      nameRegistrationData.ensResolver,
+      nameRegistrationData.customResolverAddress
+    );
+
     return await commit({
       authenticatedAddress: address,
       ensName: nameRegistrationData.name,
-      domainResolver: nameRegistrationData.ensResolver,
+      resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });

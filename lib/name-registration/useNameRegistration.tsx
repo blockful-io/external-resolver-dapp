@@ -4,6 +4,7 @@ import {
   updateCommitSubmitTimestamp,
   updateCommitTxReceipt,
   updateCurrentRegistrationStep,
+  updateCustomResolverAddress,
   updateDomainAddresses,
   updateEnsResolver,
   updateEstimatedNetworkFee,
@@ -17,7 +18,7 @@ import {
 } from "./actions";
 import { EnsResolver, RegistrationStep } from "./constants";
 import { ENSName } from "@namehash/ens-utils";
-import { TransactionReceipt } from "viem";
+import { Address, TransactionReceipt } from "viem";
 import {
   endNameRegistrationPreviouslyOpen,
   getNameRegistrationSecret,
@@ -33,6 +34,7 @@ interface NameRegistrationData {
     registerTxReceipt: TransactionReceipt | null;
     commitTxReceipt: TransactionReceipt | null;
     currentRegistrationStep: RegistrationStep;
+    customResolverAddress: Address | null;
     estimatedNetworkFee: bigint | null;
     registrationPrice: bigint | null;
     registrationYears: number;
@@ -53,6 +55,7 @@ interface NameRegistrationData {
   setRegistrationYears: (registrationYears: number) => void;
   setNameToRegister: (nameToRegister: ENSName) => void;
   setAsPrimaryName: (asPrimaryName: boolean) => void;
+  setCustomResolverAddress: (customResolverAddress: Address) => void;
   setEnsResolver: (ensResolver: EnsResolver) => void;
   setTextRecords: (textRecords: Record<string, string>) => void;
   setDomainAddresses: (domainAddresses: Record<string, string>) => void;
@@ -75,6 +78,10 @@ export const useNameRegistration = (): NameRegistrationData => {
   const registerTxReceipt = useAppSelector((state) => state.registerTxReceipt);
   const commitTxReceipt = useAppSelector((state) => state.commitTxReceipt);
   const asPrimaryName = useAppSelector((state) => state.asPrimaryName);
+
+  const customResolverAddress = useAppSelector(
+    (state) => state.customResolverAddress
+  );
   const ensResolver = useAppSelector((state) => state.ensResolver);
   const namePrice = useAppSelector((state) => state.namePrice);
   const name = useAppSelector((state) => state.name);
@@ -140,6 +147,10 @@ export const useNameRegistration = (): NameRegistrationData => {
     dispatch(updateRegistrationPrice(registrationPrice));
   };
 
+  const setCustomResolverAddress = (customResolverAddress: Address) => {
+    dispatch(updateCustomResolverAddress(customResolverAddress));
+  };
+
   const setTextRecords = (textRecords: Record<string, string>) => {
     dispatch(updateTextRecords(textRecords));
   };
@@ -154,6 +165,7 @@ export const useNameRegistration = (): NameRegistrationData => {
         commitSubmitTimestamp,
         currentRegistrationStep,
         estimatedNetworkFee,
+        customResolverAddress,
         registrationYears,
         registrationPrice,
         registerTxReceipt,
@@ -170,6 +182,7 @@ export const useNameRegistration = (): NameRegistrationData => {
     setEstimatedNetworkFee,
     setRegistrationYears,
     setRegistrationPrice,
+    setCustomResolverAddress,
     setRegisterTxReceipt,
     setCommitTxReceipt,
     setNameToRegister,
