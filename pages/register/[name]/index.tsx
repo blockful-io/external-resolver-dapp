@@ -13,12 +13,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
-import { Modal } from "@ensdomains/thorin";
 import { useAccount } from "wagmi";
 import { getOpenNameRegistrationsOfNameByWallet } from "@/lib/name-registration/localStorage";
 import { isEmpty } from "lodash";
 import { LocalNameRegistrationData } from "@/lib/name-registration/types";
-import { ContinueRegistrationModalContent } from "@/components/organisms/ContinueRegistrationModalContent";
+import { ContinueRegistrationModal } from "@/components/organisms/ContinueRegistrationModalContent";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 
 export async function getServerSideProps({
@@ -37,8 +36,10 @@ export default function RegisterNamePage({ name }: { name: string }) {
   const { setNameToRegister } = useNameRegistration();
   const router = useRouter();
   const { address } = useAccount();
-  const [modalContinueRegistrationIsOpen, setModalForContinuingRegistrationIsOpen] =
-    useState(false);
+  const [
+    modalContinueRegistrationIsOpen,
+    setModalForContinuingRegistrationIsOpen,
+  ] = useState(false);
   const [localNameRegistrationData, setLocalNameRegistrationData] =
     useState<LocalNameRegistrationData>({ timerDone: false });
 
@@ -98,13 +99,12 @@ export default function RegisterNamePage({ name }: { name: string }) {
           <RegistrationSummary />
         </div>
       </div>
-      <Modal open={modalContinueRegistrationIsOpen} onDismiss={() => {}}>
-        <ContinueRegistrationModalContent
-          name={name}
-          localNameRegistrationData={localNameRegistrationData}
-          onClose={setModalForContinuingRegistrationIsOpen}
-        />
-      </Modal>
+      <ContinueRegistrationModal
+        open={modalContinueRegistrationIsOpen}
+        name={name}
+        localNameRegistrationData={localNameRegistrationData}
+        onClose={() => setModalForContinuingRegistrationIsOpen(false)}
+      />
     </div>
   );
 }

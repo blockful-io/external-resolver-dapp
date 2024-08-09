@@ -5,16 +5,18 @@ import { BasicInfoKey, SocialAccountsKeys } from "../02-molecules";
 import { endNameRegistrationPreviouslyOpen } from "@/lib/name-registration/localStorage";
 import { useAccount } from "wagmi";
 import { Dispatch, SetStateAction } from "react";
-import { Button } from "@ensdomains/thorin";
+import { Button, Modal } from "@ensdomains/thorin";
 
-export const ContinueRegistrationModalContent = ({
+export const ContinueRegistrationModal = ({
   name,
   localNameRegistrationData,
   onClose,
+  open,
 }: {
+  open: boolean;
   name: string;
   localNameRegistrationData: LocalNameRegistrationData;
-  onClose: Dispatch<SetStateAction<boolean>>;
+  onClose: Function;
 }) => {
   const {
     setRegistrationYears,
@@ -115,39 +117,41 @@ export const ContinueRegistrationModalContent = ({
       endNameRegistrationPreviouslyOpen(address, nameRegistrationData.name);
     }
   };
-  
+
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden">
-      <div className="border-b border-gray-200">
-        <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
-          <span>
-            You have a registration in progress for the name <b>{name}</b>, do
-            you want to
-            <span className="text-sky-500"> continue </span>
-            or <span className="text-gray-500"> clear </span> the progress and
-            start a new registration?
-          </span>
-        </div>
-        <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
-          <Button
-            onClick={() => {
-              continueRegistration();
-              setModalForContinuingRegistrationIsOpen(false);
-            }}
-          >
-            Continue
-          </Button>
-          <Button
-            onClick={() => {
-              clearRegistrationOfCurrentName();
-              onClose();
-            }}
-            colorStyle="greySecondary"
-          >
-            Clear
-          </Button>
+    <Modal open={open} onDismiss={() => {}}>
+      <div className="w-[480px] border rounded-xl overflow-hidden">
+        <div className="border-b border-gray-200">
+          <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+            <span>
+              You have a registration in progress for the name <b>{name}</b>, do
+              you want to
+              <span className="text-sky-500"> continue </span>
+              or <span className="text-gray-500"> clear </span> the progress and
+              start a new registration?
+            </span>
+          </div>
+          <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+            <Button
+              onClick={() => {
+                continueRegistration();
+                onClose();
+              }}
+            >
+              Continue
+            </Button>
+            <Button
+              onClick={() => {
+                clearRegistrationOfCurrentName();
+                onClose();
+              }}
+              colorStyle="greySecondary"
+            >
+              Clear
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
