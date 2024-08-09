@@ -106,20 +106,19 @@ export const ContinueRegistrationModal = ({
     // Setting up Domain Addresses
     setDomainAddresses(localNameRegistrationData.domainAddresses);
 
+    const currentDate = new Date();
+    const commitTimestamp = new Date(localNameRegistrationData.commitTimestamp);
+
     const remainingTimer = Math.round(
       ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME / 1000 -
-        Math.round(
-          (new Date().getTime() -
-            new Date(localNameRegistrationData.commitTimestamp).getTime()) /
-            1000
-        )
+        Math.round((currentDate.getTime() - commitTimestamp.getTime()) / 1000)
     );
 
     if (remainingTimer > 0) {
       setCurrentRegistrationStep(RegistrationStep.WaitingRegistrationLocktime);
       return;
     }
-    
+
     if (!localNameRegistrationData.commitTxReceipt) {
       setCurrentRegistrationStep(RegistrationStep.NameSecuredToBeRegistered);
       return;
