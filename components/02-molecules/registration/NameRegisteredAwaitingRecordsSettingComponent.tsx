@@ -43,7 +43,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
       handleNextStep();
     }
 
-    let resolverAddress = getResolverAddress();
+    const resolverAddress = getResolverAddress();
 
     try {
       const setDomainRecordsRes = await setDomainRecords({
