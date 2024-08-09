@@ -5,6 +5,7 @@ import {
   Button,
   CheckCircleSVG,
   LinkSVG,
+  Spinner,
   WalletSVG,
 } from "@ensdomains/thorin";
 import Link from "next/link";
@@ -47,6 +48,7 @@ export const BlockchainCTA = ({
   const [txHashOrError, setTxHashOrError] = useState<
     `0x${string}` | undefined
   >();
+
   const { chain, address } = useAccount();
 
   useEffect(() => {
@@ -160,12 +162,7 @@ const TransactionRequestConfirmedCTA = ({
         colorStyle="bluePrimary"
         onClick={onClick}
         shape="rounded"
-        suffix={
-          <span className="relative flex h-2 w-2 ml-1">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-          </span>
-        }
+        suffix={<Spinner />}
       >
         Awaiting Blockchain confirmation
       </Button>

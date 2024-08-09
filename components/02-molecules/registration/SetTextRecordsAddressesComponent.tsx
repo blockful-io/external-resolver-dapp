@@ -61,7 +61,7 @@ export const SetTextRecordsAddressesComponent = ({
   };
 
   useEffect(() => {
-    if (authedAddress && nameRegistrationData.asPrimaryName) {
+    if (authedAddress) {
       setAddresses({
         ETH: { address: authedAddress, isValid: true },
       });
@@ -105,7 +105,7 @@ export const SetTextRecordsAddressesComponent = ({
   return (
     <div className="w-full flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
         <div>
           <p className="text-sm text-[#9b9ba7] font-bold text-start">
             Profile settings
@@ -169,19 +169,21 @@ export const SetTextRecordsAddressesComponent = ({
           </Button> */}
         </form>
       </div>
-      <NextButton
-        onClick={() => {
-          if (!anyInvalidAddresses()) {
-            setDomainAddresses(convertAddressesToRecord(addresses));
-            saveDomainAddressesInLocalStorage(
-              convertAddressesToRecord(addresses)
-            );
-            handleNextStep();
-          } else {
-            validateAddressesInputs();
-          }
-        }}
-      />
+      <div className="w-[500px] flex">
+        <NextButton
+          onClick={() => {
+            if (!anyInvalidAddresses()) {
+              setDomainAddresses(convertAddressesToRecord(addresses));
+              saveDomainAddressesInLocalStorage(
+                convertAddressesToRecord(addresses)
+              );
+              handleNextStep();
+            } else {
+              validateAddressesInputs();
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

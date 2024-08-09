@@ -38,7 +38,7 @@ export const PrimaryNameComponent = ({
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
 
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-7">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-7 min-h-[300px]">
         <h3 className="text-start text-[34px] font-medium">
           Do you want to use this domain as your primary name?
         </h3>
@@ -76,14 +76,15 @@ export const PrimaryNameComponent = ({
           </div>
         </div>
       </div>
-
-      <NextButton
-        disabled={asPrimaryName === null}
-        onClick={() => {
-          saveAsPrimaryNameInLocalStorage();
-          handleNextStep();
-        }}
-      />
+      <div className="w-full flex">
+        <NextButton
+          disabled={asPrimaryName === null}
+          onClick={() => {
+            saveAsPrimaryNameInLocalStorage();
+            handleNextStep();
+          }}
+        />
+      </div>
     </div>
   );
 };

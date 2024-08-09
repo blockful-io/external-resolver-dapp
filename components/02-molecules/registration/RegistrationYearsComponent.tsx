@@ -34,7 +34,7 @@ export const RegistrationYearsComponent = ({
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={() => {}} disabled={true} />
-      <div className="max-w-[500px] w-full flex flex-col gap-7">
+      <div className="max-w-[500px] w-full flex flex-col gap-7 min-h-[300px]">
         <h3 className="text-start text-[34px] font-medium">
           How many years do you want to register this domain?
         </h3>
@@ -57,12 +57,12 @@ export const RegistrationYearsComponent = ({
           </div>
         </div>
       </div>
-      <NextButton
-        onClick={() => {
+      <div className="w-full flex">
+        <NextButton onClick={() => {
           saveRegistrationYearsInLocalStorage();
           handleNextStep();
-        }}
-      />
+        }} />
+      </div>
     </div>
   );
 };

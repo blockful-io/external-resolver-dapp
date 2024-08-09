@@ -19,6 +19,7 @@ import { getOpenNameRegistrationsOfNameByWallet } from "@/lib/name-registration/
 import { isEmpty } from "lodash";
 import { LocalRegistrationNameData } from "@/lib/name-registration/types";
 import { ContinueRegistrationModalContent } from "@/components/organisms/ContinueRegistrationModalContent";
+import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 
 export async function getServerSideProps({
   params,
@@ -47,6 +48,12 @@ export default function RegisterNamePage({ name }: { name: string }) {
     } catch {
       router.push("/");
       toast.error("Invalid name");
+    }
+
+    // check if domain is supported
+    if (stringHasMoreThanOneDot(domainWithEth(name))) {
+      router.push("/");
+      toast.error("Name not supported");
     }
 
     let ensName: null | ENSName;
