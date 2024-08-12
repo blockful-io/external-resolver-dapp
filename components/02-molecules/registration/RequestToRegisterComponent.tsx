@@ -9,6 +9,7 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import { useAccount, useBalance } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
@@ -51,6 +52,14 @@ export const RequestToRegisterComponent = ({
     });
   };
 
+  const saveCommitSubmitTimestampInLocalStorage = (date: Date) => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        commitTimestamp: date,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} disabled={true} />
@@ -83,7 +92,9 @@ export const RequestToRegisterComponent = ({
         ) : (
           <BlockchainCTA
             onSuccess={() => {
-              setCommitSubmitTimestamp(new Date());
+              const commitTimestamp = new Date();
+              setCommitSubmitTimestamp(commitTimestamp);
+              saveCommitSubmitTimestampInLocalStorage(commitTimestamp);
               handleNextStep();
             }}
             transactionRequest={commitToRegister}

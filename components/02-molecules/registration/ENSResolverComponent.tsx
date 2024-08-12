@@ -12,6 +12,8 @@ import { Input, RadioButton, Typography } from "@ensdomains/thorin";
 import { useEffect, useRef, useState } from "react";
 import { isAddress } from "viem";
 import toast from "react-hot-toast";
+import { useAccount } from "wagmi";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -35,6 +37,8 @@ export const ENSResolverComponent = ({
     getResolverAddress,
   } = useNameRegistration();
 
+  const { address } = useAccount();
+
   const { ensResolver } = nameRegistrationData;
 
   const handleENSResolverSelection = (
@@ -46,6 +50,14 @@ export const ENSResolverComponent = ({
   useEffect(() => {
     setEnsResolver(EnsResolver.Database);
   }, []);
+
+  const saveEnsResolverInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        ensResolver,
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
@@ -222,7 +234,7 @@ export const ENSResolverComponent = ({
                 return;
               }
             }
-
+            saveEnsResolverInLocalStorage();
             handleNextStep();
           }}
         />

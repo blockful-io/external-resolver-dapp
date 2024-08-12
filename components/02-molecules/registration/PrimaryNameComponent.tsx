@@ -1,7 +1,9 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton } from "@ensdomains/thorin";
 import { useRef } from "react";
+import { useAccount } from "wagmi";
 
 interface PrimaryNameComponentProps {
   handlePreviousStep: () => void;
@@ -14,6 +16,7 @@ export const PrimaryNameComponent = ({
 }: PrimaryNameComponentProps) => {
   const radioButtonRefYes = useRef(null);
   const radioButtonRefNo = useRef(null);
+  const { address } = useAccount();
 
   const { nameRegistrationData, setAsPrimaryName } = useNameRegistration();
 
@@ -21,6 +24,14 @@ export const PrimaryNameComponent = ({
 
   const handleDivClick = (radioRef: React.RefObject<HTMLInputElement>) => {
     radioRef?.current?.click();
+  };
+
+  const saveAsPrimaryNameInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        asPrimaryName,
+      });
+    }
   };
 
   return (
@@ -68,7 +79,10 @@ export const PrimaryNameComponent = ({
       <div className="w-full flex">
         <NextButton
           disabled={asPrimaryName === null}
-          onClick={handleNextStep}
+          onClick={() => {
+            saveAsPrimaryNameInLocalStorage();
+            handleNextStep();
+          }}
         />
       </div>
     </div>

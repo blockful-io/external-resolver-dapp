@@ -1,6 +1,8 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { MinusSVG, PlusSVG } from "@ensdomains/thorin";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
+import { useAccount } from "wagmi";
 
 interface RegistrationYearsComponentProps {
   handleNextStep: () => void;
@@ -10,7 +12,7 @@ export const RegistrationYearsComponent = ({
   handleNextStep,
 }: RegistrationYearsComponentProps) => {
   const { nameRegistrationData, setRegistrationYears } = useNameRegistration();
-
+  const { address } = useAccount();
   const { registrationYears } = nameRegistrationData;
 
   const handlePlusButtonClick = () => {
@@ -19,6 +21,14 @@ export const RegistrationYearsComponent = ({
 
   const handleMinusButtonClick = () => {
     setRegistrationYears(registrationYears - 1);
+  };
+
+  const saveRegistrationYearsInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        registrationYears,
+      });
+    }
   };
 
   return (
@@ -48,7 +58,10 @@ export const RegistrationYearsComponent = ({
         </div>
       </div>
       <div className="w-full flex">
-        <NextButton onClick={handleNextStep} />
+        <NextButton onClick={() => {
+          saveRegistrationYearsInLocalStorage();
+          handleNextStep();
+        }} />
       </div>
     </div>
   );
