@@ -32,9 +32,9 @@ export const SetTextRecordsBasicInfoComponent = ({
 
   const validateForm = () => {
     const websiteInfo = basicInfo[BasicInfoKey.WEBSITE];
-    var urlR =
+    var urlRegex =
       /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-    const websiteIsValid = !websiteInfo || websiteInfo.match(urlR);
+    const websiteIsValid = !websiteInfo || websiteInfo.match(urlRegex);
 
     setHasErrorInKeyValues((prev) => ({
       ...prev,
