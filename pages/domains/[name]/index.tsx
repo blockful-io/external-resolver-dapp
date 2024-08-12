@@ -1,4 +1,5 @@
 import {
+  DatabaseIcon,
   EmailIcon,
   GithubIcon,
   LinkedInIcon,
@@ -19,7 +20,6 @@ import {
   Button,
   CalendarSVG,
   CogSVG,
-  EthSVG,
   EthTransparentSVG,
   Heading,
   HeartSVG,
@@ -39,6 +39,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateFieldsWithEnsData } = useFields();
+
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
@@ -348,6 +349,20 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         icon={EthTransparentSVG}
                         label="parent"
                         text="ETH"
+                      />
+                    </Skeleton>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <Skeleton>
+                    <h3 className="font-semibold text-base">Resolver</h3>
+                  </Skeleton>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Skeleton>
+                      <ProfileRecordItem
+                        icon={DatabaseIcon}
+                        text={ensData?.resolverAddress}
                       />
                     </Skeleton>
                   </div>

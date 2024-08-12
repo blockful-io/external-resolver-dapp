@@ -19,7 +19,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
   handleNextStep,
 }: NameRegisteredAwaitingRecordsSettingComponentProps) => {
   const { address } = useAccount();
-  const { nameRegistrationData } = useNameRegistration();
+  const { nameRegistrationData, getResolverAddress } = useNameRegistration();
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
@@ -43,12 +43,14 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
       handleNextStep();
     }
 
+    const resolverAddress = getResolverAddress();
+
     try {
       const setDomainRecordsRes = await setDomainRecords({
         authenticatedAddress: address,
         ensName: nameRegistrationData.name,
         textRecords: nameRegistrationData.textRecords,
-        domainResolver: nameRegistrationData.ensResolver,
+        resolverAddress: resolverAddress,
         addresses: nameRegistrationData.domainAddresses,
       });
 

@@ -6,7 +6,6 @@ import {
 } from "@/components/01-atoms";
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useBalance } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
@@ -26,9 +25,9 @@ export const RequestToRegisterComponent = ({
     address,
     chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
   });
-  const { nameRegistrationData, setCommitSubmitTimestamp } =
+  const { nameRegistrationData, setCommitSubmitTimestamp, getResolverAddress } =
     useNameRegistration();
-  const { openConnectModal } = useConnectModal();
+
   const commitToRegister = async (): Promise<
     `0x${string}` | TransactionErrorType
   > => {
@@ -42,10 +41,12 @@ export const RequestToRegisterComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
+    const resolverAddress = getResolverAddress();
+
     return await commit({
       authenticatedAddress: address,
       ensName: nameRegistrationData.name,
-      domainResolver: nameRegistrationData.ensResolver,
+      resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });
