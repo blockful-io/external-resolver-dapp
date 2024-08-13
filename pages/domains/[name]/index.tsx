@@ -99,11 +99,12 @@ export function ManageNamePageContent({ name }: { name: string }) {
   }
 
   let filteredRecords: Record<string, string> = {};
-  if (ensData && Array.isArray(ensData.texts)) {
-    filteredRecords = ensData.texts
-      .filter((text: TextRecord) => !excludeKeys.includes(text.key))
-      .reduce((obj: Record<string, string>, text: TextRecord) => {
-        obj[text.key] = text.value;
+
+  if (ensData && typeof ensData.texts === "object") {
+    filteredRecords = Object.entries(ensData.texts)
+      .filter(([key, _]) => !excludeKeys.includes(key))
+      .reduce((obj: Record<string, string>, [key, value]) => {
+        obj[key] = value as string; // Type assertion to string
         return obj;
       }, {});
   }
@@ -278,18 +279,20 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         <h3 className="font-semibold text-base">Addresses</h3>
                       </Skeleton>
                       <div className="grid grid-cols-2 gap-4">
-                        {ensData?.coins.map((coin: CoinInfo | undefined) => (
-                          <>
-                            {coin ? (
-                              <Skeleton key={coin.name}>
-                                <ProfileRecordItem
-                                  icon={EthTransparentSVG}
-                                  text={coin.value}
-                                />
-                              </Skeleton>
-                            ) : null}
-                          </>
-                        ))}
+                        {ensData?.coins.map(
+                          (coin: CoinInfo | undefined, index: number) => (
+                            <div key={index}>
+                              {coin ? (
+                                <Skeleton key={coin.name}>
+                                  <ProfileRecordItem
+                                    icon={EthTransparentSVG}
+                                    text={coin.value}
+                                  />
+                                </Skeleton>
+                              ) : null}
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                   )}

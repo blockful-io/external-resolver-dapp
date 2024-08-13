@@ -212,9 +212,8 @@ export async function getENSDomainData(
   }
 
   const textRecordsKeys = await getSubgraphRecords(client, { name: domain });
-  const availableTextRecords = isTestnet
-    ? defaultTextRecords
-    : textRecordsKeys?.texts;
+
+  const availableTextRecords = textRecordsKeys?.texts;
 
   const [newAvatar, batchResults] = await Promise.all([
     publicClient.getEnsAvatar({
