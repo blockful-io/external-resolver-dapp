@@ -137,7 +137,7 @@ export const ContinueRegistrationModal = ({
         <div className="border-b border-gray-200">
           <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
             <span>
-              You have a registration in progress for the name <b>{name}</b>, do
+              You have a registration in progress for the name <b>{name}.eth</b>, do
               you want to
               <span className="text-sky-500"> continue </span>
               or <span className="text-gray-500"> clear </span> the progress and
