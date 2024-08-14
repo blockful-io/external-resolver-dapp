@@ -13,8 +13,9 @@ import {
 } from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
+import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
-import { formatDate } from "@/lib/utils/formats";
+import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {
   Button,
@@ -34,6 +35,7 @@ import { useEffect, useState } from "react";
 
 export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
 
   const [ensData, setEnsData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -360,10 +362,28 @@ export function ManageNamePageContent({ name }: { name: string }) {
                   </Skeleton>
                   <div className="grid grid-cols-2 gap-4">
                     <Skeleton>
-                      <ProfileRecordItem
-                        icon={DatabaseIcon}
-                        text={ensData?.resolverAddress}
-                      />
+                      <div className="flex justify-between items-center gap-4 px-2 py-2 rounded-md bg-gray-50 overflow-hidden">
+                        <div className="flex items-center gap-4">
+                          <div className="flex gap-4 p-2 rounded-md bg-blue-100">
+                            <DatabaseIcon className="h-5 w-5 text-blue-500" />
+                          </div>
+
+                          <p className="whitespace-nowrap truncate">
+                            {formatHexAddress(ensData?.resolverAddress)}
+                          </p>
+                        </div>
+
+                        <div>
+                          <Button
+                            onClick={() => {
+                              setEditResolverModalOpen(true);
+                            }}
+                            size="small"
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      </div>
                     </Skeleton>
                   </div>
                 </div>
@@ -377,6 +397,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
           onRecordsEdited={handleFetchENSDomainData}
           closeModal={() => {
             setModalOpen(false);
+          }}
+        />
+      </Modal>
+      <Modal open={editResolverModalOpen} onDismiss={() => {}}>
+        <EditResolverModalContent
+          closeModal={() => {
+            setEditResolverModalOpen(false);
           }}
         />
       </Modal>

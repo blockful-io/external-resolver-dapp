@@ -55,7 +55,7 @@ export const client = createClient({
 
 // Create a wallet client for sending transactions to the blockchain
 export const walletClient = createWalletClient({
-  chain: isTestnet ? sepolia : mainnet,
+  chain: chain,
   transport: http(rpcHttpUrl),
 });
 
