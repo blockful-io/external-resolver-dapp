@@ -102,7 +102,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   if (ensData && typeof ensData.texts === "object") {
     filteredRecords = Object.entries(ensData.texts)
-      .filter(([key, _]) => !excludeKeys.includes(key))
+      .filter(([key]) => !excludeKeys.includes(key))
       .reduce((obj: Record<string, string>, [key, value]) => {
         obj[key] = value as string; // Type assertion to string
         return obj;

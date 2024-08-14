@@ -9,7 +9,12 @@ import { useAccount } from "wagmi";
 export default function DomainsPage() {
   const [names, setNames] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const { address } = useAccount();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const getNames = async () => {
@@ -34,7 +39,7 @@ export default function DomainsPage() {
   return (
     <div className="w-full text-black px-5 flex h-full flex-col items-center justify-start">
       <div className="w-full flex-col gap-8 py-10 flex justify-start max-w-[1216px]">
-        {!address ? (
+        {!address && isClient ? (
           <div className="w-full flex flex-col gap-4 items-center justify-center">
             <Heading level="2" className="text-start text-[26px]">
               You have to connect your wallet to see your domains 😉
