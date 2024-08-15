@@ -130,7 +130,10 @@ export const EditResolverModalContent = ({
             </div>
             <div>
               <Button
-                disabled={!isAddress(resolverAddress)}
+                disabled={
+                  !isAddress(resolverAddress) ||
+                  resolverAddress === currentResolverAddress
+                }
                 onClick={() => {
                   handleSaveAction();
                 }}
