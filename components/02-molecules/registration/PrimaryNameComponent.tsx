@@ -1,7 +1,9 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton } from "@ensdomains/thorin";
 import { useRef } from "react";
+import { useAccount } from "wagmi";
 
 interface PrimaryNameComponentProps {
   handlePreviousStep: () => void;
@@ -14,6 +16,7 @@ export const PrimaryNameComponent = ({
 }: PrimaryNameComponentProps) => {
   const radioButtonRefYes = useRef(null);
   const radioButtonRefNo = useRef(null);
+  const { address } = useAccount();
 
   const { nameRegistrationData, setAsPrimaryName } = useNameRegistration();
 
@@ -23,11 +26,19 @@ export const PrimaryNameComponent = ({
     radioRef?.current?.click();
   };
 
+  const saveAsPrimaryNameInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        asPrimaryName,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
 
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-7">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-7 min-h-[300px]">
         <h3 className="text-start text-[34px] font-medium">
           Do you want to use this domain as your primary name?
         </h3>
@@ -65,8 +76,15 @@ export const PrimaryNameComponent = ({
           </div>
         </div>
       </div>
-
-      <NextButton disabled={asPrimaryName === null} onClick={handleNextStep} />
+      <div className="w-full flex">
+        <NextButton
+          disabled={asPrimaryName === null}
+          onClick={() => {
+            saveAsPrimaryNameInLocalStorage();
+            handleNextStep();
+          }}
+        />
+      </div>
     </div>
   );
 };

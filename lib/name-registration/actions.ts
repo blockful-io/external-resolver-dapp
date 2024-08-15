@@ -4,7 +4,7 @@ import { ThunkAction } from "redux-thunk";
 import { EnsResolver, RegistrationStep } from "./constants";
 import { Action } from "redux";
 import { ENSName } from "@namehash/ens-utils";
-import { TransactionReceipt } from "viem";
+import { Address, TransactionReceipt } from "viem";
 
 // Action types
 export enum NameRegistrationAction {
@@ -19,6 +19,7 @@ export enum NameRegistrationAction {
   "model/currentRegistrationStep" = "model/currentRegistrationStep",
   "model/registrationYears" = "model/registrationYears",
   "model/asPrimaryName" = "model/asPrimaryName",
+  "model/customResolverAddress" = "model/customResolverAddress",
   "model/ensResolver" = "model/ensResolver",
   "model/name" = "model/name",
 }
@@ -78,6 +79,13 @@ export const updateEstimatedNetworkFee = (estimatedNetworkFee: bigint) => ({
 export const updateRegistrationPrice = (registrationPrice: bigint) => ({
   type: NameRegistrationAction["controller/registrationPrice"],
   payload: registrationPrice,
+});
+
+export const updateCustomResolverAddress = (
+  customResolverAddress: Address
+) => ({
+  type: NameRegistrationAction["model/customResolverAddress"],
+  payload: customResolverAddress,
 });
 
 export const updateCommitSubmitTimestamp = (timestamp: Date) => ({

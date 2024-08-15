@@ -27,3 +27,16 @@ export const formatDate = ({ unixTimestamp }: { unixTimestamp: number }) => {
   const formattedDate = date.format("D MMMM, YYYY");
   return formattedDate;
 };
+
+export const domainWithEth = (domain: string): string => {
+  return domain.endsWith(".eth") ? domain : `${domain}.eth`;
+};
+
+export const stringHasMoreThanOneDot = (domain: string): boolean => {
+  const dotCount = (domain.match(/\./g) || []).length;
+  return dotCount > 1;
+};
+
+export const capitalizeString = (text: string): string => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

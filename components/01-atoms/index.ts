@@ -7,6 +7,7 @@ export * from "./ProgressBar";
 export * from "./ProgressBlockTab";
 export * from "./ENSResolverTag";
 export * from "./ConnectMetamask";
+export * from "./HeaderLink";
 
 // exports from ./icons
 export * from "./icons/arbitrum";
@@ -20,3 +21,6 @@ export * from "./icons/twitter";
 export * from "./icons/info-circle";
 export * from "./icons/optimism";
 export * from "./icons/pencil-icon";
+export * from "./icons/plus-circle-icon";
+export * from "./icons/cog-icon";
+export * from "./icons/plus-circle-icon";

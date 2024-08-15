@@ -2,8 +2,6 @@ import { BackButton, BlockchainCTA } from "@/components/01-atoms";
 import { register } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-import { Button, WalletSVG } from "@ensdomains/thorin";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { TransactionReceipt } from "viem";
 import { useAccount } from "wagmi";
 
@@ -17,8 +15,8 @@ export const NameSecuredToBeRegisteredComponent = ({
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) => {
   const { address } = useAccount();
-  const { nameRegistrationData, setCommitTxReceipt } = useNameRegistration();
-  const { openConnectModal } = useConnectModal();
+  const { nameRegistrationData, setCommitTxReceipt, getResolverAddress } =
+    useNameRegistration();
 
   const registerName = async (): Promise<
     `0x${string}` | TransactionErrorType
@@ -33,10 +31,12 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
+    const resolverAddress = getResolverAddress();
+
     return await register({
       authenticatedAddress: address,
       ensName: nameRegistrationData.name,
-      domainResolver: nameRegistrationData.ensResolver,
+      resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });
@@ -45,7 +45,7 @@ export const NameSecuredToBeRegisteredComponent = ({
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} disabled={true} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
         <h3 className="text-7xl">🤝</h3>
         <h3 className="text-start text-[34px] font-medium">
           Now let&apos;s do the register transaction

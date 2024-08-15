@@ -4,6 +4,7 @@ import {
   OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY,
 } from "@/lib/name-registration/constants";
 import { createNameRegistrationSecret } from "@/lib/utils/blockchain-txs";
+import { LocalNameRegistrationData } from "./types";
 
 // GET
 export const getOpenNameRegistrations = (): Record<string, any> => {
@@ -16,7 +17,7 @@ export const getOpenNameRegistrations = (): Record<string, any> => {
 // GET (by wallet)
 const getOpenNameRegistrationsForAuthedUser = (
   authedUser: `0x${string}`
-): Record<string, any> => {
+): Record<string, LocalNameRegistrationData> => {
   const openNameRegistrations = getOpenNameRegistrations();
   return openNameRegistrations[authedUser] || {};
 };
@@ -25,7 +26,7 @@ const getOpenNameRegistrationsForAuthedUser = (
 export const getOpenNameRegistrationsOfNameByWallet = (
   authedUser: `0x${string}`,
   name: ENSName
-): Record<string, any> => {
+): LocalNameRegistrationData => {
   const walletNameRegistrations =
     getOpenNameRegistrationsForAuthedUser(authedUser);
   return walletNameRegistrations[name.name] || {};
@@ -35,7 +36,7 @@ export const getOpenNameRegistrationsOfNameByWallet = (
 export const setNameRegistrationInLocalStorage = (
   authedUser: `0x${string}`,
   name: ENSName,
-  newData: Record<string, any>
+  newData: Partial<LocalNameRegistrationData>
 ): void => {
   const openNameRegistrationsForWallet =
     getOpenNameRegistrationsForAuthedUser(authedUser);
@@ -91,7 +92,7 @@ export const endNameRegistrationPreviouslyOpen = (
 export const updateNameRegistrationInLocalStorage = (
   authedUser: `0x${string}`,
   name: ENSName,
-  newData: Record<string, any>
+  newData: LocalNameRegistrationData
 ): void => {
   const openNameRegistrations =
     getOpenNameRegistrationsForAuthedUser(authedUser);

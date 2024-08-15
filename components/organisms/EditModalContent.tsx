@@ -25,6 +25,7 @@ import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
 import { publicClient } from "@/lib/wallet/wallet-config";
 import { useAccount } from "wagmi";
+import cc from "classcat";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -35,9 +36,13 @@ const tabComponents: Record<Tab, React.FC> = {
 
 interface EditModalContentProps {
   closeModal: () => void;
+  onRecordsEdited?: () => void;
 }
 
-export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
+export const EditModalContent = ({
+  closeModal,
+  onRecordsEdited,
+}: EditModalContentProps) => {
   const [selectedTab, setSelectedTab] = useState(Tab.Profile);
   const [isSaving, setIsSaving] = useState(false);
   const [recordsEdited, setRecordsEdited] = useState(false);
@@ -45,30 +50,69 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
 
   const [changedFields, setChangedFields] = useState<Field[]>([]);
 
-  const { fields, setFields, initialFields } = useFields();
+  const {
+    profileFields,
+    accountsFields,
+    addressesFields,
+    initialProfileFields,
+    initialAddressesFields,
+    initialAccountsFields,
+    setFields,
+  } = useFields();
 
   useEffect(() => {
     const changedFieldsKeys: Field[] = [];
 
-    Object.values(fields).forEach((tabFields) => {
-      tabFields.forEach((field) => {
-        if (!!field.value) {
-          changedFieldsKeys.push(field);
-        }
-      });
+    Object.values(profileFields).forEach((field) => {
+      const initialProfileField = initialProfileFields.find(
+        ({ label }) => label === field.label
+      ) ?? { value: "" };
+      if (field.value !== initialProfileField.value) {
+        changedFieldsKeys.push(field);
+      }
     });
-
+    Object.values(accountsFields).forEach((field) => {
+      const initialAccountField = initialAccountsFields.find(
+        ({ label }) => label === field.label
+      ) ?? { value: "" };
+      if (field.value !== initialAccountField.value) {
+        changedFieldsKeys.push(field);
+      }
+    });
+    Object.values(addressesFields).forEach((field) => {
+      const initialAddressField = initialAddressesFields.find(
+        ({ label }) => label === field.label
+      ) ?? { value: "" };
+      if (field.value !== initialAddressField.value) {
+        changedFieldsKeys.push(field);
+      }
+    });
     setChangedFields(changedFieldsKeys);
-  }, [fields]);
+  }, [profileFields, accountsFields, addressesFields]);
 
   const hasAnyInvalidField = () => {
-    return Object.values(fields)
+    const invalidProfileField = Object.values(profileFields)
       .flatMap((fields) => fields)
       .some(
         (field) =>
           field.validationFunction &&
           field.validationFunction(field.value) === false
       );
+    const invalidAddressesField = Object.values(addressesFields)
+      .flatMap((fields) => fields)
+      .some(
+        (field) =>
+          field.validationFunction &&
+          field.validationFunction(field.value) === false
+      );
+    const invalidAccountsField = Object.values(accountsFields)
+      .flatMap((fields) => fields)
+      .some(
+        (field) =>
+          field.validationFunction &&
+          field.validationFunction(field.value) === false
+      );
+    return invalidProfileField || invalidAddressesField || invalidAccountsField;
   };
 
   if (recordsEdited) {
@@ -87,6 +131,7 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
       <SaveModalEdits
         changedFields={changedFields}
         nextStep={() => {
+          onRecordsEdited && onRecordsEdited();
           setRecordsEdited(true);
         }}
         back={() => {
@@ -107,11 +152,13 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Profile);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-              selectedTab === Tab.Profile
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
-            }`}
+            className={cc([
+              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              {
+                "text-blue-500 border-blue-500": selectedTab === Tab.Profile,
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Profile,
+              },
+            ])}
           >
             Profile
           </button>
@@ -119,11 +166,13 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Accounts);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-              selectedTab === Tab.Accounts
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
-            }`}
+            className={cc([
+              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              {
+                "text-blue-500 border-blue-500": selectedTab === Tab.Accounts,
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Accounts,
+              },
+            ])}
           >
             Accounts
           </button>
@@ -131,11 +180,13 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             onClick={() => {
               setSelectedTab(Tab.Addresses);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
-              selectedTab === Tab.Addresses
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
-            }`}
+            className={cc([
+              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              {
+                "text-blue-500 border-blue-500": selectedTab === Tab.Addresses,
+                "text-gray-500 border-gray-200": selectedTab !== Tab.Addresses,
+              },
+            ])}
           >
             Addresses
           </button>
@@ -178,7 +229,9 @@ export const EditModalContent = ({ closeModal }: EditModalContentProps) => {
             colorStyle="greySecondary"
             onClick={() => {
               closeModal();
-              setFields(initialFields);
+              setFields(Tab.Profile, initialProfileFields);
+              setFields(Tab.Addresses, initialAddressesFields);
+              setFields(Tab.Accounts, initialAccountsFields);
             }}
           >
             Cancel

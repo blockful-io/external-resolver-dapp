@@ -9,10 +9,16 @@ import {
 } from "@/components/02-molecules";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
+import { useAccount } from "wagmi";
+import { getOpenNameRegistrationsOfNameByWallet } from "@/lib/name-registration/localStorage";
+import { isEmpty } from "lodash";
+import { LocalNameRegistrationData } from "@/lib/name-registration/types";
+import { ContinueRegistrationModal } from "@/components/organisms/ContinueRegistrationModalContent";
+import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 
 export async function getServerSideProps({
   params,
@@ -29,13 +35,26 @@ export async function getServerSideProps({
 export default function RegisterNamePage({ name }: { name: string }) {
   const { setNameToRegister } = useNameRegistration();
   const router = useRouter();
+  const { address } = useAccount();
+  const [
+    modalContinueRegistrationIsOpen,
+    setModalForContinuingRegistrationIsOpen,
+  ] = useState(false);
+  const [localNameRegistrationData, setLocalNameRegistrationData] =
+    useState<LocalNameRegistrationData>({});
 
-  useEffect(() => {
+  const handleNameChange = useCallback(async () => {
     try {
       normalize(name);
     } catch {
       router.push("/");
       toast.error("Invalid name");
+    }
+
+    // check if domain is supported
+    if (stringHasMoreThanOneDot(domainWithEth(name))) {
+      router.push("/");
+      toast.error("Name not supported");
     }
 
     let ensName: null | ENSName;
@@ -47,16 +66,28 @@ export default function RegisterNamePage({ name }: { name: string }) {
 
       setNameToRegister(ensName);
 
-      isNameAvailable(ensName).then((isAvailable) => {
-        if (!isAvailable) {
-          router.push("/");
-          toast.error("Name is not available");
+      const isAvailable = await isNameAvailable(ensName);
+      if (address) {
+        const localStorageNameRegistrationData =
+          getOpenNameRegistrationsOfNameByWallet(address, ensName);
+
+        if (!isEmpty(localStorageNameRegistrationData)) {
+          setModalForContinuingRegistrationIsOpen(true);
+          setLocalNameRegistrationData(localStorageNameRegistrationData);
         }
-      });
+      }
+      if (!isAvailable) {
+        router.push("/");
+        toast.error("Name is not available");
+      }
     } catch {
       ensName = null;
     }
   }, [name]);
+
+  useEffect(() => {
+    handleNameChange();
+  }, [handleNameChange]);
 
   return (
     <div className="text-black flex h-full flex-col items-center justify-start bg-white">
@@ -68,6 +99,12 @@ export default function RegisterNamePage({ name }: { name: string }) {
           <RegistrationSummary />
         </div>
       </div>
+      <ContinueRegistrationModal
+        open={modalContinueRegistrationIsOpen}
+        name={name}
+        localNameRegistrationData={localNameRegistrationData}
+        onClose={() => setModalForContinuingRegistrationIsOpen(false)}
+      />
     </div>
   );
 }

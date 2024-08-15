@@ -1,6 +1,6 @@
 ---
 name: Refactor request
-about: Describe this issue template's purpose here.
+about: Describe this issue refactoring purpose
 title: 'refactor: '
 labels: enhancement
 assignees: ''

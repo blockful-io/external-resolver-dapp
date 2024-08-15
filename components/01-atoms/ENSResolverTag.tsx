@@ -15,6 +15,11 @@ const ensResolverConfig = {
     label: "Off-chain",
     enabled: true,
   },
+  [EnsResolver.Custom]: {
+    icon: DatabaseIcon,
+    label: "Custom-resolver",
+    enabled: true,
+  },
   [EnsResolver.Arbitrum]: {
     icon: ArbitrumIcon,
     label: "Arbitrum",

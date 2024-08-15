@@ -6,10 +6,10 @@ import {
 } from "@/components/01-atoms";
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useBalance } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
@@ -25,9 +25,8 @@ export const RequestToRegisterComponent = ({
     address,
     chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
   });
-  const { nameRegistrationData, setCommitSubmitTimestamp } =
+  const { nameRegistrationData, setCommitSubmitTimestamp, getResolverAddress } =
     useNameRegistration();
-  const { openConnectModal } = useConnectModal();
 
   const commitToRegister = async (): Promise<
     `0x${string}` | TransactionErrorType
@@ -42,20 +41,30 @@ export const RequestToRegisterComponent = ({
       throw new Error("Impossible to register a name without a name");
     }
 
+    const resolverAddress = getResolverAddress();
+
     return await commit({
       authenticatedAddress: address,
       ensName: nameRegistrationData.name,
-      domainResolver: nameRegistrationData.ensResolver,
+      resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
     });
+  };
+
+  const saveCommitSubmitTimestampInLocalStorage = (date: Date) => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        commitTimestamp: date,
+      });
+    }
   };
 
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} disabled={true} />
 
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
         <h3 className="text-7xl">📝</h3>
         <h3 className="text-start text-[34px] font-medium">
           Start name registration
@@ -83,7 +92,9 @@ export const RequestToRegisterComponent = ({
         ) : (
           <BlockchainCTA
             onSuccess={() => {
-              setCommitSubmitTimestamp(new Date());
+              const commitTimestamp = new Date();
+              setCommitSubmitTimestamp(commitTimestamp);
+              saveCommitSubmitTimestampInLocalStorage(commitTimestamp);
               handleNextStep();
             }}
             transactionRequest={commitToRegister}

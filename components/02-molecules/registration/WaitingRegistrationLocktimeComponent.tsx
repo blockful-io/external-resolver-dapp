@@ -1,14 +1,15 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import CountdownTimer from "@/components/01-atoms/CountdownTimer";
+import { ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME } from "@/lib/name-registration/constants";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 interface WaitingRegistrationLocktimeComponentProps {
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
-
-const ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME = 60000;
 
 export const WaitingRegistrationLocktimeComponent = ({
   handlePreviousStep,
@@ -17,10 +18,8 @@ export const WaitingRegistrationLocktimeComponent = ({
   const { nameRegistrationData } = useNameRegistration();
   const [timerDone, setTimerDone] = useState(false);
   const [timer, setTimer] = useState<number | null>(null);
-
   useEffect(() => {
     if (nameRegistrationData.commitSubmitTimestamp === null) return;
-
     const date = new Date();
 
     const remainingTimer = Math.round(
@@ -62,7 +61,7 @@ export const WaitingRegistrationLocktimeComponent = ({
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
         {timer !== null && (
           <CountdownTimer
             onTimeEnd={() => setTimerDone(true)}
@@ -81,7 +80,9 @@ export const WaitingRegistrationLocktimeComponent = ({
             : `Please wait ${timeLeft} seconds to confirm the registration commitment.`}
         </p>
       </div>
-      <NextButton disabled={!timerDone} onClick={handleNextStep} />
+      <div className="w-[500px] flex">
+        <NextButton disabled={!timerDone} onClick={handleNextStep} />
+      </div>
     </div>
   );
 };

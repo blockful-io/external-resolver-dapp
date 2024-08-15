@@ -1,11 +1,16 @@
 import {
+  DatabaseIcon,
   EmailIcon,
   GithubIcon,
   LinkedInIcon,
   PencilIcon,
   TwitterIcon,
 } from "@/components/01-atoms";
-import { FieldsProvider, ProfileRecordItem } from "@/components/02-molecules";
+import {
+  FieldsProvider,
+  ProfileRecordItem,
+  useFields,
+} from "@/components/02-molecules";
 import CustomImage from "@/components/02-molecules/CustomImage";
 import { EditModalContent } from "@/components/organisms/EditModalContent";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
@@ -15,7 +20,6 @@ import {
   Button,
   CalendarSVG,
   CogSVG,
-  EthSVG,
   EthTransparentSVG,
   Heading,
   HeartSVG,
@@ -34,12 +38,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [ensData, setEnsData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { updateFieldsWithEnsData } = useFields();
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
       const data = await getENSDomainData(name);
       setEnsData(data);
+      updateFieldsWithEnsData(data);
       setError(null);
     } catch (err) {
       console.log(err);
@@ -93,14 +99,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
   }
 
   let filteredRecords: Record<string, string> = {};
-  if (ensData && Array.isArray(ensData.texts)) {
-    filteredRecords = ensData.texts
-      .filter((text: TextRecord) => !excludeKeys.includes(text.key))
-      .reduce((obj: Record<string, string>, text: TextRecord) => {
-        obj[text.key] = text.value;
+
+  if (ensData && typeof ensData.texts === "object") {
+    filteredRecords = Object.entries(ensData.texts)
+      .filter(([key]) => !excludeKeys.includes(key))
+      .reduce((obj: Record<string, string>, [key, value]) => {
+        obj[key] = value as string; // Type assertion to string
         return obj;
       }, {});
-
   }
 
   if (!ensData && !isLoading) {
@@ -116,7 +122,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </div>
     );
   }
-
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
@@ -274,18 +279,20 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         <h3 className="font-semibold text-base">Addresses</h3>
                       </Skeleton>
                       <div className="grid grid-cols-2 gap-4">
-                        {ensData?.coins.map((coin: CoinInfo | undefined) => (
-                          <>
-                            {coin ? (
-                              <Skeleton key={coin.name}>
-                                <ProfileRecordItem
-                                  icon={EthTransparentSVG}
-                                  text={coin.value}
-                                />
-                              </Skeleton>
-                            ) : null}
-                          </>
-                        ))}
+                        {ensData?.coins.map(
+                          (coin: CoinInfo | undefined, index: number) => (
+                            <div key={index}>
+                              {coin ? (
+                                <Skeleton key={coin.name}>
+                                  <ProfileRecordItem
+                                    icon={EthTransparentSVG}
+                                    text={coin.value}
+                                  />
+                                </Skeleton>
+                              ) : null}
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                   )}
@@ -349,6 +356,20 @@ export function ManageNamePageContent({ name }: { name: string }) {
                     </Skeleton>
                   </div>
                 </div>
+
+                <div className="flex flex-col gap-4">
+                  <Skeleton>
+                    <h3 className="font-semibold text-base">Resolver</h3>
+                  </Skeleton>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Skeleton>
+                      <ProfileRecordItem
+                        icon={DatabaseIcon}
+                        text={ensData?.resolverAddress}
+                      />
+                    </Skeleton>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -356,6 +377,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </SkeletonGroup>
       <Modal open={modalOpen} onDismiss={() => {}}>
         <EditModalContent
+          onRecordsEdited={handleFetchENSDomainData}
           closeModal={() => {
             setModalOpen(false);
           }}

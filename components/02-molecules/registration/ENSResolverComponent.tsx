@@ -2,15 +2,18 @@ import {
   ArbitrumIcon,
   BackButton,
   DatabaseIcon,
-  EthIcon,
   NextButton,
   OptimismIcon,
 } from "@/components/01-atoms";
 import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
-import { RadioButton, Typography } from "@ensdomains/thorin";
-import { useEffect, useRef } from "react";
+import { Input, RadioButton, Typography } from "@ensdomains/thorin";
+import { useEffect, useRef, useState } from "react";
+import { isAddress } from "viem";
+import toast from "react-hot-toast";
+import { useAccount } from "wagmi";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
 interface ENSResolverComponentProps {
   handlePreviousStep: () => void;
@@ -21,12 +24,20 @@ export const ENSResolverComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: ENSResolverComponentProps) => {
-  const radioButtonRefMainnet = useRef(null);
   const radioButtonRefDatabase = useRef(null);
+  const radioButtonRefCustomDatabase = useRef(null);
   const radioButtonRefArbitrum = useRef(null);
   const radioButtonRefOptimism = useRef(null);
+  const [customAddress, setCustomAddress] = useState("");
 
-  const { nameRegistrationData, setEnsResolver } = useNameRegistration();
+  const {
+    nameRegistrationData,
+    setEnsResolver,
+    setCustomResolverAddress,
+    getResolverAddress,
+  } = useNameRegistration();
+
+  const { address } = useAccount();
 
   const { ensResolver } = nameRegistrationData;
 
@@ -40,11 +51,18 @@ export const ENSResolverComponent = ({
     setEnsResolver(EnsResolver.Database);
   }, []);
 
+  const saveEnsResolverInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        ensResolver,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={handlePreviousStep} />
-
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-7">
+      <div className="max-w-[500px] w-full flex items-start flex-col gap-7 min-h-[300px]">
         <div className="flex flex-col gap-3">
           <h3 className="text-start text-[34px] font-medium">
             Where do you want to store the domain data?
@@ -65,33 +83,6 @@ export const ENSResolverComponent = ({
         </div>
 
         <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
-          {/* <div
-            onClick={() => handleENSResolverSelection(radioButtonRefMainnet)}
-            className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
-              ensResolver === null
-                ? "bg-white"
-                : ensResolver === EnsResolver.Mainnet
-                ? "bg-[#EEF5FF]"
-                : "bg-white"
-            }`}
-          >
-            <div>
-              <RadioButton
-                checked={ensResolver === EnsResolver.Mainnet}
-                onChange={() => {
-                  setEnsResolver(EnsResolver.Mainnet);
-                }}
-                ref={radioButtonRefMainnet}
-                label=""
-                name="RadioButtonGroup"
-                value="10"
-              />
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <EthIcon className="h-6 w-6" />
-              Mainnet
-            </div>
-          </div> */}
           <div
             onClick={() => handleENSResolverSelection(radioButtonRefDatabase)}
             className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
@@ -118,6 +109,36 @@ export const ENSResolverComponent = ({
               <DatabaseIcon className="h-6 w-6" />
               Off-chain
               <p className="text-xs mt-1">hosted by blockful</p>
+            </div>
+          </div>
+
+          <div
+            onClick={() =>
+              handleENSResolverSelection(radioButtonRefCustomDatabase)
+            }
+            className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
+              ensResolver === null
+                ? "bg-white"
+                : ensResolver === EnsResolver.Custom
+                ? "bg-[#EEF5FF]"
+                : "bg-white"
+            }`}
+          >
+            <div>
+              <RadioButton
+                checked={ensResolver === EnsResolver.Custom}
+                onChange={() => {
+                  setEnsResolver(EnsResolver.Custom);
+                }}
+                ref={radioButtonRefCustomDatabase}
+                label=""
+                name="RadioButtonGroup"
+                value="10"
+              />
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <DatabaseIcon className="h-6 w-6" />
+              Custom Resolver
             </div>
           </div>
 
@@ -182,8 +203,42 @@ export const ENSResolverComponent = ({
           </button>
         </div>
       </div>
-
-      <NextButton disabled={ensResolver === null} onClick={handleNextStep} />
+      {ensResolver === EnsResolver.Custom && (
+        <Input
+          clearable
+          label={
+            <span className="w-full flex justify-start">Ens Resolver</span>
+          }
+          placeholder="Resolver address"
+          type="text"
+          className="!flex !items-start !justify-start"
+          value={customAddress}
+          onChange={(e) => {
+            setCustomAddress(e.target.value);
+          }}
+        />
+      )}
+      <div className="w-full flex">
+        <NextButton
+          disabled={
+            ensResolver === null ||
+            (ensResolver === EnsResolver.Custom && !isAddress(customAddress))
+          }
+          onClick={() => {
+            if (ensResolver === EnsResolver.Custom) {
+              if (isAddress(customAddress)) {
+                let resAddress = getResolverAddress();
+                setCustomResolverAddress(resAddress);
+              } else {
+                toast.error("Resolver address is invalid");
+                return;
+              }
+            }
+            saveEnsResolverInLocalStorage();
+            handleNextStep();
+          }}
+        />
+      </div>
     </div>
   );
 };

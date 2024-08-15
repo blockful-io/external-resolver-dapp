@@ -2,8 +2,7 @@
 import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { NameRegistrationAction } from "./actions";
 import { EnsResolver, RegistrationStep } from "./constants";
-import { TransactionReceipt } from "viem";
-import { endNameRegistrationPreviouslyOpen } from "./localStorage";
+import { Address, TransactionReceipt } from "viem";
 
 export interface NameRegistrationData {
   textRecords: Record<string, string>;
@@ -12,6 +11,7 @@ export interface NameRegistrationData {
   registrationYears: number;
   name: ENSName | null;
   asPrimaryName: boolean;
+  customResolverAddress: Address | null;
   namePrice: bigint | null;
   ensResolver: EnsResolver | null;
   registrationPrice: bigint | null;
@@ -27,6 +27,7 @@ export const nameRegistrationInitialState: NameRegistrationData = {
   registrationPrice: null,
   registerTxReceipt: null,
   commitTxReceipt: null,
+  customResolverAddress: null,
   textRecords: {},
   domainAddresses: {},
   commitSubmitTimestamp: null,
@@ -84,6 +85,11 @@ const nameRegistrationReducer = (
       return {
         ...state,
         commitSubmitTimestamp: action.payload,
+      };
+    case NameRegistrationAction["model/customResolverAddress"]:
+      return {
+        ...state,
+        customResolverAddress: action.payload,
       };
     case NameRegistrationAction["model/currentRegistrationStep"]:
       return {

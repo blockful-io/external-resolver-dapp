@@ -47,7 +47,7 @@ export const UserDropdown = () => {
       items={[
         {
           label: "Manage",
-          onClick: () => router.push(`/domains/${ensName}`),
+          onClick: () => router.push(`/domains`),
           icon: <PersonSVG />,
         },
         {

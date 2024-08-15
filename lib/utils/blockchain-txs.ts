@@ -21,10 +21,8 @@ import {
   BaseError,
   RawContractError,
   Hash,
-  Hex,
+  fromBytes,
   Address,
-  toHex,
-  http,
 } from "viem";
 import { isTestnet, SupportedNetwork } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
@@ -36,13 +34,10 @@ import {
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
-import { normalize, packetToBytes } from "viem/ens";
-import {
-  DomainAddressesSupportedCryptocurrencies,
-  cryptocurrencyToCoinType,
-} from "./ensData";
-import { useEnsResolver } from "wagmi";
-import { universalResolverResolveAbi } from "viem/_types/constants/abis";
+import { normalize } from "viem/ens";
+import { cryptocurrencies, cryptocurrenciesToCoinType } from "./ensData";
+import { getCoderByCoinName } from "@ensdomains/address-encoder";
+import { CcipRequestParameters, DomainData, MessageData } from "./types";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -50,44 +45,6 @@ const walletConnectProjectId =
 if (!walletConnectProjectId) {
   throw new Error("No wallet connect project ID informed");
 }
-
-/**
- * @notice Struct used to define the domain of the typed data signature, defined in EIP-712.
- * @param name The user friendly name of the contract that the signature corresponds to.
- * @param version The version of domain object being used.
- * @param chainId The ID of the chain that the signature corresponds to (ie Ethereum mainnet: 1, Goerli testnet: 5, ...).
- * @param verifyingContract The address of the contract that the signature pertains to.
- */
-export type DomainData = {
-  name: string;
-  version: string;
-  chainId: number;
-  verifyingContract: `0x${string}`;
-};
-
-/**
- * @notice Struct used to define a parameter for off-chain Database Handler deferral.
- * @param name The variable name of the parameter.
- * @param value The string encoded value representation of the parameter.
- */
-export type Parameter = {
-  name: string;
-  value: string;
-};
-
-/**
- * @notice Struct used to define the message context used to construct a typed data signature, defined in EIP-712,
- * to authorize and define the deferred mutation being performed.
- * @param functionSelector The function selector of the corresponding mutation.
- * @param sender The address of the user performing the mutation (msg.sender).
- * @param parameter[] A list of <key, value> pairs defining the inputs used to perform the deferred mutation.
- */
-export type MessageData = {
-  functionSelector: `0x${string}`;
-  sender: `0x${string}`;
-  parameters: Parameter[];
-  expirationTimestamp: bigint;
-};
 
 const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
   return createWalletClient({
@@ -148,17 +105,6 @@ export async function makeCommitment({
       return errorType || error;
     });
 }
-
-export type TypedSignature = {
-  signature: `0x${string}`;
-  domain: DomainData;
-  message: MessageData;
-};
-
-export type CcipRequestParameters = {
-  body: { data: Hex; signature: TypedSignature; sender: Address };
-  url: string;
-};
 
 export async function ccipRequest({
   body,
@@ -250,14 +196,14 @@ export async function handleDBStorage({
 */
 export const commit = async ({
   ensName,
-  domainResolver,
   durationInYears,
+  resolverAddress,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
   durationInYears: bigint;
-  domainResolver: EnsResolver;
+  resolverAddress: Address;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -277,7 +223,7 @@ export const commit = async ({
       durationInYears: durationInYears,
       secret: getNameRegistrationSecret(),
       reverseRecord: registerAndSetAsPrimaryName,
-      resolverAddress: ensResolverAddress[domainResolver],
+      resolverAddress: resolverAddress,
       ownerControlledFuses: DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
     });
 
@@ -305,14 +251,14 @@ export const commit = async ({
 */
 export const register = async ({
   ensName,
-  domainResolver,
+  resolverAddress,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
 }: {
   ensName: ENSName;
+  resolverAddress: Address;
   durationInYears: bigint;
-  domainResolver: EnsResolver;
   authenticatedAddress: `0x${string}`;
   registerAndSetAsPrimaryName: boolean;
 }): Promise<`0x${string}` | TransactionErrorType> => {
@@ -336,7 +282,7 @@ export const register = async ({
         authenticatedAddress,
         durationInYears * SECONDS_PER_YEAR.seconds,
         getNameRegistrationSecret(),
-        ensResolverAddress[domainResolver],
+        resolverAddress,
         [],
         registerAndSetAsPrimaryName,
         DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
@@ -383,14 +329,14 @@ export const register = async ({
 */
 export const setDomainRecords = async ({
   ensName,
-  domainResolver,
+  resolverAddress,
   domainResolverAddress,
   authenticatedAddress,
   textRecords,
   addresses,
 }: {
   ensName: ENSName;
-  domainResolver?: EnsResolver;
+  resolverAddress?: Address;
   domainResolverAddress?: `0x${string}`;
   authenticatedAddress: `0x${string}`;
   textRecords: Record<string, string>;
@@ -409,7 +355,7 @@ export const setDomainRecords = async ({
       const key = Object.keys(textRecords)[i];
       const value = textRecords[key];
 
-      if (value) {
+      if (value !== null && value !== undefined) {
         const callData = encodeFunctionData({
           functionName: "setText",
           abi: DomainResolverABI,
@@ -421,30 +367,34 @@ export const setDomainRecords = async ({
     }
 
     for (let i = 0; i < Object.keys(addresses).length; i++) {
-      const value = Object.values(addresses)[i];
-
+      const [cryptocurrencyName, address] = Object.entries(addresses)[i];
+      if (
+        !Object.keys(cryptocurrencies).includes(
+          cryptocurrencyName.toUpperCase()
+        )
+      ) {
+        console.error(`cryptocurrency ${cryptocurrencyName} not supported`);
+        continue;
+      }
+      const coinType =
+        cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
+      const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
+      const addressEncoded = fromBytes(coder.decode(address), "hex");
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
-        // To be replaced when multiple coin types are supported
-        args: [
-          namehash(publicAddress),
-          cryptocurrencyToCoinType[
-            DomainAddressesSupportedCryptocurrencies.ETH
-          ],
-          value,
-        ],
+        args: [namehash(publicAddress), coinType, addressEncoded],
       });
-
       calls.push(callData);
     }
 
     try {
-      let resolverAddress;
-      if (domainResolver) {
-        resolverAddress = ensResolverAddress[domainResolver];
+      let localResolverAddress;
+
+      if (resolverAddress) {
+        localResolverAddress = resolverAddress;
       } else if (domainResolverAddress) {
-        resolverAddress = domainResolverAddress;
+        localResolverAddress = domainResolverAddress;
       } else {
         throw new Error("No domain resolver informed");
       }
@@ -454,7 +404,7 @@ export const setDomainRecords = async ({
         abi: DomainResolverABI,
         args: [calls],
         account: authenticatedAddress,
-        address: resolverAddress,
+        address: localResolverAddress,
       });
     } catch (err) {
       const data = getRevertErrorData(err);
@@ -576,20 +526,19 @@ export const getNamePrice = async ({
 }: {
   ensName: ENSName;
   durationInYears: bigint;
-}) => {
-  return publicClient
-    .readContract({
-      args: [ensName.name, durationInYears * SECONDS_PER_YEAR.seconds],
-      address: nameRegistrationContracts.ETH_REGISTRAR,
-      functionName: "rentPrice",
-      abi: ETHRegistrarABI,
-    })
-    .then((price: unknown) => {
-      return (price as NamePrice).base + (price as NamePrice).premium;
-    })
-    .catch((error) => {
-      return error;
-    });
+}): Promise<bigint> => {
+  const ensNameDirectSubname = ensName.name.split(".eth")[0];
+  const price = await publicClient.readContract({
+    args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
+    address: nameRegistrationContracts.ETH_REGISTRAR,
+    functionName: "rentPrice",
+    abi: ETHRegistrarABI,
+  });
+  if (price) {
+    return (price as NamePrice).base + (price as NamePrice).premium;
+  } else {
+    throw new Error("Error getting name price");
+  }
 };
 
 export const getGasPrice = async (): Promise<bigint> => {

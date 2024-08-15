@@ -1,6 +1,8 @@
 import { BackButton, NextButton } from "@/components/01-atoms";
 import { MinusSVG, PlusSVG } from "@ensdomains/thorin";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
+import { useAccount } from "wagmi";
 
 interface RegistrationYearsComponentProps {
   handleNextStep: () => void;
@@ -10,7 +12,7 @@ export const RegistrationYearsComponent = ({
   handleNextStep,
 }: RegistrationYearsComponentProps) => {
   const { nameRegistrationData, setRegistrationYears } = useNameRegistration();
-
+  const { address } = useAccount();
   const { registrationYears } = nameRegistrationData;
 
   const handlePlusButtonClick = () => {
@@ -21,10 +23,18 @@ export const RegistrationYearsComponent = ({
     setRegistrationYears(registrationYears - 1);
   };
 
+  const saveRegistrationYearsInLocalStorage = () => {
+    if (address && nameRegistrationData.name) {
+      setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
+        registrationYears,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-[44px] justify-start items-start">
       <BackButton onClick={() => {}} disabled={true} />
-      <div className="max-w-[500px] w-full flex flex-col gap-7">
+      <div className="max-w-[500px] w-full flex flex-col gap-7 min-h-[300px]">
         <h3 className="text-start text-[34px] font-medium">
           How many years do you want to register this domain?
         </h3>
@@ -47,7 +57,12 @@ export const RegistrationYearsComponent = ({
           </div>
         </div>
       </div>
-      <NextButton onClick={handleNextStep} />
+      <div className="w-full flex">
+        <NextButton onClick={() => {
+          saveRegistrationYearsInLocalStorage();
+          handleNextStep();
+        }} />
+      </div>
     </div>
   );
 };
