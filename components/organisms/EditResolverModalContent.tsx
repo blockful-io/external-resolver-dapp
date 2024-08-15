@@ -1,26 +1,56 @@
-import { walletClient } from "@/lib/wallet/wallet-config";
+import { chain } from "@/lib/wallet/wallet-config";
 import { setResolver } from "@ensdomains/ensjs/wallet";
 import { Button, Input } from "@ensdomains/thorin";
 import { useState } from "react";
-import { isAddress } from "viem";
+import toast from "react-hot-toast";
+import { createWalletClient, custom, isAddress } from "viem";
 
 interface EditResolverModalContentProps {
+  name: string;
   closeModal: () => void;
   onRecordsEdited?: () => void;
 }
 
 export const EditResolverModalContent = ({
   closeModal,
+  name,
 }: EditResolverModalContentProps) => {
   const [resolverAddress, setResolverAddress] = useState("");
+  const [transactionHash, setTransactionHash] = useState("");
+  const [transactionSuccess, setTransactionSuccess] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
 
   const handleSaveAction = async () => {
-    const hash = await setResolver(walletClient, {
-      name: "eduardo.eth",
-      contract: "registry",
-      resolverAddress: "0x6AEBB4AdC056F3B01d225fE34c20b1FdC21323A2",
-      account: "0x89F8e4020c0dd384F13c288bc5743F963F9D8fdF",
+    // Create a wallet client for sending transactions to the blockchain
+    const walletClient = createWalletClient({
+      chain: chain,
+      transport: custom(window.ethereum),
     });
+
+    const [address] = await walletClient.getAddresses();
+
+    if (isAddress(resolverAddress)) {
+      setIsloading(true);
+      try {
+        const hash =
+          address &&
+          (await setResolver(walletClient, {
+            name: name,
+            contract: "nameWrapper",
+            resolverAddress: resolverAddress,
+            account: address,
+          }));
+        setTransactionHash(hash);
+        setTransactionSuccess(true);
+      } catch {
+        () => {
+          toast.error("an error occured");
+        };
+      }
+      setIsloading(false);
+    } else {
+      toast.error("Your resolver must be an address");
+    }
   };
 
   return (
@@ -28,41 +58,84 @@ export const EditResolverModalContent = ({
       <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
         Edit Resolver
       </div>
-      <div className="bg-white text-black border-b border-gray-200 p-6">
-        <Input
-          clearable
-          label={"Resolver Address"}
-          placeholder={"0x00"}
-          type="text"
-          value={resolverAddress}
-          onChange={(e) => setResolverAddress(e.target.value)}
-          error={
-            resolverAddress.length &&
-            !isAddress(resolverAddress) &&
-            "invalid address"
-          }
-        />
+      <div className="bg-white text-black border-b border-gray-200 p-6 flex flex-col gap-4">
+        {transactionSuccess ? (
+          <>
+            <p className="text-[72px]"> 🎉</p>
+            <div>
+              <p className="text-lg">
+                <span className="font-bold">Congratulations!</span>
+              </p>
+              <p>Update resolver transaction sent</p>
+            </div>
+
+            <p className="text-sm">
+              Check your transaction:{" "}
+              <a
+                className="text-gray-500 underline hover:text-gray-700 transition-colors duration-200"
+                target="_blank"
+                href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+              >
+                https://sepolia.etherscan.io/tx/...
+              </a>
+            </p>
+          </>
+        ) : (
+          <Input
+            clearable
+            label={"Resolver Address"}
+            placeholder={"0x00"}
+            type="text"
+            value={resolverAddress}
+            onChange={(e) => setResolverAddress(e.target.value)}
+            error={
+              resolverAddress.length &&
+              !isAddress(resolverAddress) &&
+              "invalid address"
+            }
+          />
+        )}
+
+        {isLoading && <h1>Check your wallet</h1>}
       </div>
+
       <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
-        <div>
-          <Button
-            colorStyle="greySecondary"
-            onClick={() => {
-              closeModal();
-            }}
-          >
-            Cancel
-          </Button>
-        </div>
-        <div>
-          <Button
-            onClick={() => {
-              handleSaveAction();
-            }}
-          >
-            Save
-          </Button>
-        </div>
+        {transactionSuccess ? (
+          <>
+            <div>
+              <Button
+                onClick={() => {
+                  closeModal();
+                }}
+              >
+                Done
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <Button
+                colorStyle="greySecondary"
+                onClick={() => {
+                  closeModal();
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+            <div>
+              <Button
+                disabled={!isAddress(resolverAddress)}
+                onClick={() => {
+                  handleSaveAction();
+                }}
+              >
+                Save
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -402,6 +402,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
       </Modal>
       <Modal open={editResolverModalOpen} onDismiss={() => {}}>
         <EditResolverModalContent
+          name={name}
           closeModal={() => {
             setEditResolverModalOpen(false);
           }}

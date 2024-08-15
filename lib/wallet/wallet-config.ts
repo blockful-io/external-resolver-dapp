@@ -1,11 +1,6 @@
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import {
-  createClient,
-  createPublicClient,
-  createWalletClient,
-  custom,
-} from "viem";
+import { createClient, createPublicClient, createWalletClient } from "viem";
 import { mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { isTestnet } from "./chains";
@@ -19,7 +14,7 @@ const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
 const mainnetWithEns = addEnsContracts(mainnet);
 const sepoliaWithEns = addEnsContracts(sepolia);
 
-const chain = {
+export const chain = {
   ...(isTestnet ? sepoliaWithEns : mainnetWithEns),
   subgraphs: {
     ens: {
