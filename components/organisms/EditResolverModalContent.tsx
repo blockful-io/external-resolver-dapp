@@ -3,19 +3,23 @@ import { setResolver } from "@ensdomains/ensjs/wallet";
 import { Button, Input } from "@ensdomains/thorin";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { createWalletClient, custom, isAddress } from "viem";
+import { Address, createWalletClient, custom, isAddress } from "viem";
 
 interface EditResolverModalContentProps {
   name: string;
+  currentResolverAddress: Address;
   closeModal: () => void;
   onRecordsEdited?: () => void;
 }
 
 export const EditResolverModalContent = ({
+  currentResolverAddress,
   closeModal,
   name,
 }: EditResolverModalContentProps) => {
-  const [resolverAddress, setResolverAddress] = useState("");
+  const [resolverAddress, setResolverAddress] = useState<string>(
+    currentResolverAddress
+  );
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
