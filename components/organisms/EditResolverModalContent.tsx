@@ -108,24 +108,13 @@ export const EditResolverModalContent = ({
         {transactionSuccess ? (
           <>
             <div>
-              <Button
-                onClick={() => {
-                  onCloseModal();
-                }}
-              >
-                Done
-              </Button>
+              <Button onClick={onCloseModal}>Done</Button>
             </div>
           </>
         ) : (
           <>
             <div>
-              <Button
-                colorStyle="greySecondary"
-                onClick={() => {
-                  onCloseModal();
-                }}
-              >
+              <Button colorStyle="greySecondary" onClick={onCloseModal}>
                 Cancel
               </Button>
             </div>
