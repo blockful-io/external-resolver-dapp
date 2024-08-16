@@ -20,7 +20,7 @@ export const EditResolverModalContent = ({
   const [resolverAddress, setResolverAddress] = useState<string>(
     currentResolverAddress
   );
-  const [transactionHash, setTransactionHash] = useState("");
+  const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
 
