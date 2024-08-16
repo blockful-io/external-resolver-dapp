@@ -65,7 +65,7 @@ export const EditResolverModalContent = ({
       <div className="bg-white text-black border-b border-gray-200 p-6 flex flex-col gap-4">
         {transactionSuccess ? (
           <>
-            <p className="text-[72px]"> 🎉</p>
+            <p className="text-7xl"> 🎉</p>
             <div>
               <p className="text-lg">
                 <span className="font-bold">Congratulations!</span>
@@ -78,6 +78,7 @@ export const EditResolverModalContent = ({
               <a
                 className="text-gray-500 underline hover:text-gray-700 transition-colors duration-200"
                 target="_blank"
+                // TODO: Adjust links once mainnet is supported
                 href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
               >
                 https://sepolia.etherscan.io/tx/...
