@@ -124,9 +124,7 @@ export const EditResolverModalContent = ({
                   !isAddress(resolverAddress) ||
                   resolverAddress === currentResolverAddress
                 }
-                onClick={() => {
-                  handleSaveAction();
-                }}
+                onClick={handleSaveAction}
               >
                 Save
               </Button>
