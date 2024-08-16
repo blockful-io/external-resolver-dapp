@@ -8,13 +8,13 @@ import { Address, createWalletClient, custom, isAddress } from "viem";
 interface EditResolverModalContentProps {
   name: string;
   currentResolverAddress: Address;
-  closeModal: () => void;
+  onCloseModal: () => void;
   onRecordsEdited?: () => void;
 }
 
 export const EditResolverModalContent = ({
   currentResolverAddress,
-  closeModal,
+  onCloseModal,
   name,
 }: EditResolverModalContentProps) => {
   const [resolverAddress, setResolverAddress] = useState<string>(
@@ -109,7 +109,7 @@ export const EditResolverModalContent = ({
             <div>
               <Button
                 onClick={() => {
-                  closeModal();
+                  onCloseModal();
                 }}
               >
                 Done
@@ -122,7 +122,7 @@ export const EditResolverModalContent = ({
               <Button
                 colorStyle="greySecondary"
                 onClick={() => {
-                  closeModal();
+                  onCloseModal();
                 }}
               >
                 Cancel

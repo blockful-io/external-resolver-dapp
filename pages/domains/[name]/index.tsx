@@ -407,7 +407,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
         <EditResolverModalContent
           currentResolverAddress={ensData?.resolverAddress}
           name={name}
-          closeModal={() => {
+          onCloseModal={() => {
             setEditResolverModalOpen(false);
           }}
         />
