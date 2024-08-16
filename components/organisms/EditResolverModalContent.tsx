@@ -48,7 +48,7 @@ export const EditResolverModalContent = ({
         setTransactionSuccess(true);
       } catch {
         () => {
-          toast.error("an error occured");
+          toast.error("An error occured, please try again later...");
         };
       }
       setIsloading(false);
