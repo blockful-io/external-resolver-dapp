@@ -32,6 +32,7 @@ import {
 import Avatar from "boring-avatars";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAccount, useEnsName } from "wagmi";
 
 export function ManageNamePageContent({ name }: { name: string }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,6 +42,12 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateFieldsWithEnsData } = useFields();
+
+  const { address } = useAccount();
+
+  const { data: authedUserName } = useEnsName({
+    address: address,
+  });
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
@@ -376,16 +383,18 @@ export function ManageNamePageContent({ name }: { name: string }) {
                           </p>
                         </div>
 
-                        <div>
-                          <Button
-                            onClick={() => {
-                              setEditResolverModalOpen(true);
-                            }}
-                            size="small"
-                          >
-                            Edit
-                          </Button>
-                        </div>
+                        {authedUserName === ensData?.owner && (
+                          <div>
+                            <Button
+                              onClick={() => {
+                                setEditResolverModalOpen(true);
+                              }}
+                              size="small"
+                            >
+                              Edit
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </Skeleton>
                   </div>
