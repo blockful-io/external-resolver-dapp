@@ -1,19 +1,12 @@
-import {
-  DatabaseIcon,
-  EmailIcon,
-  GithubIcon,
-  LinkedInIcon,
-  PencilIcon,
-  TwitterIcon,
-} from "@/components/01-atoms";
+import { DatabaseIcon } from "@/components/01-atoms";
 import {
   FieldsProvider,
   ProfileRecordItem,
   useFields,
 } from "@/components/02-molecules";
-import CustomImage from "@/components/02-molecules/CustomImage";
-import { EditModalContent } from "@/components/organisms/EditModalContent";
+
 import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
+import { UserDomainCard } from "@/components/organisms/UserDomainCard";
 import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
@@ -29,12 +22,10 @@ import {
   Skeleton,
   SkeletonGroup,
 } from "@ensdomains/thorin";
-import Avatar from "boring-avatars";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export function ManageNamePageContent({ name }: { name: string }) {
-  const [modalOpen, setModalOpen] = useState(false);
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
 
   const [ensData, setEnsData] = useState<any | null>(null);
@@ -142,133 +133,17 @@ export function ManageNamePageContent({ name }: { name: string }) {
           <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
             <div className="w-full flex gap-[60px]">
               <Skeleton>
-                <div className="w-[376px] flex flex-col rounded-md overflow-hidden border border-gray-200 ">
-                  <div className="h-[120px] w-full bg-gradient-ens" />
-
-                  <div className="w-full px-6 pb-6 flex flex-col gap-5">
-                    <div className="h-[56px] items-end w-full flex justify-between">
-                      {ensData?.texts?.avatar ? (
-                        <CustomImage
-                          alt="avatar image"
-                          width={100}
-                          height={100}
-                          src={
-                            !!ensData?.texts?.avatar
-                              ? ensData?.texts?.avatar
-                              : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=264653,2a9d8f,e9c46a,f4a261,e76f51"
-                          }
-                          className="w-[100px] h-[100px] border-4 border-white rounded-[10px]"
-                        />
-                      ) : (
-                        <div className="w-[100px] h-[100px] border-4 bg-gradient-ens border-white rounded-[10px] overflow-hidden">
-                          <Avatar
-                            size={100}
-                            square
-                            name="Margaret Bourke"
-                            variant="marble"
-                            colors={[
-                              "#44BCF0",
-                              "#7298F8",
-                              "#A099FF",
-                              "#FFFFFF",
-                            ]}
-                          />
-                        </div>
-                      )}
-
-                      <div>
-                        <Button
-                          onClick={() => {
-                            setModalOpen(true);
-                          }}
-                          size="small"
-                          prefix={<PencilIcon />}
-                        >
-                          Edit
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col">
-                      <Skeleton>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-[26px] truncate">{name}</h3>
-                        </div>
-                        {ensData?.texts?.url && (
-                          <a
-                            href={ensData.texts.url}
-                            target="_blank"
-                            className="text-[16px] text-blue-500"
-                          >
-                            {ensData.texts.url}
-                          </a>
-                        )}
-                      </Skeleton>
-                    </div>
-                    <Skeleton>
-                      <p className="text-base text-gray-400">
-                        {ensData?.texts?.description}
-                      </p>
-                    </Skeleton>
-                    {/* <Skeleton>
-                      <div className="flex items-center justify-center gap-2 p-3 rounded-md border border-gray-200">
-                        <Toggle />
-                        <p>Primary name</p>
-                        <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
-                      </div>
-                    </Skeleton> */}
-                    <div className="flex flex-col items-start justify-center gap-1">
-                      {ensData?.texts?.["email"] && (
-                        <Link
-                          target="_blank"
-                          href={`mailto:${ensData?.texts?.["email"]}`}
-                          className="p-2 flex gap-2 group"
-                        >
-                          <EmailIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-                          <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.texts?.["email"]}
-                          </h3>
-                        </Link>
-                      )}
-
-                      {!!ensData?.texts?.["com.github"] && (
-                        <Link
-                          target="_blank"
-                          href={`https://github.com/${ensData?.texts["com.github"]}`}
-                          className="p-2 flex gap-2 group"
-                        >
-                          <GithubIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-                          <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.texts?.["com.github"]}
-                          </h3>
-                        </Link>
-                      )}
-
-                      {ensData?.texts?.["com.twitter"] && (
-                        <Link
-                          target="_blank"
-                          href={`https://x.com/${ensData?.texts["com.twitter"]}`}
-                          className="p-2 flex gap-2 group"
-                        >
-                          <TwitterIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-                          <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
-                            {ensData?.texts?.["com.twitter"]}
-                          </h3>
-                        </Link>
-                      )}
-
-                      {ensData?.texts?.["com.linkedin"] && (
-                        <Link
-                          target="_blank"
-                          href={`https://www.linkedin.com/in/${ensData?.texts["com.linkedin"]}`}
-                          className="p-2"
-                        >
-                          <LinkedInIcon className="w-5 h-5" />
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <UserDomainCard
+                  name={name}
+                  avatar={ensData?.texts?.avatar}
+                  url={ensData?.texts?.url}
+                  description={ensData?.texts?.description}
+                  email={ensData?.texts?.["email"]}
+                  github={ensData?.texts?.["com.github"]}
+                  twitter={ensData?.texts["com.twitter"]}
+                  linkedIn={ensData?.texts["com.linkedin"]}
+                  onRecordsEdited={handleFetchENSDomainData}
+                />
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
@@ -395,14 +270,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
           </div>
         </div>
       </SkeletonGroup>
-      <Modal open={modalOpen} onDismiss={() => {}}>
-        <EditModalContent
-          onRecordsEdited={handleFetchENSDomainData}
-          closeModal={() => {
-            setModalOpen(false);
-          }}
-        />
-      </Modal>
+
       <Modal open={editResolverModalOpen} onDismiss={() => {}}>
         <EditResolverModalContent
           currentResolverAddress={ensData?.resolverAddress}
