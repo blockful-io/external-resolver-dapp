@@ -51,28 +51,6 @@ export const cryptocurrencies: { [k: string]: string } = {
   MATIC: "MATIC",
 };
 
-export const cryptocurrenciesToCoinType: { [k: string]: string } = {
-  [cryptocurrencies.BTC]: "0",
-  [cryptocurrencies.LTC]: "2",
-  [cryptocurrencies.DOGE]: "3",
-  [cryptocurrencies.ETH]: "60",
-  [cryptocurrencies.BNB]: "714",
-  [cryptocurrencies.ARB1]: "2147525809",
-  [cryptocurrencies.OP]: "2147483658",
-  [cryptocurrencies.MATIC]: "2147483658",
-};
-
-export const cryptocurrenciesToSymbol: { [k: string]: string } = {
-  [cryptocurrencies.BTC]: "₿",
-  [cryptocurrencies.LTC]: "Ł",
-  [cryptocurrencies.DOGE]: "Ð",
-  [cryptocurrencies.ETH]: "Ξ",
-  [cryptocurrencies.BNB]: "₿",
-  [cryptocurrencies.ARB1]: "ARB",
-  [cryptocurrencies.OP]: "OP",
-  [cryptocurrencies.MATIC]: "MATIC",
-};
-
 export const fetchDomainData = async (domain: string) => {
   // check if the resolver supports ENSIP-16 - https://viem.sh/docs/contract/readContract.html
   try {
