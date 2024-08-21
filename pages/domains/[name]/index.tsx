@@ -7,7 +7,12 @@ import {
 
 import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
-import { CoinInfo, getENSDomainData } from "@/lib/utils/ensData";
+import {
+  CoinInfo,
+  fetchDomainData,
+  // findResolverUrl,
+  getENSDomainDataThroughSubgraph,
+} from "@/lib/utils/ensData";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {
@@ -36,7 +41,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
-      const data = await getENSDomainData(name);
+      const data = await getENSDomainDataThroughSubgraph(name);
       setEnsData(data);
       updateFieldsWithEnsData(data);
       setError(null);
@@ -55,6 +60,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   useEffect(() => {
     handleFetchENSDomainData();
+    fetchDomainData(name);
   }, []);
 
   const excludeKeys = [
