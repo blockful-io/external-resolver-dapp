@@ -318,7 +318,6 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     const textsKeys = Object.keys(texts || {});
     const coinNames = addresses?.map((coin) => coin.name) ?? [];
 
-    console.log("COIN NAMES ", coinNames, addressesFields);
     const newProfileFields: Field[] = profileFields.map((field) => {
       if (textsKeys.includes(field.label)) {
         return {

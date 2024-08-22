@@ -27,7 +27,6 @@ import {
 } from "./interfaces";
 import { query } from "./queries";
 import { parseAbiItem } from "viem";
-import { CoinType, coinTypeToNameMap } from "@ensdomains/address-encoder";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -43,16 +42,12 @@ export const fetchDomainData = async (
   try {
     const data = await fetchDomainDataThroughResolver(domain);
     const domainData = formatDomainDataThroughResolver(data);
-
-    console.log("fetchDomainDataThroughResolver", domainData);
     return domainData;
     // Case where it's not compatilble
   } catch (error) {
     const data = await getENSDomainDataThroughSubgraph(domain);
     if (!data) return null;
-
     const domainData = await formatENSDomainDataThroughSubgraph(data);
-    console.log("getENSDomainDataThroughSubgraph", domainData);
     return domainData;
   }
 };
@@ -146,12 +141,9 @@ const formatENSDomainDataThroughSubgraph = async (
     expiryDate: data.expiry?.date?.getTime()!,
     subdomains: [],
     subdomainCount: 0,
-    id: "id",
-    resolvedAddress: "0x",
     parent: "eth",
   };
 
-  console.log("getENSDomainDataThroughSubgraph", domainData);
   return domainData;
 };
 

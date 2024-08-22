@@ -26,9 +26,7 @@ export interface SubgraphEnsData {
 }
 
 export interface DomainData {
-  id: string;
   owner: string;
-  resolvedAddress: string;
   parent: string;
   subdomains: string[];
   subdomainCount: number;
