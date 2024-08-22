@@ -26,7 +26,8 @@ import {
   SubgraphEnsData,
 } from "./interfaces";
 import { query } from "./queries";
-import { parseAbiItem } from "viem";
+import { ContractFunctionExecutionError, parseAbiItem } from "viem";
+import toast from "react-hot-toast";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -45,10 +46,15 @@ export const fetchDomainData = async (
     return domainData;
     // Case where it's not compatilble
   } catch (error) {
-    const data = await getENSDomainDataThroughSubgraph(domain);
-    if (!data) return null;
-    const domainData = await formatENSDomainDataThroughSubgraph(data);
-    return domainData;
+    if (error instanceof ContractFunctionExecutionError) {
+      const data = await getENSDomainDataThroughSubgraph(domain);
+      if (!data) return null;
+      const domainData = await formatENSDomainDataThroughSubgraph(data);
+      return domainData;
+    } else {
+      toast.error("An Error occurred while loading the data");
+    }
+    return null;
   }
 };
 
