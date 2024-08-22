@@ -220,7 +220,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                     </Skeleton>
 
                     <Skeleton>
-                      {ensData?.expiryDate && (
+                      {ensData?.expiryDate !== undefined && (
                         <ProfileRecordItem
                           icon={CalendarSVG}
                           label="expiry"

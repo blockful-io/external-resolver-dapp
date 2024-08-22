@@ -15,13 +15,6 @@ export interface CoinInfo {
   coin: string;
 }
 
-export interface ResolvedEnsData {
-  expiry?: number;
-  coins?: DecodedAddr[];
-  texts?: TextRecords;
-  owner?: string;
-}
-
 export interface SubgraphEnsDate {
   expiry?: DateWithValue<bigint> | undefined;
   contentHash: InternalGetContentHashReturnType;
@@ -45,6 +38,7 @@ export interface DomainData {
     texts: Record<string, string>;
     addresses: {
       address: string;
+      name: string;
       coin: string;
     }[];
   };

@@ -2,9 +2,8 @@ import { Field, FieldType, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
 import _ from "lodash";
-import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 import validateBitcoinAddress from "bitcoin-address-validation";
-import { TextRecords } from "@/lib/domain-page";
+import { DomainData, TextRecords } from "@/lib/domain-page";
 
 interface FieldsContextType {
   profileFields: Field[];
@@ -19,18 +18,11 @@ interface FieldsContextType {
   updateField: (tab: Tab, index: number, newValue: string) => void;
   domainAddressesToUpdate: Record<string, string>;
   textRecordsToUpdate: Record<string, string>;
-  updateEditModalFieldsWithEnsData: (ensData: ResolvedEnsData | null) => void;
+  updateEditModalFieldsWithEnsData: (ensData: DomainData | null) => void;
 }
 
 interface FieldsProviderProps {
   children: ReactNode;
-}
-
-export interface ResolvedEnsData {
-  expiry?: number;
-  coins?: DecodedAddr[];
-  texts?: TextRecords;
-  owner?: string;
 }
 
 const FieldsContext = createContext<FieldsContextType | undefined>(undefined);
@@ -225,7 +217,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       },
     },
     {
-      label: "opt",
+      label: "op",
       placeholder: "0x0000000000000000000000000000000000000000",
       fieldType: FieldType.Address,
       value: "",
@@ -235,17 +227,17 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         return fieldIsEmpty || isValidAddress;
       },
     },
-    {
-      label: "matic",
-      placeholder: "0x0000000000000000000000000000000000000000",
-      fieldType: FieldType.Address,
-      value: "",
-      validationFunction: (fieldValue: string) => {
-        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
-        return fieldIsEmpty || isValidAddress;
-      },
-    },
+    // {
+    //   label: "matic",
+    //   placeholder: "0x0000000000000000000000000000000000000000",
+    //   fieldType: FieldType.Address,
+    //   value: "",
+    //   validationFunction: (fieldValue: string) => {
+    //     const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+    //     const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+    //     return fieldIsEmpty || isValidAddress;
+    //   },
+    // },
   ]);
 
   // INITIAL ADDRESS STATE
@@ -311,45 +303,47 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ]);
 
-  const updateEditModalFieldsWithEnsData = (
-    ensData: ResolvedEnsData | null
-  ) => {
-    if (!ensData) {
+  const updateEditModalFieldsWithEnsData = (domainData: DomainData | null) => {
+    if (!domainData) {
       console.warn("FieldsContext - updateFieldsWithEnsData - No ENS Data");
       return;
     }
-    if (!ensData.texts || _.isEmpty(ensData.texts)) {
+
+    const { texts, addresses } = domainData.resolver;
+    if (!texts || _.isEmpty(texts)) {
       console.warn(
         "FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts"
       );
     }
-    const textsKeys = Object.keys(ensData.texts || {});
-    const coinNames = ensData.coins?.map((coin) => coin.name) ?? [];
+    const textsKeys = Object.keys(texts || {});
+    const coinNames = addresses?.map((coin) => coin.name) ?? [];
+
+    console.log("COIN NAMES ", coinNames, addressesFields);
     const newProfileFields: Field[] = profileFields.map((field) => {
       if (textsKeys.includes(field.label)) {
         return {
           ...field,
-          value: (ensData.texts as TextRecords)[field.label] as string,
+          value: (texts as TextRecords)[field.label] as string,
         };
       }
       return field;
     });
-    const newAddressesFields = addressesFields.map((field) => {
-      if (coinNames.includes(field.label)) {
+    const newAddressesFields = addressesFields.map((addressField) => {
+      if (coinNames.includes(addressField.label)) {
         return {
-          ...field,
-          value: (ensData.coins as DecodedAddr[]).find(
-            (coin) => coin.name === field.label
-          )?.value as string,
+          ...addressField,
+          value: addresses.find(
+            (address) => address.name === addressField.label
+          )?.address as string,
         };
       }
-      return field;
+      return addressField;
     });
     const newAccountsFields = accountsFields.map((field) => {
       if (textsKeys.includes(field.label)) {
         return {
           ...field,
-          value: (ensData.texts as TextRecords)[field.label] as string,
+          value: (texts as TextRecords)[field.label] as string,
         };
       }
       return field;

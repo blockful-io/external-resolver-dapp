@@ -1,6 +1,7 @@
 import { DecodedText } from "@ensdomains/ensjs/dist/types/types";
 import { ETHEREUM_ADDRESS_REGEX } from "../name-registration/constants";
 import { cryptocurrencies } from "./constants";
+import { CoinType, coinTypeToNameMap } from "@ensdomains/address-encoder";
 
 export const validateDomain = (domain: string): void => {
   if (!ETHEREUM_ADDRESS_REGEX.test(domain) && !domain?.endsWith(".eth")) {
@@ -15,6 +16,10 @@ export const transformTextRecords = (
     acc[item.key] = item.value;
     return acc;
   }, {});
+};
+
+export const getCoinNameByType = (coin: string) => {
+  return coinTypeToNameMap[parseInt(coin) as CoinType][0].toString();
 };
 
 export const updateAvatarInTexts = (

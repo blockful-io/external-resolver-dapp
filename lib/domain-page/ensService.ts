@@ -13,6 +13,7 @@ import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize } from "viem/ens";
 import {
+  getCoinNameByType,
   getSupportedCoins,
   transformTextRecords,
   updateAvatarInTexts,
@@ -26,6 +27,7 @@ import {
 } from "./interfaces";
 import { query } from "./queries";
 import { parseAbiItem } from "viem";
+import { CoinType, coinTypeToNameMap } from "@ensdomains/address-encoder";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -33,16 +35,18 @@ if (!ensSubgraphApiKey) {
   throw new Error("ENS subgraph API key not found");
 }
 
-// Main Functions
+// Fetch ENS data for a given domain
 export const fetchDomainData = async (
   domain: string
 ): Promise<DomainData | null> => {
+  // Check if the domain resolver is compatible with metadata, if nor it will return an error
   try {
     const data = await fetchDomainDataThroughResolver(domain);
     const domainData = formatDomainDataThroughResolver(data);
 
     console.log("fetchDomainDataThroughResolver", domainData);
     return domainData;
+    // Case where it's not compatilble
   } catch (error) {
     const data = await getENSDomainDataThroughSubgraph(domain);
     if (!data) return null;
@@ -53,6 +57,7 @@ export const fetchDomainData = async (
   }
 };
 
+// Fetch ENS data for a given domain through subgraph
 export const getENSDomainDataThroughSubgraph = async (
   domain: string
 ): Promise<SubgraphEnsDate | null> => {
@@ -91,7 +96,6 @@ export const getENSDomainDataThroughSubgraph = async (
     ...expiry,
   };
 
-  console.log("SUBGRAPH DATA", data, newAvatar);
   return data;
 };
 
@@ -99,6 +103,7 @@ const fetchDomainDataThroughResolver = async (
   name: string
 ): Promise<QueryDomain> => {
   const resolverAdd = await getResolver(publicClient, { name });
+
   const metadataUrl = await publicClient.readContract({
     address: resolverAdd!,
     abi: [parseAbiItem("function metadata() returns (string)")],
@@ -128,10 +133,15 @@ const formatENSDomainDataThroughSubgraph = async (
       id: "id",
       address: data.resolverAddress,
       texts: updatedTexts,
-      addresses: data.coins.map((coin) => ({
-        address: coin.value,
-        coin: coin.id.toString(),
-      })),
+      addresses: data.coins.map((coin) => {
+        const coinName = getCoinNameByType(coin.id.toString());
+
+        return {
+          address: coin.value,
+          name: coinName,
+          coin: coin.id.toString(),
+        };
+      }),
     },
     expiryDate: data.expiry?.date?.getTime()!,
     subdomains: [],
@@ -153,6 +163,14 @@ const formatDomainDataThroughResolver = (data: QueryDomain): DomainData => {
     expiryDate: parseInt(data.expiryDate),
     resolver: {
       ...data.resolver,
+      addresses: data.resolver.addresses.map((address) => {
+        const coinName = getCoinNameByType(address.coin);
+        return {
+          ...address,
+          name: coinName,
+        };
+      }),
+
       texts: transformedTexts,
     },
   };
