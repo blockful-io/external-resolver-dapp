@@ -23,7 +23,7 @@ import {
   DomainData,
   QueryDomain,
   QueryResponse,
-  SubgraphEnsDate,
+  SubgraphEnsData,
 } from "./interfaces";
 import { query } from "./queries";
 import { parseAbiItem } from "viem";
@@ -60,7 +60,7 @@ export const fetchDomainData = async (
 // Fetch ENS data for a given domain through subgraph
 export const getENSDomainDataThroughSubgraph = async (
   domain: string
-): Promise<SubgraphEnsDate | null> => {
+): Promise<SubgraphEnsData | null> => {
   validateDomain(domain);
 
   if (await getAvailable(client, { name: domain })) return null;
@@ -88,7 +88,7 @@ export const getENSDomainDataThroughSubgraph = async (
 
   const [textRecords, owner, expiry] = batchResults;
 
-  const data: SubgraphEnsDate = {
+  const data: SubgraphEnsData = {
     newAvatar,
     ...textRecords,
     ...owner,
@@ -117,7 +117,7 @@ const fetchDomainDataThroughResolver = async (
 };
 
 const formatENSDomainDataThroughSubgraph = async (
-  data: SubgraphEnsDate
+  data: SubgraphEnsData
 ): Promise<DomainData> => {
   const transformedTexts = transformTextRecords(data.texts);
 

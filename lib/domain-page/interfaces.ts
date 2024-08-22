@@ -15,7 +15,7 @@ export interface CoinInfo {
   coin: string;
 }
 
-export interface SubgraphEnsDate {
+export interface SubgraphEnsData {
   expiry?: DateWithValue<bigint> | undefined;
   contentHash: InternalGetContentHashReturnType;
   texts: DecodedText[];
