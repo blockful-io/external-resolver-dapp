@@ -25,6 +25,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
+import { useAccount, useEnsName } from "wagmi";
 
 export function ManageNamePageContent({ name }: { name: string }) {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
@@ -33,6 +34,12 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateEditModalFieldsWithEnsData } = useFields();
+
+  const { address } = useAccount();
+
+  const { data: authedUserName } = useEnsName({
+    address: address,
+  });
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
@@ -259,16 +266,18 @@ export function ManageNamePageContent({ name }: { name: string }) {
                           )}
                         </div>
 
-                        <div>
-                          <Button
-                            onClick={() => {
-                              setEditResolverModalOpen(true);
-                            }}
-                            size="small"
-                          >
-                            Edit
-                          </Button>
-                        </div>
+                        {authedUserName === ensData?.owner && (
+                          <div>
+                            <Button
+                              onClick={() => {
+                                setEditResolverModalOpen(true);
+                              }}
+                              size="small"
+                            >
+                              Edit
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </Skeleton>
                   </div>
