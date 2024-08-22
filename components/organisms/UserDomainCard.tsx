@@ -146,9 +146,12 @@ export const UserDomainCard = ({
             <Link
               target="_blank"
               href={`https://www.linkedin.com/in/${linkedIn}`}
-              className="p-2"
+              className="p-2 flex gap-2 group"
             >
-              <LinkedInIcon className="w-5 h-5" />
+              <LinkedInIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
+              <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+                {linkedIn}
+              </h3>
             </Link>
           )}
         </div>

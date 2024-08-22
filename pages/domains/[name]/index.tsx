@@ -62,6 +62,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const excludeKeys = [
     "com.twitter",
     "com.telegram",
+    "com.linkedin",
     "avatar",
     "com.github",
     "email",
