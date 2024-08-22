@@ -29,9 +29,8 @@ export interface TextRecords {
   [key: string]: string | undefined;
 }
 export interface CoinInfo {
-  id: string;
-  name: string;
-  value: string;
+  address: string;
+  coin: string;
 }
 export interface ResolvedEnsData {
   expiry?: number;
@@ -53,14 +52,18 @@ export const cryptocurrencies: { [k: string]: string } = {
 
 export const fetchDomainData = async (domain: string) => {
   // check if the resolver supports ENSIP-16 - https://viem.sh/docs/contract/readContract.html
+
+  let domainData: DomainData | null;
   try {
-    const domainData = await fetchDomainDataThroughResolver(domain);
+    domainData = await fetchDomainDataThroughResolver(domain);
 
-    console.log("domainData", domainData);
+    console.log("fetchDomainDataThroughResolver", domainData);
+    return domainData;
   } catch (error) {
-    const domainData = await getENSDomainDataThroughSubgraph(domain);
+    domainData = await getENSDomainDataThroughSubgraph(domain);
 
-    console.log("domainData ", domainData);
+    console.log("getENSDomainDataThroughSubgraph ", domainData);
+    return domainData;
   }
 };
 
@@ -68,7 +71,7 @@ export const fetchDomainData = async (domain: string) => {
 
 export async function getENSDomainDataThroughSubgraph(
   domain: string
-): Promise<ResolvedEnsData | null> {
+): Promise<DomainData | null> {
   if (!(ETHEREUM_ADDRESS_REGEX.test(domain) || domain?.endsWith(".eth")))
     throw new Error(`Invalid ENS domain or ethereum address: ${domain}`);
 
@@ -116,6 +119,7 @@ export async function getENSDomainDataThroughSubgraph(
   const owner = batchResults[1];
   const expiry = batchResults[2];
 
+  console.log("textRecords ", textRecords);
   // Format text records
   const transformedTexts = textRecords.texts.reduce<Record<string, string>>(
     (acc, item) => {
@@ -143,90 +147,31 @@ export async function getENSDomainDataThroughSubgraph(
     });
   }
 
-  const updatedTextRecords = {
+  const domainData = {
     ...textRecords,
     texts: updatedTexts,
-    owner: ownerName?.name ?? owner?.owner,
-    expiry: expiry?.expiry?.date?.getTime(),
+    owner: ownerName?.name ?? owner?.owner!,
+    expiry: expiry?.expiry?.date?.getTime()!,
+
+    resolver: {
+      id: "id",
+      address: textRecords.resolverAddress,
+      texts: updatedTexts,
+      addresses: textRecords.coins.map((coin) => {
+        return { address: coin.value, coin: coin.id.toString() };
+      }),
+    },
+    expiryDate: expiry?.expiry?.date?.getTime()!,
+    subdomains: [],
+    subdomainCount: 0,
+    id: "",
+    resolvedAddress: "0x",
+    parent: "eth",
   };
 
-  console.log("getENSDomainDataThroughSubgraph", updatedTextRecords);
+  console.log("getENSDomainDataThroughSubgraph", domainData);
 
-  return updatedTextRecords;
-}
-
-const query = gql`
-  query Query($name: String!) {
-    domain(name: $name) {
-      id
-      context
-      owner
-      name
-      node
-      label
-      labelhash
-      resolvedAddress
-      parent
-      parentNode
-      subdomains
-      subdomainCount
-      resolver {
-        id
-        node
-        context
-        addr
-        contentHash
-        texts {
-          key
-          value
-        }
-        addresses {
-          address
-          coin
-        }
-        address
-      }
-      expiryDate
-      registerDate
-    }
-  }
-`;
-
-interface Domain {
-  id: string;
-  context: string;
-  owner: string;
-  name: string;
-  node: string;
-  label: string;
-  labelhash: string;
-  resolvedAddress: string;
-  parent: string;
-  parentNode: string;
-  subdomains: string[];
-  subdomainCount: number;
-  resolver: {
-    id: string;
-    node: string;
-    context: string;
-    address: string;
-    addr: string;
-    contentHash: string;
-    texts: {
-      key: string;
-      value: string;
-    }[];
-    addresses: {
-      address: string;
-      coin: string;
-    }[];
-  };
-  expiryDate: string;
-  registerDate: string;
-}
-
-interface QueryResponse {
-  domain: Domain;
+  return domainData;
 }
 
 async function fetchDomainDataThroughResolver(name: string) {
@@ -246,5 +191,96 @@ async function fetchDomainDataThroughResolver(name: string) {
 
   const variables = { name };
   const data = await graphQlClient.request<QueryResponse>(query, variables);
-  return data.domain;
+
+  const textRecords = data.domain.resolver.texts;
+
+  const transformedTexts = textRecords.reduce<Record<string, string>>(
+    (acc, item) => {
+      acc[item.key] = item.value;
+      return acc;
+    },
+    {}
+  );
+
+  const fomarttedData: DomainData = {
+    ...data.domain,
+    expiryDate: parseInt(data.domain.expiryDate),
+    resolver: {
+      ...data.domain.resolver,
+      texts: transformedTexts,
+    },
+  };
+
+  return fomarttedData;
+}
+
+const query = gql`
+  query Query($name: String!) {
+    domain(name: $name) {
+      id
+      owner
+      resolvedAddress
+      parent
+      subdomains
+      subdomainCount
+      resolver {
+        id
+        address
+        texts {
+          key
+          value
+        }
+        addresses {
+          address
+          coin
+        }
+      }
+      expiryDate
+    }
+  }
+`;
+
+interface QueryDomain {
+  id: string;
+  owner: string;
+  resolvedAddress: string;
+  parent: string;
+  subdomains: string[];
+  subdomainCount: number;
+  resolver: {
+    id: string;
+    address: string;
+    texts: {
+      key: string;
+      value: string;
+    }[];
+    addresses: {
+      address: string;
+      coin: string;
+    }[];
+  };
+  expiryDate: string;
+}
+
+export interface DomainData {
+  id: string;
+  owner: string;
+  resolvedAddress: string;
+  parent: string;
+  subdomains: string[];
+  subdomainCount: number;
+  resolver: {
+    id: string;
+    address: string;
+    texts: Record<string, string>;
+    addresses: {
+      address: string;
+      coin: string;
+    }[];
+  };
+  expiryDate: number;
+}
+
+interface QueryResponse {
+  domain: QueryDomain;
 }

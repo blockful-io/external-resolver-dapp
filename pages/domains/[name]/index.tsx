@@ -7,12 +7,7 @@ import {
 
 import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
-import {
-  CoinInfo,
-  fetchDomainData,
-  // findResolverUrl,
-  getENSDomainDataThroughSubgraph,
-} from "@/lib/utils/ensData";
+import { CoinInfo, DomainData, fetchDomainData } from "@/lib/utils/ensData";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {
@@ -29,11 +24,12 @@ import {
 } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Address } from "viem";
 
 export function ManageNamePageContent({ name }: { name: string }) {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
 
-  const [ensData, setEnsData] = useState<any | null>(null);
+  const [ensData, setEnsData] = useState<DomainData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateFieldsWithEnsData } = useFields();
@@ -41,7 +37,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
-      const data = await getENSDomainDataThroughSubgraph(name);
+      const data = await fetchDomainData(name);
       setEnsData(data);
       updateFieldsWithEnsData(data);
       setError(null);
@@ -99,8 +95,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   let filteredRecords: Record<string, string> = {};
 
-  if (ensData && typeof ensData.texts === "object") {
-    filteredRecords = Object.entries(ensData.texts)
+  if (ensData && typeof ensData.resolver.texts === "object") {
+    filteredRecords = Object.entries(ensData.resolver.texts)
       .filter(([key]) => !excludeKeys.includes(key))
       .reduce((obj: Record<string, string>, [key, value]) => {
         obj[key] = value as string; // Type assertion to string
@@ -141,20 +137,20 @@ export function ManageNamePageContent({ name }: { name: string }) {
               <Skeleton>
                 <UserDomainCard
                   name={name}
-                  avatar={ensData?.texts?.avatar}
-                  url={ensData?.texts?.url}
-                  description={ensData?.texts?.description}
-                  email={ensData?.texts?.["email"]}
-                  github={ensData?.texts?.["com.github"]}
-                  twitter={ensData?.texts["com.twitter"]}
-                  linkedIn={ensData?.texts["com.linkedin"]}
+                  avatar={ensData?.resolver.texts?.avatar}
+                  url={ensData?.resolver.texts?.url}
+                  description={ensData?.resolver.texts?.description}
+                  email={ensData?.resolver.texts?.["email"]}
+                  github={ensData?.resolver.texts?.["com.github"]}
+                  twitter={ensData?.resolver.texts["com.twitter"]}
+                  linkedIn={ensData?.resolver.texts["com.linkedin"]}
                   onRecordsEdited={handleFetchENSDomainData}
                 />
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {!!ensData?.coins.length &&
-                  ensData?.coins.some(
+                {!!ensData?.resolver.addresses.length &&
+                  ensData?.resolver.addresses.some(
                     (add: CoinInfo | undefined) => typeof add !== "undefined"
                   ) && (
                     <div className="flex flex-col gap-4">
@@ -162,14 +158,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
                         <h3 className="font-semibold text-base">Addresses</h3>
                       </Skeleton>
                       <div className="grid grid-cols-2 gap-4">
-                        {ensData?.coins.map(
+                        {ensData?.resolver.addresses.map(
                           (coin: CoinInfo | undefined, index: number) => (
                             <div key={index}>
                               {coin ? (
-                                <Skeleton key={coin.name}>
+                                <Skeleton key={coin.coin}>
                                   <ProfileRecordItem
                                     icon={EthTransparentSVG}
-                                    text={coin.value}
+                                    text={coin.address}
                                   />
                                 </Skeleton>
                               ) : null}
@@ -209,26 +205,30 @@ export function ManageNamePageContent({ name }: { name: string }) {
                       <ProfileRecordItem
                         icon={CogSVG}
                         label="manager"
-                        text={ensData?.owner && ensData?.owner}
+                        text={ensData?.owner ?? ""}
                       />
                     </Skeleton>
 
                     <Skeleton>
-                      <ProfileRecordItem
-                        icon={HeartSVG}
-                        label="owner"
-                        text={ensData?.owner}
-                      />
+                      {ensData?.owner && (
+                        <ProfileRecordItem
+                          icon={HeartSVG}
+                          label="owner"
+                          text={ensData?.owner}
+                        />
+                      )}
                     </Skeleton>
 
                     <Skeleton>
-                      <ProfileRecordItem
-                        icon={CalendarSVG}
-                        label="expiry"
-                        text={formatDate({
-                          unixTimestamp: ensData?.expiry / 1000,
-                        })}
-                      />
+                      {ensData?.expiryDate && (
+                        <ProfileRecordItem
+                          icon={CalendarSVG}
+                          label="expiry"
+                          text={formatDate({
+                            unixTimestamp: ensData?.expiryDate / 1000,
+                          })}
+                        />
+                      )}
                     </Skeleton>
                     <Skeleton>
                       <ProfileRecordItem
@@ -252,9 +252,11 @@ export function ManageNamePageContent({ name }: { name: string }) {
                             <DatabaseIcon className="h-5 w-5 text-blue-500" />
                           </div>
 
-                          <p className="whitespace-nowrap truncate">
-                            {formatHexAddress(ensData?.resolverAddress)}
-                          </p>
+                          {ensData?.resolver?.address && (
+                            <p className="whitespace-nowrap truncate">
+                              {formatHexAddress(ensData?.resolver?.address)}
+                            </p>
+                          )}
                         </div>
 
                         <div>
@@ -279,7 +281,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
       <Modal open={editResolverModalOpen} onDismiss={() => {}}>
         <EditResolverModalContent
-          currentResolverAddress={ensData?.resolverAddress}
+          currentResolverAddress={ensData?.resolver.address as Address}
           name={name}
           onCloseModal={() => {
             setEditResolverModalOpen(false);
