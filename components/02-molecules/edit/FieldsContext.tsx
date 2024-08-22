@@ -2,7 +2,7 @@ import { Field, FieldType, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
 import _ from "lodash";
-import { ResolvedEnsData, TextRecords } from "@/lib/utils/ensData";
+import { TextRecords } from "@/lib/utils/ensData";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 import validateBitcoinAddress from "bitcoin-address-validation";
 
@@ -19,11 +19,18 @@ interface FieldsContextType {
   updateField: (tab: Tab, index: number, newValue: string) => void;
   domainAddressesToUpdate: Record<string, string>;
   textRecordsToUpdate: Record<string, string>;
-  updateFieldsWithEnsData: (ensData: ResolvedEnsData | null) => void;
+  updateEditModalFieldsWithEnsData: (ensData: ResolvedEnsData | null) => void;
 }
 
 interface FieldsProviderProps {
   children: ReactNode;
+}
+
+export interface ResolvedEnsData {
+  expiry?: number;
+  coins?: DecodedAddr[];
+  texts?: TextRecords;
+  owner?: string;
 }
 
 const FieldsContext = createContext<FieldsContextType | undefined>(undefined);
@@ -304,7 +311,9 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ]);
 
-  const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {
+  const updateEditModalFieldsWithEnsData = (
+    ensData: ResolvedEnsData | null
+  ) => {
     if (!ensData) {
       console.warn("FieldsContext - updateFieldsWithEnsData - No ENS Data");
       return;
@@ -367,7 +376,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         initialAddressesFields,
         domainAddressesToUpdate,
         textRecordsToUpdate,
-        updateFieldsWithEnsData,
+        updateEditModalFieldsWithEnsData,
         addField,
         updateField,
         setFields,

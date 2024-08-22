@@ -32,14 +32,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [ensData, setEnsData] = useState<DomainData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { updateFieldsWithEnsData } = useFields();
+  const { updateEditModalFieldsWithEnsData } = useFields();
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
       const data = await fetchDomainData(name);
       setEnsData(data);
-      updateFieldsWithEnsData(data);
+      updateEditModalFieldsWithEnsData(data);
       setError(null);
     } catch (err) {
       console.log(err);

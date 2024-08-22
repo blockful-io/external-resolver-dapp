@@ -51,9 +51,9 @@ export const cryptocurrencies: { [k: string]: string } = {
 };
 
 export const fetchDomainData = async (domain: string) => {
-  // check if the resolver supports ENSIP-16 - https://viem.sh/docs/contract/readContract.html
-
   let domainData: DomainData | null;
+
+  // check if the resolver supports ENSIP-16
   try {
     domainData = await fetchDomainDataThroughResolver(domain);
 
@@ -148,11 +148,7 @@ export async function getENSDomainDataThroughSubgraph(
   }
 
   const domainData = {
-    ...textRecords,
-    texts: updatedTexts,
     owner: ownerName?.name ?? owner?.owner!,
-    expiry: expiry?.expiry?.date?.getTime()!,
-
     resolver: {
       id: "id",
       address: textRecords.resolverAddress,
@@ -164,7 +160,7 @@ export async function getENSDomainDataThroughSubgraph(
     expiryDate: expiry?.expiry?.date?.getTime()!,
     subdomains: [],
     subdomainCount: 0,
-    id: "",
+    id: "id",
     resolvedAddress: "0x",
     parent: "eth",
   };
