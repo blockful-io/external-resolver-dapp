@@ -56,7 +56,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   useEffect(() => {
     handleFetchENSDomainData();
-    fetchDomainData(name);
   }, []);
 
   const excludeKeys = [
