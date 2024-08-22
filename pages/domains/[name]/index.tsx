@@ -7,7 +7,7 @@ import {
 
 import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
-import { CoinInfo, DomainData, fetchDomainData } from "@/lib/utils/ensData";
+import { CoinInfo, DomainData, fetchDomainData } from "@/lib/domain-page";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {

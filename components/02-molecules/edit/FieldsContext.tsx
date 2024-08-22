@@ -2,9 +2,9 @@ import { Field, FieldType, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
 import _ from "lodash";
-import { TextRecords } from "@/lib/utils/ensData";
 import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 import validateBitcoinAddress from "bitcoin-address-validation";
+import { TextRecords } from "@/lib/domain-page";
 
 interface FieldsContextType {
   profileFields: Field[];

@@ -33,7 +33,7 @@ import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage"
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
-import { cryptocurrencies } from "./ensData";
+import { cryptocurrencies } from "../domain-page";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 
