@@ -317,7 +317,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       );
     }
     const textsKeys = Object.keys(texts || {});
-    const coinNames = !addresses ? [] : addresses.map((coin) => coin.name);
+    const coinNames = !addresses ? [] : addresses.map((coin) => coin.label);
 
     const newProfileFields: Field[] = profileFields.map((field) => {
       if (textsKeys.includes(field.label)) {
@@ -331,7 +331,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     const newAddressesFields = addressesFields.map((addressField) => {
       if (coinNames.includes(addressField.label)) {
         const newAddress = addresses.find(
-          (address) => address.name === addressField.label
+          (address) => address.label === addressField.label
         )?.address as string;
 
         return {

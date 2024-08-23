@@ -36,7 +36,7 @@ export interface DomainData {
     texts: Record<string, string>;
     addresses: {
       address: string;
-      name: string;
+      label: string;
       coin: string;
     }[];
   };
