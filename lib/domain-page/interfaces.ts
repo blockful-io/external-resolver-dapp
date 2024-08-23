@@ -32,7 +32,7 @@ export interface DomainData {
   subdomainCount: number;
   resolver: {
     id: string;
-    address: string;
+    address: Address;
     texts: Record<string, string>;
     addresses: {
       address: string;
@@ -43,7 +43,7 @@ export interface DomainData {
   expiryDate: number;
 }
 
-export interface QueryDomain {
+export interface ResolverQueryDomainData {
   id: string;
   owner: string;
   resolvedAddress: string;
@@ -52,19 +52,19 @@ export interface QueryDomain {
   subdomainCount: number;
   resolver: {
     id: string;
-    address: string;
+    address: Address;
     texts: {
       key: string;
       value: string;
     }[];
     addresses: {
-      address: string;
+      address: Address;
       coin: string;
     }[];
   };
   expiryDate: string;
 }
 
-export interface QueryResponse {
-  domain: QueryDomain;
+export interface ResolverQueryDomainResponse {
+  domain: ResolverQueryDomainData;
 }

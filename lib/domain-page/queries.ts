@@ -1,6 +1,6 @@
 import { gql } from "graphql-request";
 
-export const query = gql`
+export const metadataDomainQuery = gql`
   query Query($name: String!) {
     domain(name: $name) {
       id

@@ -82,11 +82,7 @@ export const UserDomainCard = ({
               <h3 className="text-[26px] truncate">{name}</h3>
             </div>
             {url && (
-              <a
-                href={url}
-                target="_blank"
-                className="text-[16px] text-blue-500"
-              >
+              <a href={url} target="_blank" className="text-base text-blue-500">
                 {url}
               </a>
             )}
@@ -95,7 +91,10 @@ export const UserDomainCard = ({
         <Skeleton>
           <p className="text-base text-gray-400">{description}</p>
         </Skeleton>
-        {/* <Skeleton>
+        {/* 
+        We don't support primary name setting yet
+
+        <Skeleton>
         <div className="flex items-center justify-center gap-2 p-3 rounded-md border border-gray-200">
           <Toggle />
           <p>Primary name</p>
@@ -103,7 +102,7 @@ export const UserDomainCard = ({
         </div>
       </Skeleton> */}
         <div className="flex flex-col items-start justify-center gap-1">
-          {email && (
+          {!!email && (
             <Link
               target="_blank"
               href={`mailto:${email}`}
@@ -129,7 +128,7 @@ export const UserDomainCard = ({
             </Link>
           )}
 
-          {twitter && (
+          {!!twitter && (
             <Link
               target="_blank"
               href={`https://x.com/${twitter}`}
@@ -142,7 +141,7 @@ export const UserDomainCard = ({
             </Link>
           )}
 
-          {linkedIn && (
+          {!!linkedIn && (
             <Link
               target="_blank"
               href={`https://www.linkedin.com/in/${linkedIn}`}

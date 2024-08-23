@@ -7,7 +7,7 @@ import {
 
 import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
-import { CoinInfo, DomainData, fetchDomainData } from "@/lib/domain-page";
+import { CoinInfo, DomainData, getENSDomainData } from "@/lib/domain-page";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 
 import {
@@ -24,7 +24,6 @@ import {
 } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Address } from "viem";
 import { useAccount, useEnsName } from "wagmi";
 
 export function ManageNamePageContent({ name }: { name: string }) {
@@ -44,7 +43,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
-      const data = await fetchDomainData(name);
+      const data = await getENSDomainData(name);
       setEnsData(data);
       updateEditModalFieldsWithEnsData(data);
       setError(null);
@@ -67,7 +66,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   const excludeKeys = [
     "com.twitter",
-    // "org.telegram",
+    // "org.telegram", telegram is not yet shown in UserDomainCard
     "com.linkedin",
     "avatar",
     "com.github",
@@ -76,11 +75,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
     "name",
     "url",
   ];
-
-  interface TextRecord {
-    key: string;
-    value: string;
-  }
 
   if (!ensData && error) {
     return (
@@ -125,6 +119,14 @@ export function ManageNamePageContent({ name }: { name: string }) {
     );
   }
 
+  const millisencondsToSeconds = (millisecodNumber: number): number =>
+    millisecodNumber / 1000;
+
+  const resolver = ensData?.resolver;
+  const textRecords = resolver?.texts;
+  const addresses = resolver?.addresses;
+  const expiryDate = ensData?.expiryDate;
+
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
       <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
@@ -144,44 +146,41 @@ export function ManageNamePageContent({ name }: { name: string }) {
               <Skeleton>
                 <UserDomainCard
                   name={name}
-                  avatar={ensData?.resolver.texts?.avatar}
-                  url={ensData?.resolver.texts?.url}
-                  description={ensData?.resolver.texts?.description}
-                  email={ensData?.resolver.texts?.["email"]}
-                  github={ensData?.resolver.texts?.["com.github"]}
-                  twitter={ensData?.resolver.texts["com.twitter"]}
-                  linkedIn={ensData?.resolver.texts["com.linkedin"]}
+                  avatar={textRecords?.avatar}
+                  url={textRecords?.url}
+                  description={textRecords?.description}
+                  email={textRecords?.["email"]}
+                  github={textRecords?.["com.github"]}
+                  twitter={textRecords?.["com.twitter"]}
+                  linkedIn={textRecords?.["com.linkedin"]}
                   onRecordsEdited={handleFetchENSDomainData}
                 />
               </Skeleton>
 
               <div className="flex-grow flex gap-11 flex-col">
-                {!!ensData?.resolver.addresses.length &&
-                  ensData?.resolver.addresses.some(
-                    (add: CoinInfo | undefined) => typeof add !== "undefined"
-                  ) && (
-                    <div className="flex flex-col gap-4">
-                      <Skeleton>
-                        <h3 className="font-semibold text-base">Addresses</h3>
-                      </Skeleton>
-                      <div className="grid grid-cols-2 gap-4">
-                        {ensData?.resolver.addresses.map(
-                          (coin: CoinInfo | undefined, index: number) => (
-                            <div key={index}>
-                              {coin ? (
-                                <Skeleton key={coin.coin}>
-                                  <ProfileRecordItem
-                                    icon={EthTransparentSVG}
-                                    text={coin.address}
-                                  />
-                                </Skeleton>
-                              ) : null}
-                            </div>
-                          )
-                        )}
-                      </div>
+                {!!addresses?.length && (
+                  <div className="flex flex-col gap-4">
+                    <Skeleton>
+                      <h3 className="font-semibold text-base">Addresses</h3>
+                    </Skeleton>
+                    <div className="grid grid-cols-2 gap-4">
+                      {addresses.map(
+                        (coin: CoinInfo | undefined, index: number) => (
+                          <div key={index}>
+                            {coin ? (
+                              <Skeleton key={coin.coin}>
+                                <ProfileRecordItem
+                                  icon={EthTransparentSVG}
+                                  text={coin.address}
+                                />
+                              </Skeleton>
+                            ) : null}
+                          </div>
+                        )
+                      )}
                     </div>
-                  )}
+                  </div>
+                )}
 
                 {Object.keys(filteredRecords).length !== 0 && (
                   <div className="flex flex-col gap-4">
@@ -227,12 +226,12 @@ export function ManageNamePageContent({ name }: { name: string }) {
                     </Skeleton>
 
                     <Skeleton>
-                      {ensData?.expiryDate !== undefined && (
+                      {expiryDate !== undefined && (
                         <ProfileRecordItem
                           icon={CalendarSVG}
                           label="expiry"
                           text={formatDate({
-                            unixTimestamp: ensData?.expiryDate / 1000,
+                            unixTimestamp: millisencondsToSeconds(expiryDate),
                           })}
                         />
                       )}
@@ -259,9 +258,9 @@ export function ManageNamePageContent({ name }: { name: string }) {
                             <DatabaseIcon className="h-5 w-5 text-blue-500" />
                           </div>
 
-                          {ensData?.resolver?.address && (
+                          {resolver?.address && (
                             <p className="whitespace-nowrap truncate">
-                              {formatHexAddress(ensData?.resolver?.address)}
+                              {formatHexAddress(resolver?.address)}
                             </p>
                           )}
                         </div>
@@ -288,15 +287,17 @@ export function ManageNamePageContent({ name }: { name: string }) {
         </div>
       </SkeletonGroup>
 
-      <Modal open={editResolverModalOpen} onDismiss={() => {}}>
-        <EditResolverModalContent
-          currentResolverAddress={ensData?.resolver.address as Address}
-          name={name}
-          onCloseModal={() => {
-            setEditResolverModalOpen(false);
-          }}
-        />
-      </Modal>
+      {resolver?.address && (
+        <Modal open={editResolverModalOpen} onDismiss={() => {}}>
+          <EditResolverModalContent
+            currentResolverAddress={resolver?.address}
+            name={name}
+            onCloseModal={() => {
+              setEditResolverModalOpen(false);
+            }}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

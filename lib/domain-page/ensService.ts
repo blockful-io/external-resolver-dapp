@@ -21,11 +21,11 @@ import {
 } from "./utils";
 import {
   DomainData,
-  QueryDomain,
-  QueryResponse,
+  ResolverQueryDomainData,
+  ResolverQueryDomainResponse,
   SubgraphEnsData,
 } from "./interfaces";
-import { query } from "./queries";
+import { metadataDomainQuery } from "./queries";
 import { ContractFunctionExecutionError, parseAbiItem } from "viem";
 import toast from "react-hot-toast";
 
@@ -36,20 +36,20 @@ if (!ensSubgraphApiKey) {
 }
 
 // Fetch ENS data for a given domain
-export const fetchDomainData = async (
+export const getENSDomainData = async (
   domain: string
 ): Promise<DomainData | null> => {
-  // Check if the domain resolver is compatible with metadata, if nor it will return an error
+  // Check if the domain resolver is compatible with metadata, if not it will return an error
   try {
-    const data = await fetchDomainDataThroughResolver(domain);
-    const domainData = formatDomainDataThroughResolver(data);
+    const data = await getENSDomainDataThroughResolver(domain);
+    const domainData = formatResolverDomainData(data);
     return domainData;
     // Case where it's not compatilble
   } catch (error) {
     if (error instanceof ContractFunctionExecutionError) {
       const data = await getENSDomainDataThroughSubgraph(domain);
       if (!data) return null;
-      const domainData = await formatENSDomainDataThroughSubgraph(data);
+      const domainData = await formatSubgraphDomainData(data);
       return domainData;
     } else {
       toast.error("An Error occurred while loading the data");
@@ -100,9 +100,10 @@ export const getENSDomainDataThroughSubgraph = async (
   return data;
 };
 
-const fetchDomainDataThroughResolver = async (
+// Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned
+const getENSDomainDataThroughResolver = async (
   name: string
-): Promise<QueryDomain> => {
+): Promise<ResolverQueryDomainData> => {
   const resolverAdd = await getResolver(publicClient, { name });
 
   const metadataUrl = await publicClient.readContract({
@@ -112,12 +113,17 @@ const fetchDomainDataThroughResolver = async (
   });
 
   const graphQlClient = new GraphQLClient(metadataUrl);
-  const data = await graphQlClient.request<QueryResponse>(query, { name });
+  const data = await graphQlClient.request<ResolverQueryDomainResponse>(
+    metadataDomainQuery,
+    {
+      name,
+    }
+  );
 
   return data.domain;
 };
 
-const formatENSDomainDataThroughSubgraph = async (
+const formatSubgraphDomainData = async (
   data: SubgraphEnsData
 ): Promise<DomainData> => {
   const transformedTexts = transformTextRecords(data.texts);
@@ -153,7 +159,9 @@ const formatENSDomainDataThroughSubgraph = async (
   return domainData;
 };
 
-const formatDomainDataThroughResolver = (data: QueryDomain): DomainData => {
+const formatResolverDomainData = (
+  data: ResolverQueryDomainData
+): DomainData => {
   const transformedTexts = transformTextRecords(data.resolver.texts);
 
   return {
