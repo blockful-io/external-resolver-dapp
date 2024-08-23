@@ -227,6 +227,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         return fieldIsEmpty || isValidAddress;
       },
     },
+    // Matic is not working
     // {
     //   label: "matic",
     //   placeholder: "0x0000000000000000000000000000000000000000",
