@@ -84,10 +84,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
     "url",
   ];
 
-  interface TextRecord {
-    key: string;
-    value: string;
-  }
+  const showEditButton: boolean =
+    authedUserName === ensData?.owner || address === ensData?.owner;
 
   if (!ensData && error) {
     return (
@@ -383,7 +381,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                           </p>
                         </div>
 
-                        {authedUserName === ensData?.owner && (
+                        {showEditButton && (
                           <div>
                             <Button
                               onClick={() => {
