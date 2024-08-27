@@ -1,45 +1,31 @@
-import { DatabaseIcon } from "@/components/01-atoms";
-import {
-  FieldsProvider,
-  ProfileRecordItem,
-  useFields,
-} from "@/components/02-molecules";
+import { FieldsProvider, useFields } from "@/components/02-molecules";
 
-import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
 import { ProfileHeader } from "@/components/organisms/ProfileHeader";
+import { ProfileTab } from "@/components/organisms/ProfileTab";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
-import { CoinInfo, DomainData, getENSDomainData } from "@/lib/domain-page";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
+import { DomainData, getENSDomainData } from "@/lib/domain-page";
 
-import {
-  Button,
-  CalendarSVG,
-  CogSVG,
-  EthTransparentSVG,
-  Heading,
-  HeartSVG,
-  LeftChevronSVG,
-  Modal,
-  Skeleton,
-  SkeletonGroup,
-} from "@ensdomains/thorin";
+import { Button, Heading, Skeleton, SkeletonGroup } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useAccount, useEnsName } from "wagmi";
+
+export const excludeKeys = [
+  "com.twitter",
+  // "org.telegram", telegram is not yet shown in UserDomainCard
+  "com.linkedin",
+  "avatar",
+  "com.github",
+  "email",
+  "description",
+  "name",
+  "url",
+];
 
 export function ManageNamePageContent({ name }: { name: string }) {
-  const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
-
   const [ensData, setEnsData] = useState<DomainData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateEditModalFieldsWithEnsData } = useFields();
-
-  const { address } = useAccount();
-
-  const { data: authedUserName } = useEnsName({
-    address: address,
-  });
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
@@ -64,18 +50,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
   useEffect(() => {
     handleFetchENSDomainData();
   }, []);
-
-  const excludeKeys = [
-    "com.twitter",
-    // "org.telegram", telegram is not yet shown in UserDomainCard
-    "com.linkedin",
-    "avatar",
-    "com.github",
-    "email",
-    "description",
-    "name",
-    "url",
-  ];
 
   if (!ensData && error) {
     return (
@@ -120,13 +94,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
     );
   }
 
-  const millisencondsToSeconds = (millisecodNumber: number): number =>
-    millisecodNumber / 1000;
-
   const resolver = ensData?.resolver;
   const textRecords = resolver?.texts;
-  const addresses = resolver?.addresses;
-  const expiryDate = ensData?.expiryDate;
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
@@ -150,147 +119,11 @@ export function ManageNamePageContent({ name }: { name: string }) {
                 />
               </Skeleton>
 
-              <div className="flex-grow flex gap-11 flex-col">
-                {!!addresses?.length && (
-                  <div className="flex flex-col gap-4">
-                    <Skeleton>
-                      <h3 className="font-semibold text-base">Addresses</h3>
-                    </Skeleton>
-                    <div className="grid grid-cols-2 gap-4">
-                      {addresses.map(
-                        (coin: CoinInfo | undefined, index: number) => (
-                          <div key={index}>
-                            {coin ? (
-                              <Skeleton key={coin.coin}>
-                                <ProfileRecordItem
-                                  icon={EthTransparentSVG}
-                                  text={coin.address}
-                                />
-                              </Skeleton>
-                            ) : null}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {Object.keys(filteredRecords).length !== 0 && (
-                  <div className="flex flex-col gap-4">
-                    <Skeleton>
-                      <h3 className="font-semibold text-base">Other Records</h3>
-                    </Skeleton>
-                    <div className="grid grid-cols-2 gap-4">
-                      {Object.entries(filteredRecords).map(([key, value]) => (
-                        <Skeleton key={key}>
-                          <ProfileRecordItem
-                            icon={EthTransparentSVG}
-                            key={key}
-                            label={key}
-                            text={value}
-                          />
-                        </Skeleton>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-col gap-4">
-                  <Skeleton>
-                    <h3 className="font-semibold text-base">Ownership</h3>
-                  </Skeleton>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Skeleton>
-                      <ProfileRecordItem
-                        icon={CogSVG}
-                        label="manager"
-                        text={ensData?.owner ?? ""}
-                      />
-                    </Skeleton>
-
-                    <Skeleton>
-                      {ensData?.owner && (
-                        <ProfileRecordItem
-                          icon={HeartSVG}
-                          label="owner"
-                          text={ensData?.owner}
-                        />
-                      )}
-                    </Skeleton>
-
-                    <Skeleton>
-                      {expiryDate !== undefined && (
-                        <ProfileRecordItem
-                          icon={CalendarSVG}
-                          label="expiry"
-                          text={formatDate({
-                            unixTimestamp: millisencondsToSeconds(expiryDate),
-                          })}
-                        />
-                      )}
-                    </Skeleton>
-                    <Skeleton>
-                      <ProfileRecordItem
-                        icon={EthTransparentSVG}
-                        label="parent"
-                        text="ETH"
-                      />
-                    </Skeleton>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <Skeleton>
-                    <h3 className="font-semibold text-base">Resolver</h3>
-                  </Skeleton>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Skeleton>
-                      <div className="flex justify-between items-center gap-4 px-2 py-2 rounded-md bg-gray-50 overflow-hidden">
-                        <div className="flex items-center gap-4">
-                          <div className="flex gap-4 p-2 rounded-md bg-blue-100">
-                            <DatabaseIcon className="h-5 w-5 text-blue-500" />
-                          </div>
-
-                          {resolver?.address && (
-                            <p className="whitespace-nowrap truncate">
-                              {formatHexAddress(resolver?.address)}
-                            </p>
-                          )}
-                        </div>
-
-                        {authedUserName === ensData?.owner && (
-                          <div>
-                            <Button
-                              onClick={() => {
-                                setEditResolverModalOpen(true);
-                              }}
-                              size="small"
-                            >
-                              Edit
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </Skeleton>
-                  </div>
-                </div>
-              </div>
+              <ProfileTab ensData={ensData} />
             </div>
           </div>
         </div>
       </SkeletonGroup>
-
-      {resolver?.address && (
-        <Modal open={editResolverModalOpen} onDismiss={() => {}}>
-          <EditResolverModalContent
-            currentResolverAddress={resolver?.address}
-            name={name}
-            onCloseModal={() => {
-              setEditResolverModalOpen(false);
-            }}
-          />
-        </Modal>
-      )}
     </div>
   );
 }

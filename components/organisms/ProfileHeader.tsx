@@ -3,15 +3,27 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+export enum Tabs {
+  Profile = "profile",
+  Subdomains = "subdomains",
+}
+
+// export const TabBodyComponents: Record<Tabs, React.ComponentType> = {
+//   [Tabs.Profile]: ProfileBodyComponent,
+//   [Tabs.Subdomains]: SubdomainsBodyComponent,
+// };
+
 export const ProfileHeader = () => {
   const router = useRouter();
-  const { domain } = router.query; // Dynamic route parameter
+  const { name } = router.query; // Dynamic route parameter
   const { tab } = router.query; // Query parameter
+
+  console.log("outer.query", router.query);
 
   // To handle tab changes and update the route
   const handleTabChange = (newTab: string) => {
     router.push({
-      pathname: `/domains/${domain}`,
+      pathname: `/domains/${name}`,
       query: { tab: newTab },
     });
   };
