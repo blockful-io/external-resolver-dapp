@@ -6,6 +6,7 @@ import {
 } from "@/components/02-molecules";
 
 import { EditResolverModalContent } from "@/components/organisms/EditResolverModalContent";
+import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
 import { CoinInfo, DomainData, getENSDomainData } from "@/lib/domain-page";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
@@ -129,16 +130,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   return (
     <div className="text-black flex flex-col items-center justify-start bg-white">
-      <div className="w-full border-b border-gray-200 py-4 px-[60px] flex items-start">
-        <div className="w-full max-w-[1216px] flex mx-auto">
-          <Link
-            href="/domains"
-            className="flex items-center justify-center flex-shrink text-gray-400 hover:text-black duration-300 transition-colors gap-2"
-          >
-            <LeftChevronSVG /> <p className="text-black">Back</p>
-          </Link>
-        </div>
-      </div>
+      <ProfileHeader />
+
       <SkeletonGroup loading={isLoading}>
         <div className="w-full p-[60px]">
           <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
