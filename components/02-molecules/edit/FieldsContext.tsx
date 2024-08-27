@@ -332,11 +332,13 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       if (coinNames.includes(addressField.label)) {
         const newAddress = addresses.find(
           (address) => address.label === addressField.label
-        )?.address as string;
+        )?.address;
+
+        const formattedNewAddress = newAddress || "";
 
         return {
           ...addressField,
-          value: newAddress,
+          value: formattedNewAddress,
         };
       }
       return addressField;
