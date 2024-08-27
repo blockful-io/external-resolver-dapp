@@ -328,7 +328,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       }
       return field;
     });
-    const newAddressesFields = addressesFields.map((addressField) => {
+    const populateAddressesFields = addressesFields.map((addressField) => {
       if (coinNames.includes(addressField.label)) {
         const newAddress = addresses.find(
           (address) => address.label === addressField.label
@@ -353,7 +353,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     const newFieldsByTab = {
       [Tab.Profile]: newProfileFields,
       [Tab.Accounts]: newAccountsFields,
-      [Tab.Addresses]: newAddressesFields,
+      [Tab.Addresses]: populateAddressesFields,
     };
     [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
       setFields(tab, newFieldsByTab[tab]);
