@@ -5,9 +5,10 @@ export const metadataDomainQuery = gql`
     domain(name: $name) {
       id
       owner
-      resolvedAddress
       parent
-      subdomains
+      subdomains {
+        name
+      }
       subdomainCount
       resolver {
         id
