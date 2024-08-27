@@ -145,7 +145,7 @@ const formatSubgraphDomainData = async (
 
         return {
           address: coin.value,
-          name: coinName,
+          label: coinName,
           coin: coin.id.toString(),
         };
       }),
@@ -173,7 +173,7 @@ const formatResolverDomainData = (
         const coinName = getCoinNameByType(address.coin);
         return {
           ...address,
-          name: coinName,
+          label: coinName,
         };
       }),
 
