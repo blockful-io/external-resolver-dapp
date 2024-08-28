@@ -4,6 +4,7 @@ import { client } from "@/lib/wallet/wallet-config";
 import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
 import { Heading, Skeleton } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
 
 export default function DomainsPage() {
@@ -20,14 +21,17 @@ export default function DomainsPage() {
     const getNames = async () => {
       setIsLoading(true);
 
-      if (address) {
-        const result = await getNamesForAddress(client, {
-          address: address,
-        });
+      try {
+        if (address) {
+          const result = await getNamesForAddress(client, {
+            address: address,
+          });
+          const filteredNames = result.map((object) => object.name);
 
-        const filteredNames = result.map((object) => object.name);
-
-        setNames([...filteredNames]);
+          setNames([...filteredNames]);
+        }
+      } catch (error) {
+        toast.error("An error occurred");
       }
 
       setIsLoading(false);

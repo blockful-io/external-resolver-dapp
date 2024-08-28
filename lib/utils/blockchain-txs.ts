@@ -5,8 +5,6 @@ import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
-  EnsResolver,
-  ensResolverAddress,
   nameRegistrationContracts,
   nameRegistrationSCs,
 } from "../name-registration/constants";
@@ -35,7 +33,7 @@ import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage"
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
-import { cryptocurrencies, cryptocurrenciesToCoinType } from "./ensData";
+import { cryptocurrencies } from "../domain-page";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 
@@ -322,6 +320,17 @@ export const register = async ({
       return errorType;
     }
   }
+};
+
+const cryptocurrenciesToCoinType: { [k: string]: string } = {
+  [cryptocurrencies.BTC]: "0",
+  [cryptocurrencies.LTC]: "2",
+  [cryptocurrencies.DOGE]: "3",
+  [cryptocurrencies.ETH]: "60",
+  [cryptocurrencies.BNB]: "714",
+  [cryptocurrencies.ARB1]: "2147525809",
+  [cryptocurrencies.OP]: "2147483658",
+  [cryptocurrencies.MATIC]: "2147483658",
 };
 
 /*

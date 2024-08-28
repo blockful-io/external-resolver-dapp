@@ -2,9 +2,8 @@ import { Field, FieldType, Tab } from "@/types/editFieldsTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
 import _ from "lodash";
-import { ResolvedEnsData, TextRecords } from "@/lib/utils/ensData";
-import { DecodedAddr } from "@ensdomains/ensjs/dist/types/types";
 import validateBitcoinAddress from "bitcoin-address-validation";
+import { DomainData, TextRecords } from "@/lib/domain-page";
 
 interface FieldsContextType {
   profileFields: Field[];
@@ -19,7 +18,7 @@ interface FieldsContextType {
   updateField: (tab: Tab, index: number, newValue: string) => void;
   domainAddressesToUpdate: Record<string, string>;
   textRecordsToUpdate: Record<string, string>;
-  updateFieldsWithEnsData: (ensData: ResolvedEnsData | null) => void;
+  updateEditModalFieldsWithEnsData: (ensData: DomainData | null) => void;
 }
 
 interface FieldsProviderProps {
@@ -218,7 +217,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       },
     },
     {
-      label: "opt",
+      label: "op",
       placeholder: "0x0000000000000000000000000000000000000000",
       fieldType: FieldType.Address,
       value: "",
@@ -228,17 +227,18 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         return fieldIsEmpty || isValidAddress;
       },
     },
-    {
-      label: "matic",
-      placeholder: "0x0000000000000000000000000000000000000000",
-      fieldType: FieldType.Address,
-      value: "",
-      validationFunction: (fieldValue: string) => {
-        const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
-        const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
-        return fieldIsEmpty || isValidAddress;
-      },
-    },
+    // Matic is not working
+    // {
+    //   label: "matic",
+    //   placeholder: "0x0000000000000000000000000000000000000000",
+    //   fieldType: FieldType.Address,
+    //   value: "",
+    //   validationFunction: (fieldValue: string) => {
+    //     const fieldIsEmpty: Readonly<boolean> = fieldValue === "";
+    //     const isValidAddress: Readonly<boolean> = !!isAddress(fieldValue);
+    //     return fieldIsEmpty || isValidAddress;
+    //   },
+    // },
   ]);
 
   // INITIAL ADDRESS STATE
@@ -304,43 +304,60 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     },
   ]);
 
-  const updateFieldsWithEnsData = (ensData: ResolvedEnsData | null) => {
-    if (!ensData) {
+  const updateEditModalFieldsWithEnsData = (domainData: DomainData | null) => {
+    if (!domainData) {
       console.warn("FieldsContext - updateFieldsWithEnsData - No ENS Data");
       return;
     }
-    if (!ensData.texts || _.isEmpty(ensData.texts)) {
+
+    const { texts, addresses: domainAddresses } = domainData.resolver;
+    if (!texts || _.isEmpty(texts)) {
       console.warn(
         "FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts"
       );
     }
-    const textsKeys = Object.keys(ensData.texts || {});
-    const coinNames = ensData.coins?.map((coin) => coin.name) ?? [];
+    const textsKeys = Object.keys(texts || {});
+
+    // Update profile fields with corresponding text values
     const newProfileFields: Field[] = profileFields.map((field) => {
       if (textsKeys.includes(field.label)) {
         return {
           ...field,
-          value: (ensData.texts as TextRecords)[field.label] as string,
+          value: String(texts[field.label]),
         };
       }
       return field;
     });
-    const newAddressesFields = addressesFields.map((field) => {
-      if (coinNames.includes(field.label)) {
+
+    // Get the names of the coins from the addresses, or an empty array if no addresses exist
+    const domainCoinNames = !domainAddresses
+      ? []
+      : domainAddresses.map((coin) => coin.label);
+
+    // Populate address fields with ENS values or default to an empty string
+    const populatedAddressFields = addressesFields.map((addressField) => {
+      if (domainCoinNames.includes(addressField.label)) {
+        // Find the ENS address matching the label
+        const matchedAddress = domainAddresses.find(
+          (domainAddress) => domainAddress.label === addressField.label
+        )?.address;
+
+        // Use the found address or default to an empty string if undefined
+        const resolvedAddress = matchedAddress || "";
+
         return {
-          ...field,
-          value: (ensData.coins as DecodedAddr[]).find(
-            (coin) => coin.name === field.label
-          )?.value as string,
+          ...addressField,
+          value: resolvedAddress,
         };
       }
-      return field;
+
+      return addressField; // Return the address field unchanged if no match is found
     });
     const newAccountsFields = accountsFields.map((field) => {
       if (textsKeys.includes(field.label)) {
         return {
           ...field,
-          value: (ensData.texts as TextRecords)[field.label] as string,
+          value: String(texts[field.label]),
         };
       }
       return field;
@@ -348,7 +365,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     const newFieldsByTab = {
       [Tab.Profile]: newProfileFields,
       [Tab.Accounts]: newAccountsFields,
-      [Tab.Addresses]: newAddressesFields,
+      [Tab.Addresses]: populatedAddressFields,
     };
     [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
       setFields(tab, newFieldsByTab[tab]);
@@ -367,7 +384,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         initialAddressesFields,
         domainAddressesToUpdate,
         textRecordsToUpdate,
-        updateFieldsWithEnsData,
+        updateEditModalFieldsWithEnsData,
         addField,
         updateField,
         setFields,
