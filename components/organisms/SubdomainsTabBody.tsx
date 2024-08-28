@@ -2,12 +2,11 @@ import { EthTransparentSVG, Skeleton } from "@ensdomains/thorin";
 import { ProfileRecordItem } from "../02-molecules";
 import { DomainData } from "@/lib/domain-page";
 
-export const SubdomainsTab = ({
+export const SubdomainsTabBody = ({
   domainData,
 }: {
   domainData: DomainData | null;
 }) => {
-  console.log("domainData Subdomains tab ", domainData);
   return (
     <div className="flex-grow flex gap-11 flex-col">
       <div className="flex flex-col gap-4">

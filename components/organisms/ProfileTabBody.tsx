@@ -17,7 +17,7 @@ import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
 
-export const ProfileTab = ({
+export const ProfileTabBody = ({
   domainData,
 }: {
   domainData: DomainData | null;
@@ -35,14 +35,11 @@ export const ProfileTab = ({
   const showEditButton: boolean =
     authedUserName === domainData?.owner || address === domainData?.owner;
 
-  console.log("authedUserName ", address, domainData?.owner);
-
   const millisencondsToSeconds = (millisecodNumber: number): number =>
     millisecodNumber / 1000;
 
   const resolver = domainData?.resolver;
 
-  const textRecords = resolver?.texts;
   const addresses = resolver?.addresses;
   const expiryDate = domainData?.expiryDate;
 

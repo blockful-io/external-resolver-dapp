@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Tabs } from "./ProfileHeader";
-import { ProfileTab } from "./ProfileTab";
+import { ProfileTabBody } from "./ProfileTabBody";
 import { DomainData } from "@/lib/domain-page";
-import { SubdomainsTab } from "./SubdomainsTab";
+import { SubdomainsTabBody } from "./SubdomainsTabBody";
 import { useRouter } from "next/router";
 
 interface ProfileTabProps {
@@ -22,12 +22,12 @@ interface TabInfo<T = any> {
 // Object mapping each tab to its properties
 export const TabConfig: Record<Tabs, TabInfo> = {
   [Tabs.Profile]: {
-    component: ProfileTab as React.ComponentType<ProfileTabProps>,
+    component: ProfileTabBody as React.ComponentType<ProfileTabProps>,
     route: "/domains/[domain]?tab=profile",
     name: "Profile",
   },
   [Tabs.Subdomains]: {
-    component: SubdomainsTab as React.ComponentType<SubdomainsTabProps>,
+    component: SubdomainsTabBody as React.ComponentType<SubdomainsTabProps>,
     route: "/domains/[domain]?tab=subdomains",
     name: "Subdomains",
   },

@@ -8,17 +8,10 @@ export enum Tabs {
   Subdomains = "subdomains",
 }
 
-// export const TabBodyComponents: Record<Tabs, React.ComponentType> = {
-//   [Tabs.Profile]: ProfileBodyComponent,
-//   [Tabs.Subdomains]: SubdomainsBodyComponent,
-// };
-
 export const ProfileHeader = () => {
   const router = useRouter();
   const { name } = router.query; // Dynamic route parameter
   const { tab } = router.query; // Query parameter
-
-  console.log("outer.query", router.query);
 
   // To handle tab changes and update the route
   const handleTabChange = (newTab: string) => {
@@ -30,7 +23,6 @@ export const ProfileHeader = () => {
 
   useEffect(() => {
     if (!tab) {
-      // Set a default tab if none is specified
       handleTabChange("profile");
     }
   }, [tab]);
