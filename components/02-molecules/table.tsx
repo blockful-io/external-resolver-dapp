@@ -6,12 +6,14 @@ interface TableProps {
   names: (string | null)[];
   title?: string;
   withRoleColumn?: boolean;
+  clickable?: boolean;
 }
 
 export const Table = ({
   names,
   title = "Domain",
   withRoleColumn = true,
+  clickable = true,
 }: TableProps) => {
   return (
     <div className="rounded-lg border border-gray-200 overflow-hidden">
@@ -39,6 +41,7 @@ export const Table = ({
                   domain={item}
                   roles={["manager"]}
                   withRoleColumn={withRoleColumn}
+                  clickable={clickable}
                 />
               )
             );

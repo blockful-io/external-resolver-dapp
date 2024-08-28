@@ -53,6 +53,7 @@ export const SubdomainsTabBody = ({
         <Skeleton>
           {subdomainsArray?.length ? (
             <Table
+              clickable={false}
               title="Names"
               names={subdomainsArray}
               withRoleColumn={false}

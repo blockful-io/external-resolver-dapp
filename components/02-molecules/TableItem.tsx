@@ -13,12 +13,14 @@ interface TableItemProps {
   domain: string;
   roles: string[];
   withRoleColumn: boolean;
+  clickable: boolean;
 }
 
 export const TableItem = ({
   domain,
   roles,
   withRoleColumn,
+  clickable,
 }: TableItemProps) => {
   const router = useRouter();
   const [avatar, setAvatar] = useState("");
@@ -50,8 +52,13 @@ export const TableItem = ({
 
   return (
     <tr
-      onClick={() => handleRowClick(`/domains/${domain}`)}
-      className="hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
+      onClick={() => {
+        clickable && handleRowClick(`/domains/${domain}`);
+      }}
+      className={cc([
+        " transition-colors duration-200",
+        { "cursor-pointer hover:bg-gray-100": clickable },
+      ])}
     >
       <td className="py-2 px-4 border-b align-middle">
         <div className="flex items-center gap-2">
