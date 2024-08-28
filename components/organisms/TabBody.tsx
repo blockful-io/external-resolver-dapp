@@ -1,17 +1,9 @@
 import React, { useEffect } from "react";
 import { Tabs } from "./ProfileHeader";
-import { ProfileTabBody } from "./ProfileTabBody";
+import { ProfileTabBody, ProfileTabProps } from "./ProfileTabBody";
 import { DomainData } from "@/lib/domain-page";
-import { SubdomainsTabBody } from "./SubdomainsTabBody";
+import { SubdomainsTabBody, SubdomainsTabProps } from "./SubdomainsTabBody";
 import { useRouter } from "next/router";
-
-interface ProfileTabProps {
-  domainData: DomainData | null;
-}
-
-interface SubdomainsTabProps {
-  domainData: DomainData | null;
-}
 
 interface TabInfo<T = any> {
   component: React.ComponentType<T>;

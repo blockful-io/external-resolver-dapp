@@ -17,11 +17,11 @@ import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
 
-export const ProfileTabBody = ({
-  domainData,
-}: {
+export interface ProfileTabProps {
   domainData: DomainData | null;
-}) => {
+}
+
+export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
   const { address } = useAccount();
 
