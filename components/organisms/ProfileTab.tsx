@@ -32,6 +32,9 @@ export const ProfileTab = ({
     address: address,
   });
 
+  const showEditButton: boolean =
+    authedUserName === domainData?.owner || address === domainData?.owner;
+
   console.log("authedUserName ", address, domainData?.owner);
 
   const millisencondsToSeconds = (millisecodNumber: number): number =>
@@ -161,8 +164,7 @@ export const ProfileTab = ({
                 )}
               </div>
 
-              {(authedUserName === domainData?.owner ||
-                address === domainData?.owner) && (
+              {showEditButton && (
                 <div>
                   <Button
                     onClick={() => {

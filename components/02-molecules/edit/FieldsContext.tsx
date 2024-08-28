@@ -310,15 +310,15 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       return;
     }
 
-    const { texts, addresses } = domainData.resolver;
+    const { texts, addresses: domainAddresses } = domainData.resolver;
     if (!texts || _.isEmpty(texts)) {
       console.warn(
         "FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts"
       );
     }
     const textsKeys = Object.keys(texts || {});
-    const coinNames = !addresses ? [] : addresses.map((coin) => coin.label);
 
+    // Update profile fields with corresponding text values
     const newProfileFields: Field[] = profileFields.map((field) => {
       if (textsKeys.includes(field.label)) {
         return {
@@ -328,20 +328,30 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       }
       return field;
     });
-    const populateAddressesFields = addressesFields.map((addressField) => {
-      if (coinNames.includes(addressField.label)) {
-        const newAddress = addresses.find(
-          (address) => address.label === addressField.label
+
+    // Get the names of the coins from the addresses, or an empty array if no addresses exist
+    const domainCoinNames = !domainAddresses
+      ? []
+      : domainAddresses.map((coin) => coin.label);
+
+    // Populate address fields with ENS values or default to an empty string
+    const populatedAddressFields = addressesFields.map((addressField) => {
+      if (domainCoinNames.includes(addressField.label)) {
+        // Find the ENS address matching the label
+        const matchedAddress = domainAddresses.find(
+          (domainAddress) => domainAddress.label === addressField.label
         )?.address;
 
-        const formattedNewAddress = newAddress || "";
+        // Use the found address or default to an empty string if undefined
+        const resolvedAddress = matchedAddress || "";
 
         return {
           ...addressField,
-          value: formattedNewAddress,
+          value: resolvedAddress,
         };
       }
-      return addressField;
+
+      return addressField; // Return the address field unchanged if no match is found
     });
     const newAccountsFields = accountsFields.map((field) => {
       if (textsKeys.includes(field.label)) {
@@ -355,7 +365,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     const newFieldsByTab = {
       [Tab.Profile]: newProfileFields,
       [Tab.Accounts]: newAccountsFields,
-      [Tab.Addresses]: populateAddressesFields,
+      [Tab.Addresses]: populatedAddressFields,
     };
     [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
       setFields(tab, newFieldsByTab[tab]);
