@@ -17,7 +17,11 @@ import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
 
-export const ProfileTab = ({ ensData }: { ensData: DomainData | null }) => {
+export const ProfileTab = ({
+  domainData,
+}: {
+  domainData: DomainData | null;
+}) => {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
   const { address } = useAccount();
 
@@ -28,21 +32,21 @@ export const ProfileTab = ({ ensData }: { ensData: DomainData | null }) => {
     address: address,
   });
 
-  console.log("authedUserName ", address, ensData?.owner);
+  console.log("authedUserName ", address, domainData?.owner);
 
   const millisencondsToSeconds = (millisecodNumber: number): number =>
     millisecodNumber / 1000;
 
-  const resolver = ensData?.resolver;
+  const resolver = domainData?.resolver;
 
   const textRecords = resolver?.texts;
   const addresses = resolver?.addresses;
-  const expiryDate = ensData?.expiryDate;
+  const expiryDate = domainData?.expiryDate;
 
   let filteredRecords: Record<string, string> = {};
 
-  if (ensData && typeof ensData.resolver.texts === "object") {
-    filteredRecords = Object.entries(ensData.resolver.texts)
+  if (domainData && typeof domainData.resolver.texts === "object") {
+    filteredRecords = Object.entries(domainData.resolver.texts)
       .filter(([key]) => !excludeKeys.includes(key))
       .reduce((obj: Record<string, string>, [key, value]) => {
         obj[key] = value as string; // Type assertion to string
@@ -103,16 +107,16 @@ export const ProfileTab = ({ ensData }: { ensData: DomainData | null }) => {
             <ProfileRecordItem
               icon={CogSVG}
               label="manager"
-              text={ensData?.owner ?? ""}
+              text={domainData?.owner ?? ""}
             />
           </Skeleton>
 
           <Skeleton>
-            {ensData?.owner && (
+            {domainData?.owner && (
               <ProfileRecordItem
                 icon={HeartSVG}
                 label="owner"
-                text={ensData?.owner}
+                text={domainData?.owner}
               />
             )}
           </Skeleton>
@@ -157,8 +161,8 @@ export const ProfileTab = ({ ensData }: { ensData: DomainData | null }) => {
                 )}
               </div>
 
-              {(authedUserName === ensData?.owner ||
-                address === ensData?.owner) && (
+              {(authedUserName === domainData?.owner ||
+                address === domainData?.owner) && (
                 <div>
                   <Button
                     onClick={() => {

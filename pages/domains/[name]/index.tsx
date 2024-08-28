@@ -1,12 +1,13 @@
 import { FieldsProvider, useFields } from "@/components/02-molecules";
 
-import { ProfileHeader } from "@/components/organisms/ProfileHeader";
-import { ProfileTab } from "@/components/organisms/ProfileTab";
+import { ProfileHeader, Tabs } from "@/components/organisms/ProfileHeader";
+import TabBody from "@/components/organisms/TabBody";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
 import { DomainData, getENSDomainData } from "@/lib/domain-page";
 
 import { Button, Heading, Skeleton, SkeletonGroup } from "@ensdomains/thorin";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export const excludeKeys = [
@@ -26,6 +27,9 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateEditModalFieldsWithEnsData } = useFields();
+
+  const router = useRouter();
+  const { tab } = router.query;
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
@@ -119,7 +123,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                 />
               </Skeleton>
 
-              <ProfileTab ensData={ensData} />
+              <TabBody selectedTab={tab as Tabs} domainData={ensData} />
             </div>
           </div>
         </div>
