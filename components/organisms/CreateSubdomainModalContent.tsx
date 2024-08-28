@@ -1,6 +1,8 @@
+import { createSubdomain } from "@/lib/create-subdomain/service";
 import { Button, Input } from "@ensdomains/thorin";
 import { useState } from "react";
-import { Address, isAddress } from "viem";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
 
 interface CreateSubdomainModalContentProps {
   name: string;
@@ -18,8 +20,17 @@ export const CreateSubdomainModalContent = ({
   // const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const authedUser = useAccount();
 
-  const handleSaveAction = async () => {};
+  const handleSaveAction = async () => {
+    setIsloading(true);
+    await createSubdomain({
+      resolverAddress: currentResolverAddress,
+      signerAddress: authedUser.address!,
+      name: `${newSubdomain}.${name}`,
+    });
+    setIsloading(false);
+  };
 
   return (
     <div className="w-[480px] border rounded-xl overflow-hidden">
@@ -68,13 +79,7 @@ export const CreateSubdomainModalContent = ({
               </Button>
             </div>
             <div>
-              <Button
-                disabled={
-                  !isAddress(newSubdomain) ||
-                  newSubdomain === currentResolverAddress
-                }
-                onClick={handleSaveAction}
-              >
+              <Button disabled={isLoading} onClick={handleSaveAction}>
                 Save
               </Button>
             </div>
