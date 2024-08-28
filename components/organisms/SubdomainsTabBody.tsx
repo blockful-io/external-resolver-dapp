@@ -11,7 +11,6 @@ export const SubdomainsTabBody = ({ domainData }: SubdomainsTabProps) => {
     (domain) => domain?.name as string
   );
 
-  console.log("domainData ", subdomainsArray);
   return (
     <div className="flex-grow flex gap-8 flex-col">
       <div className="flex flex-col gap-1">
