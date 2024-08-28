@@ -49,7 +49,7 @@ export interface ResolverQueryDomainData {
   owner: string;
   resolvedAddress: string;
   parent: string;
-  subdomains: string[];
+  subdomains: DomainData[];
   subdomainCount: number;
   resolver: {
     id: string;
