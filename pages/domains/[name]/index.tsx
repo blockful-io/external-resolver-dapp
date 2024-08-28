@@ -76,6 +76,9 @@ export function ManageNamePageContent({ name }: { name: string }) {
     "url",
   ];
 
+  const showEditButton: boolean =
+    authedUserName === ensData?.owner || address === ensData?.owner;
+
   if (!ensData && error) {
     return (
       <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
@@ -265,7 +268,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                           )}
                         </div>
 
-                        {authedUserName === ensData?.owner && (
+                        {showEditButton && (
                           <div>
                             <Button
                               onClick={() => {
