@@ -12,9 +12,14 @@ import cc from "classcat";
 interface TableItemProps {
   domain: string;
   roles: string[];
+  withRoleColumn: boolean;
 }
 
-export const TableItem = ({ domain, roles }: TableItemProps) => {
+export const TableItem = ({
+  domain,
+  roles,
+  withRoleColumn,
+}: TableItemProps) => {
   const router = useRouter();
   const [avatar, setAvatar] = useState("");
   const [isLoadingImage, setIsLoadingImage] = useState(true);
@@ -78,23 +83,25 @@ export const TableItem = ({ domain, roles }: TableItemProps) => {
           <span className="text-blue-600">{domain}</span>
         </div>
       </td>
-      <td className="py-2 px-4 border-b align-middle">
-        {roles.map((role, index) => (
-          <span
-            key={index}
-            className={cc([
-              "inline-block px-2 py-1 mr-2 rounded",
-              {
-                "bg-yellow-100 text-yellow-800": role === "owner",
-                "bg-green-100 text-green-800": role === "manager",
-                "bg-blue-100 text-blue-800": role === "admin",
-              },
-            ])}
-          >
-            {role}
-          </span>
-        ))}
-      </td>
+      {withRoleColumn && (
+        <td className="py-2 px-4 border-b align-middle">
+          {roles.map((role, index) => (
+            <span
+              key={index}
+              className={cc([
+                "inline-block px-2 py-1 mr-2 rounded",
+                {
+                  "bg-yellow-100 text-yellow-800": role === "owner",
+                  "bg-green-100 text-green-800": role === "manager",
+                  "bg-blue-100 text-blue-800": role === "admin",
+                },
+              ])}
+            >
+              {role}
+            </span>
+          ))}
+        </td>
+      )}
     </tr>
   );
 };

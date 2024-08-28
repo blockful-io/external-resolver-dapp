@@ -25,7 +25,7 @@ export const SubdomainsTabBody = ({ domainData }: SubdomainsTabProps) => {
       </div>
       <Skeleton>
         {subdomainsArray?.length ? (
-          <Table names={subdomainsArray} />
+          <Table title="Names" names={subdomainsArray} withRoleColumn={false} />
         ) : (
           <p>No subnames have been added.</p>
         )}
