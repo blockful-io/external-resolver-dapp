@@ -83,7 +83,7 @@ export const CreateSubdomainModalContent = ({
             placeholder={""}
             type="text"
             value={newSubdomain}
-            onChange={(e) => setNewSubdomain(e.target.value)}
+            onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
             suffix={`.${name}`}
             error={isDomainInvalid()}
           />
