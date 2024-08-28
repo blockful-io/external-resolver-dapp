@@ -26,12 +26,15 @@ export const TabConfig: Record<Tabs, TabInfo> = {
 };
 
 interface TabBodyProps {
-  selectedTab: Tabs;
   domainData: DomainData | null;
 }
 
-const TabBody = ({ selectedTab, domainData }: TabBodyProps) => {
+const TabBody = ({ domainData }: TabBodyProps) => {
   const router = useRouter();
+
+  const { tab } = router.query;
+
+  const selectedTab = tab as Tabs;
 
   // Check if the selected tab exists in TabConfig
   const tabExists = TabConfig[selectedTab] !== undefined;

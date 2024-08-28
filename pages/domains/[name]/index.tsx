@@ -29,7 +29,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const { updateEditModalFieldsWithEnsData } = useFields();
 
   const router = useRouter();
-  const { tab } = router.query;
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
@@ -123,7 +122,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                 />
               </Skeleton>
 
-              <TabBody selectedTab={tab as Tabs} domainData={ensData} />
+              <TabBody domainData={ensData} />
             </div>
           </div>
         </div>
