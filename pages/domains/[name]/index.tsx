@@ -1,13 +1,12 @@
 import { FieldsProvider, useFields } from "@/components/02-molecules";
 
-import { ProfileHeader, Tabs } from "@/components/organisms/ProfileHeader";
+import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import TabBody from "@/components/organisms/TabBody";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
 import { DomainData, getENSDomainData } from "@/lib/domain-page";
 
 import { Button, Heading, Skeleton, SkeletonGroup } from "@ensdomains/thorin";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export const excludeKeys = [
@@ -27,8 +26,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateEditModalFieldsWithEnsData } = useFields();
-
-  const router = useRouter();
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
@@ -70,17 +67,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
         </Button>
       </div>
     );
-  }
-
-  let filteredRecords: Record<string, string> = {};
-
-  if (ensData && typeof ensData.resolver.texts === "object") {
-    filteredRecords = Object.entries(ensData.resolver.texts)
-      .filter(([key]) => !excludeKeys.includes(key))
-      .reduce((obj: Record<string, string>, [key, value]) => {
-        obj[key] = value as string; // Type assertion to string
-        return obj;
-      }, {});
   }
 
   if (!ensData && !isLoading) {
