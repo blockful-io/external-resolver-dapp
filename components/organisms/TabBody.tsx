@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Tabs } from "./ProfileHeader";
 import { ProfileTab } from "./ProfileTab";
 import { DomainData } from "@/lib/domain-page";
 import { SubdomainsTab } from "./SubdomainsTab";
+import { useRouter } from "next/router";
 
 interface ProfileTabProps {
   domainData: DomainData | null;
@@ -38,6 +39,26 @@ interface TabBodyProps {
 }
 
 const TabBody = ({ selectedTab, domainData }: TabBodyProps) => {
+  const router = useRouter();
+
+  // Check if the selected tab exists in TabConfig
+  const tabExists = TabConfig[selectedTab] !== undefined;
+
+  useEffect(() => {
+    if (!tabExists) {
+      // If the tab does not exist, redirect to the default tab (Tabs.Profile)
+      router.push({
+        pathname: router.pathname,
+        query: { ...router.query, tab: Tabs.Profile },
+      });
+    }
+  }, [tabExists, router]);
+
+  if (!tabExists) {
+    // Prevent rendering if tab is invalid; redirect is happening
+    return null;
+  }
+
   const { component: SelectedComponent } = TabConfig[selectedTab];
 
   // Render the selected tab's component with the specific props
