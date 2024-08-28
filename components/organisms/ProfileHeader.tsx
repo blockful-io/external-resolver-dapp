@@ -40,7 +40,9 @@ export const ProfileHeader = () => {
           {/* Profile Tab */}
           <button
             className={`h-full p-4 ${
-              tab === "profile" ? "bg-gray-100 text-black" : "text-gray-400"
+              tab === "profile"
+                ? "text-blue-500 border-b border-blue-500"
+                : "text-gray-400"
             } hover:bg-gray-100 transition-colors duration-300`}
             onClick={() => handleTabChange("profile")}
           >
@@ -50,7 +52,9 @@ export const ProfileHeader = () => {
           {/* Subdomains Tab */}
           <button
             className={`h-full p-4 ${
-              tab === "subdomains" ? "bg-gray-100 text-black" : "text-gray-400"
+              tab === "subdomains"
+                ? "text-blue-500 border-b border-blue-500"
+                : "text-gray-400"
             } hover:bg-gray-100 transition-colors duration-300`}
             onClick={() => handleTabChange("subdomains")}
           >
