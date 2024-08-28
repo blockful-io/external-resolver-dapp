@@ -7,9 +7,13 @@ import { useRouter } from "next/router";
 
 export interface SubdomainsTabProps {
   domainData: DomainData | null;
+  fetchDomainData: () => void;
 }
 
-export const SubdomainsTabBody = ({ domainData }: SubdomainsTabProps) => {
+export const SubdomainsTabBody = ({
+  domainData,
+  fetchDomainData,
+}: SubdomainsTabProps) => {
   const [createSubdomainModalOpen, setCreateSubdomainModalOpen] =
     useState(false);
 
@@ -61,6 +65,8 @@ export const SubdomainsTabBody = ({ domainData }: SubdomainsTabProps) => {
 
       <Modal open={createSubdomainModalOpen} onDismiss={() => {}}>
         <CreateSubdomainModalContent
+          onRecordsEdited={fetchDomainData}
+          alreadyCreatedSubdomains={subdomainsArray}
           currentResolverAddress={domainData?.resolver.address!}
           name={String(name)}
           onCloseModal={() => {

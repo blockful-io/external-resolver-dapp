@@ -1,6 +1,9 @@
 import { createSubdomain } from "@/lib/create-subdomain/service";
-import { Button, Input } from "@ensdomains/thorin";
+import { Button, Input, Spinner } from "@ensdomains/thorin";
+import { buildENSName } from "@namehash/ens-utils";
+import { normalize } from "viem/ens";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 
@@ -9,26 +12,51 @@ interface CreateSubdomainModalContentProps {
   currentResolverAddress: Address;
   onCloseModal: () => void;
   onRecordsEdited?: () => void;
+  alreadyCreatedSubdomains?: string[];
 }
 
 export const CreateSubdomainModalContent = ({
   currentResolverAddress,
   onCloseModal,
+  onRecordsEdited,
   name,
+  alreadyCreatedSubdomains,
 }: CreateSubdomainModalContentProps) => {
   const [newSubdomain, setNewSubdomain] = useState<string>("");
-  // const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
   const authedUser = useAccount();
 
+  const isDomainInvalid = () => {
+    try {
+      normalize(newSubdomain);
+      buildENSName(newSubdomain);
+      if (alreadyCreatedSubdomains?.includes(`${newSubdomain}.${name}`)) {
+        return "subdomain already created";
+      }
+    } catch (error) {
+      return "Invalid domain";
+    }
+  };
+
   const handleSaveAction = async () => {
     setIsloading(true);
-    await createSubdomain({
-      resolverAddress: currentResolverAddress,
-      signerAddress: authedUser.address!,
-      name: `${newSubdomain}.${name}`,
-    });
+
+    try {
+      const response = await createSubdomain({
+        resolverAddress: currentResolverAddress,
+        signerAddress: authedUser.address!,
+        name: `${newSubdomain}.${name}`,
+      });
+      if (response?.ok) {
+        !!onRecordsEdited && onRecordsEdited();
+        setTransactionSuccess(true);
+        toast.success("Subdomain created successfully 🙂");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     setIsloading(false);
   };
 
@@ -57,7 +85,7 @@ export const CreateSubdomainModalContent = ({
             value={newSubdomain}
             onChange={(e) => setNewSubdomain(e.target.value)}
             suffix={`.${name}`}
-            // error={"invalid address"}
+            error={isDomainInvalid()}
           />
         )}
 
@@ -80,7 +108,7 @@ export const CreateSubdomainModalContent = ({
             </div>
             <div>
               <Button disabled={isLoading} onClick={handleSaveAction}>
-                Save
+                {isLoading ? <Spinner color="blue" /> : "Save"}
               </Button>
             </div>
           </>

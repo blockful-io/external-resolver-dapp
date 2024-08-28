@@ -40,11 +40,9 @@ export const createSubdomain = async ({
         authenticatedAddress: signerAddress,
       });
 
-      if (response?.ok) {
-        toast.success("Subdomain created successfully 🙂");
-      }
+      return response;
     } else {
-      toast.error("erro");
+      toast.error("error");
       console.error("writing failed: ", { error });
     }
   }

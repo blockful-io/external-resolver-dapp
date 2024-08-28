@@ -27,9 +27,10 @@ export const TabConfig: Record<Tabs, TabInfo> = {
 
 interface TabBodyProps {
   domainData: DomainData | null;
+  fetchDomainData: () => void;
 }
 
-const TabBody = ({ domainData }: TabBodyProps) => {
+const TabBody = ({ domainData, fetchDomainData }: TabBodyProps) => {
   const router = useRouter();
 
   const { tab } = router.query;
@@ -57,7 +58,12 @@ const TabBody = ({ domainData }: TabBodyProps) => {
   const { component: SelectedComponent } = TabConfig[selectedTab];
 
   // Render the selected tab's component with the specific props
-  return <SelectedComponent domainData={domainData} />;
+  return (
+    <SelectedComponent
+      domainData={domainData}
+      fetchDomainData={fetchDomainData}
+    />
+  );
 };
 
 export default TabBody;

@@ -108,7 +108,10 @@ export function ManageNamePageContent({ name }: { name: string }) {
                 />
               </Skeleton>
 
-              <TabBody domainData={ensData} />
+              <TabBody
+                domainData={ensData}
+                fetchDomainData={handleFetchENSDomainData}
+              />
             </div>
           </div>
         </div>
