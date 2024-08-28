@@ -108,7 +108,6 @@ export async function ccipRequest({
   body,
   url,
 }: CcipRequestParameters): Promise<Response> {
-  // return new Promise((resolve, reject) => {
   return fetch(url.replace("/{sender}/{data}.json", ""), {
     body: JSON.stringify(body, (_, value) =>
       typeof value === "bigint" ? value.toString() : value
@@ -118,16 +117,6 @@ export async function ccipRequest({
       "Content-Type": "application/json",
     },
   });
-  // .then((res) => {
-  //   return res.json();
-  // })
-  // .then((res) => resolve(res))
-  // .catch((err) => {
-  //   console.error(err);
-  //   reject(err);
-  // });
-  // }
-  // );
 }
 
 export async function handleDBStorage({
