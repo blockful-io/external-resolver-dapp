@@ -26,9 +26,10 @@ export interface SubgraphEnsData {
 }
 
 export interface DomainData {
+  name?: string;
   owner: string;
   parent: string;
-  subdomains: string[];
+  subdomains: DomainData[];
   subdomainCount: number;
   resolver: {
     id: string;
@@ -48,7 +49,7 @@ export interface ResolverQueryDomainData {
   owner: string;
   resolvedAddress: string;
   parent: string;
-  subdomains: string[];
+  subdomains: DomainData[];
   subdomainCount: number;
   resolver: {
     id: string;
