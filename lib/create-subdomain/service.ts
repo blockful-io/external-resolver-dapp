@@ -17,10 +17,13 @@ export const createSubdomain = async ({
   name,
 }: CreateSubdomainArgs) => {
   try {
+    const dnsName = toHex(name),
+          ttl = 300,
+          owner = signerAddress
     await publicClient.simulateContract({
       functionName: "register",
       abi: DomainResolverABI,
-      args: [toHex(name), 300, signerAddress],
+      args: [dnsName, ttl, owner],
       account: signerAddress,
       address: resolverAddress,
     });
