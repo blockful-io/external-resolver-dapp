@@ -1,6 +1,5 @@
 import { FieldType, Tab } from "@/types/editFieldsTypes";
 import { Input, Textarea } from "@ensdomains/thorin";
-import Image from "next/image";
 import React from "react";
 import { useFields } from "./FieldsContext";
 import Avatar from "boring-avatars";

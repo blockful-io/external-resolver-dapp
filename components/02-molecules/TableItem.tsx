@@ -56,7 +56,7 @@ export const TableItem = ({
         clickable && handleRowClick(`/domains/${domain}`);
       }}
       className={cc([
-        " transition-colors duration-200",
+        "transition-colors duration-200",
         { "cursor-pointer hover:bg-gray-100": clickable },
       ])}
     >

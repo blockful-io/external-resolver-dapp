@@ -27,12 +27,12 @@ export const CreateSubdomainModalContent = ({
   const [isLoading, setIsloading] = useState(false);
   const authedUser = useAccount();
 
-  const isDomainInvalid = () => {
+  const isSubdomainInvalid = () => {
     try {
       normalize(newSubdomain);
       buildENSName(newSubdomain);
       if (alreadyCreatedSubdomains?.includes(`${newSubdomain}.${name}`)) {
-        return "subdomain already created";
+        return "Subdomain is already created";
       }
     } catch (error) {
       return "Invalid domain";
@@ -85,7 +85,7 @@ export const CreateSubdomainModalContent = ({
             value={newSubdomain}
             onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
             suffix={`.${name}`}
-            error={isDomainInvalid()}
+            error={isSubdomainInvalid()}
           />
         )}
 
