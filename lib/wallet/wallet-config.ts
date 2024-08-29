@@ -1,17 +1,11 @@
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import {
-  createClient,
-  createPublicClient,
-  createWalletClient,
-  custom,
-} from "viem";
+import { createClient, createPublicClient, createWalletClient } from "viem";
 import { mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { isTestnet } from "./chains";
 import { QueryClient } from "@tanstack/react-query";
 import { addEnsContracts } from "@ensdomains/ensjs";
-import { ENS_SUBGRAPH_ENDPOINT } from "../utils/ensData";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
@@ -19,7 +13,13 @@ const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
 const mainnetWithEns = addEnsContracts(mainnet);
 const sepoliaWithEns = addEnsContracts(sepolia);
 
-const chain = {
+const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
+
+const ENS_SUBGRAPH_ENDPOINT = isTestnet
+  ? `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/DmMXLtMZnGbQXASJ7p1jfzLUbBYnYUD9zNBTxpkjHYXV`
+  : `https://gateway-arbitrum.network.thegraph.com/api/${ensSubgraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`;
+
+export const chain = {
   ...(isTestnet ? sepoliaWithEns : mainnetWithEns),
   subgraphs: {
     ens: {
@@ -55,7 +55,7 @@ export const client = createClient({
 
 // Create a wallet client for sending transactions to the blockchain
 export const walletClient = createWalletClient({
-  chain: isTestnet ? sepolia : mainnet,
+  chain: chain,
   transport: http(rpcHttpUrl),
 });
 
