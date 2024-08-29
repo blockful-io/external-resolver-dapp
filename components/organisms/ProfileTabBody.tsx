@@ -35,7 +35,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
   const showEditButton: boolean =
     authedUserName === domainData?.owner || address === domainData?.owner;
 
-  const millisencondsToSeconds = (millisecodNumber: number): number =>
+  const millisecondsToSeconds = (millisecodNumber: number): number =>
     millisecodNumber / 1000;
 
   const resolver = domainData?.resolver;
@@ -127,7 +127,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                 icon={CalendarSVG}
                 label="expiry"
                 text={formatDate({
-                  unixTimestamp: millisencondsToSeconds(expiryDate),
+                  unixTimestamp: millisecondsToSeconds(expiryDate),
                 })}
               />
             )}

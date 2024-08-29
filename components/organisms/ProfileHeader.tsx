@@ -3,12 +3,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export enum Tabs {
-  Profile = "profile",
-  Subdomains = "subdomains",
-}
-
 export const ProfileHeader = () => {
+  // https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes
   const router = useRouter();
   const { name } = router.query; // Dynamic route parameter
   const { tab } = router.query; // Query parameter
@@ -28,7 +24,7 @@ export const ProfileHeader = () => {
   }, [tab]);
 
   return (
-    <div className="w-full border-b border-gray-200 py- px-[60px] flex items-start">
+    <div className="w-full border-b border-gray-200 px-[60px] flex items-start">
       <div className="w-full max-w-[1216px] flex mx-auto justify-between">
         <Link
           href="/domains"
