@@ -133,11 +133,13 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
             )}
           </Skeleton>
           <Skeleton>
-            <ProfileRecordItem
-              icon={EthTransparentSVG}
-              label="parent"
-              text="ETH"
-            />
+            {domainData?.parent && (
+              <ProfileRecordItem
+                icon={EthTransparentSVG}
+                label="parent"
+                text={domainData?.parent ?? ""}
+              />
+            )}
           </Skeleton>
         </div>
       </div>
