@@ -49,7 +49,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   useEffect(() => {
     handleFetchENSDomainData();
-  }, []);
+  }, [name]);
 
   if (!ensData && error) {
     return (
