@@ -19,7 +19,9 @@ export const transformTextRecords = (
 };
 
 export const getCoinNameByType = (coin: string) => {
-  return coinTypeToNameMap[parseInt(coin) as CoinType][0].toString();
+  const coinNameArr = coinTypeToNameMap[parseInt(coin) as CoinType]; // Doesn't include 1
+  const coinName = coinNameArr ? coinNameArr[0] : "";
+  return coinName;
 };
 
 export const updateAvatarInTexts = (
