@@ -6,6 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Address, isAddress } from "viem";
 import { useAccount } from "wagmi";
+import { NewSubdomainInfo } from "./NewSubdomainInfo";
 
 interface CreateSubdomainModalContentProps {
   name: string;
@@ -31,7 +32,8 @@ export const CreateSubdomainModalContent = ({
 }: CreateSubdomainModalContentProps) => {
   const [newSubdomain, setNewSubdomain] = useState<string>("");
   const [subdomainAddress, setSubdomainAddress] = useState<string>("");
-  const [transactionSuccess, setTransactionSuccess] = useState(false);
+  const [website, setWebsite] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [isLoading, setIsloading] = useState(false);
   const authedUser = useAccount();
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
@@ -61,7 +63,6 @@ export const CreateSubdomainModalContent = ({
       });
       if (response?.ok) {
         !!onRecordsEdited && onRecordsEdited();
-        setTransactionSuccess(true);
         toast.success("Subdomain created successfully 🙂");
         setCurrentStep(CreateSubdomainModalSteps.Success);
       }
@@ -71,6 +72,9 @@ export const CreateSubdomainModalContent = ({
 
     setIsloading(false);
   };
+
+  var urlRegex =
+    /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
 
   // Map each step to a corresponding JSX element
   const stepComponents: Record<CreateSubdomainModalSteps, JSX.Element> = {
@@ -87,30 +91,52 @@ export const CreateSubdomainModalContent = ({
       />
     ),
     [CreateSubdomainModalSteps.ProfileSettings]: (
-      <Input
-        clearable
-        label={"Address"}
-        placeholder={""}
-        type="text"
-        value={subdomainAddress}
-        onChange={(e) => setSubdomainAddress(e.target.value.toLowerCase())}
-        error={
-          subdomainAddress.length &&
-          !isAddress(subdomainAddress) &&
-          "Invalid Address"
-        }
-      />
+      <>
+        <p className="text-gray-400">
+          Adjust your information and personalize your profile.
+        </p>
+        <Input
+          clearable
+          label={"ETH Address"}
+          placeholder={""}
+          type="text"
+          value={subdomainAddress}
+          onChange={(e) => setSubdomainAddress(e.target.value.toLowerCase())}
+          error={
+            subdomainAddress.length &&
+            !isAddress(subdomainAddress) &&
+            "Invalid Address"
+          }
+        />
+        <Input
+          clearable
+          label={"Website"}
+          placeholder={""}
+          type="text"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value.toLowerCase())}
+          error={
+            website !== "" && !website.match(urlRegex) && "Invalid Website"
+          }
+        />
+        <Input
+          clearable
+          label={"Description"}
+          placeholder={""}
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value.toLowerCase())}
+        />
+      </>
     ),
     [CreateSubdomainModalSteps.Confirmation]: (
       <>
-        <p className="text-7xl">👇🏻</p>
-        <div>
-          <p className="text-lg">
-            <span className="font-bold">
-              Click on save to save your new subdomain!
-            </span>
-          </p>
-        </div>
+        <NewSubdomainInfo
+          domain={`${newSubdomain}.${name}`}
+          description={description}
+          website={website}
+          EthAddress={subdomainAddress}
+        />
       </>
     ),
     [CreateSubdomainModalSteps.Success]: (
@@ -124,6 +150,26 @@ export const CreateSubdomainModalContent = ({
         </div>
       </>
     ),
+  };
+
+  // Map each step to a corresponding validation function
+  const stepValidation: Record<CreateSubdomainModalSteps, () => boolean> = {
+    [CreateSubdomainModalSteps.SubdomainInput]: () => {
+      if (newSubdomain.length) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [CreateSubdomainModalSteps.ProfileSettings]: () => {
+      if (subdomainAddress === "" || isAddress(subdomainAddress)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [CreateSubdomainModalSteps.Confirmation]: () => true,
+    [CreateSubdomainModalSteps.Success]: () => true,
   };
 
   const handleNextStep = () => {
@@ -176,7 +222,10 @@ export const CreateSubdomainModalContent = ({
               </div>
             ) : (
               <div>
-                <Button disabled={isLoading} onClick={handleNextStep}>
+                <Button
+                  disabled={isLoading || !stepValidation[currentStep]()}
+                  onClick={handleNextStep}
+                >
                   Next
                 </Button>
               </div>
