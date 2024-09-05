@@ -137,7 +137,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
               <ProfileRecordItem
                 icon={EthTransparentSVG}
                 label="parent"
-                text={domainData?.parent ?? ""}
+                text={domainData.parent}
               />
             )}
           </Skeleton>
