@@ -157,9 +157,10 @@
     "type": "function",
     "name": "register",
     "inputs": [
-      { "name": "name", "type": "bytes", "internalType": "bytes" },
-      { "name": "ttl", "type": "uint32", "internalType": "uint32" },
-      { "name": "owner", "type": "address", "internalType": "address" }
+      { "name": "", "type": "bytes", "internalType": "bytes" },
+      { "name": "", "type": "uint32", "internalType": "uint32" },
+      { "name": "", "type": "address", "internalType": "address" },
+      { "name": "", "type": "bytes[]", "internalType": "bytes[]" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -208,9 +209,9 @@
     "type": "function",
     "name": "setABI",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "contentType", "type": "uint256", "internalType": "uint256" },
-      { "name": "data", "type": "bytes", "internalType": "bytes" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "bytes", "internalType": "bytes" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -219,9 +220,9 @@
     "type": "function",
     "name": "setAddr",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "coinType", "type": "uint256", "internalType": "uint256" },
-      { "name": "a", "type": "bytes", "internalType": "bytes" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "bytes", "internalType": "bytes" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -230,8 +231,8 @@
     "type": "function",
     "name": "setAddr",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "a", "type": "address", "internalType": "address" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "address", "internalType": "address" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -240,8 +241,8 @@
     "type": "function",
     "name": "setContenthash",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "hash", "type": "bytes", "internalType": "bytes" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "bytes", "internalType": "bytes" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -287,9 +288,9 @@
     "type": "function",
     "name": "setPubkey",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "x", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "y", "type": "bytes32", "internalType": "bytes32" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "bytes32", "internalType": "bytes32" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -298,9 +299,9 @@
     "type": "function",
     "name": "setText",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "key", "type": "string", "internalType": "string" },
-      { "name": "value", "type": "string", "internalType": "string" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "string", "internalType": "string" },
+      { "name": "", "type": "string", "internalType": "string" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -337,8 +338,8 @@
     "type": "function",
     "name": "transfer",
     "inputs": [
-      { "name": "node", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "owner", "type": "address", "internalType": "address" }
+      { "name": "", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "", "type": "address", "internalType": "address" }
     ],
     "outputs": [],
     "stateMutability": "view"
@@ -750,21 +751,8 @@
         "type": "tuple",
         "internalType": "struct IWriteDeferral.messageData",
         "components": [
-          {
-            "name": "functionSelector",
-            "type": "bytes4",
-            "internalType": "bytes4"
-          },
+          { "name": "callData", "type": "bytes", "internalType": "bytes" },
           { "name": "sender", "type": "address", "internalType": "address" },
-          {
-            "name": "parameters",
-            "type": "tuple[]",
-            "internalType": "struct IWriteDeferral.parameter[]",
-            "components": [
-              { "name": "name", "type": "string", "internalType": "string" },
-              { "name": "value", "type": "string", "internalType": "string" }
-            ]
-          },
           {
             "name": "expirationTimestamp",
             "type": "uint256",

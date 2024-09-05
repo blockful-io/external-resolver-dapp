@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { EditModalContent } from "./EditModalContent";
 import { useState } from "react";
+import { useAccount, useEnsName } from "wagmi";
 
 interface UserDomainCardProps {
   url?: string;
@@ -21,6 +22,7 @@ interface UserDomainCardProps {
   linkedIn?: string;
   description?: string;
   name?: string;
+  owner?: string;
   onRecordsEdited?: () => void;
 }
 
@@ -34,8 +36,16 @@ export const UserDomainCard = ({
   linkedIn,
   description,
   onRecordsEdited,
+  owner,
 }: UserDomainCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const { address } = useAccount();
+
+  const { data: authedUserName } = useEnsName({
+    address: address,
+  });
+
+  const showEditButton: boolean = authedUserName === owner || address === owner;
 
   return (
     <div className="w-[376px] flex flex-col rounded-md overflow-hidden border border-gray-200 ">
@@ -63,17 +73,19 @@ export const UserDomainCard = ({
             </div>
           )}
 
-          <div>
-            <Button
-              onClick={() => {
-                setModalOpen(true);
-              }}
-              size="small"
-              prefix={<PencilIcon />}
-            >
-              Edit
-            </Button>
-          </div>
+          {showEditButton && (
+            <div>
+              <Button
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+                size="small"
+                prefix={<PencilIcon />}
+              >
+                Edit
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col">

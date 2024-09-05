@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import { isAddress } from "viem";
 import _ from "lodash";
 import validateBitcoinAddress from "bitcoin-address-validation";
-import { DomainData, TextRecords } from "@/lib/domain-page";
+import { DomainData } from "@/lib/domain-page";
 
 interface FieldsContextType {
   profileFields: Field[];
@@ -320,13 +320,10 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
 
     // Update profile fields with corresponding text values
     const newProfileFields: Field[] = profileFields.map((field) => {
-      if (textsKeys.includes(field.label)) {
-        return {
-          ...field,
-          value: String(texts[field.label]),
-        };
-      }
-      return field;
+      return {
+        ...field,
+        value: String(texts[field.label] ?? ""),
+      };
     });
 
     // Get the names of the coins from the addresses, or an empty array if no addresses exist
@@ -351,22 +348,24 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         };
       }
 
-      return addressField; // Return the address field unchanged if no match is found
+      return {
+        ...addressField,
+        value: "",
+      }; // Return the address field unchanged if no match is found
     });
     const newAccountsFields = accountsFields.map((field) => {
-      if (textsKeys.includes(field.label)) {
-        return {
-          ...field,
-          value: String(texts[field.label]),
-        };
-      }
-      return field;
+      return {
+        ...field,
+        value: String(texts[field.label] ?? ""),
+      };
     });
+
     const newFieldsByTab = {
       [Tab.Profile]: newProfileFields,
       [Tab.Accounts]: newAccountsFields,
       [Tab.Addresses]: populatedAddressFields,
     };
+
     [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
       setFields(tab, newFieldsByTab[tab]);
       setInitialFields(tab, newFieldsByTab[tab]);
