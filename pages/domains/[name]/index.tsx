@@ -50,7 +50,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   useEffect(() => {
     handleFetchENSDomainData();
-  }, []);
+  }, [name]);
 
   // If the domain is not available, redirect to the register page
   if (!ensData && error) {
@@ -98,6 +98,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
             <div className="w-full flex gap-[60px]">
               <Skeleton>
                 <UserDomainCard
+                  owner={ensData?.owner}
                   name={name}
                   avatar={textRecords?.avatar}
                   url={textRecords?.url}
