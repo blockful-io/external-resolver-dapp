@@ -165,11 +165,7 @@ export const CreateSubdomainModalContent = ({
       }
     },
     [CreateSubdomainModalSteps.ProfileSettings]: () => {
-      if (subdomainAddress === "" || isAddress(subdomainAddress)) {
-        return true;
-      } else {
-        return false;
-      }
+return subdomainAddress === "" || isAddress(subdomainAddress);
     },
     [CreateSubdomainModalSteps.Confirmation]: () => true,
     [CreateSubdomainModalSteps.Success]: () => true,
