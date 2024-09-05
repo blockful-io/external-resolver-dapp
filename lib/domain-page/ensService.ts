@@ -58,6 +58,7 @@ export const getENSDomainData = async (
       toast.error("An Error occurred while loading the data");
 
       // If the resolver is not compatible with the metadata API or subgraph query, return a basic domain data
+      // If that fails, handleFetchENSDomainData will set the error state
       return await getBasicENSDomainData(domain);
     }
   }
