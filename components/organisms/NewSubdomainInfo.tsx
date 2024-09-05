@@ -5,14 +5,14 @@ interface NewSubdomainInfoProps {
   domain: string;
   website: string;
   description: string;
-  EthAddress: string;
+  ethAddress: string;
 }
 
 export const NewSubdomainInfo = ({
   domain = "new domain",
   website,
   description,
-  EthAddress,
+  ethAddress,
 }: NewSubdomainInfoProps) => {
   return (
     <>
@@ -43,7 +43,7 @@ export const NewSubdomainInfo = ({
               <EthSVG className="w-4 h-4 text-gray-400" />
               <p className="text-gray-400">ETH Address</p>
             </div>
-            <p className="max-w-32 truncate">{EthAddress}</p>
+            <p className="max-w-32 truncate">{ethAddress}</p>
           </div>
         </div>
       </div>

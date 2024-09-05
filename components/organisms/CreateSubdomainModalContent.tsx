@@ -138,7 +138,7 @@ export const CreateSubdomainModalContent = ({
           domain={`${newSubdomain}.${name}`}
           description={description}
           website={website}
-          EthAddress={subdomainAddress}
+          ethAddress={subdomainAddress}
         />
       </>
     ),
