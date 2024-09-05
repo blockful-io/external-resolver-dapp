@@ -107,7 +107,6 @@ const getENSDomainDataThroughResolver = async (
 ): Promise<ResolverQueryDomainData> => {
   const resolverAdd = await getResolver(publicClient, { name });
 
-  console.log("domain resolver: ", resolverAdd);
 
   const metadataUrl = await publicClient.readContract({
     address: resolverAdd!,
