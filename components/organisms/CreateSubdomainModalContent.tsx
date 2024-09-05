@@ -158,18 +158,10 @@ export const CreateSubdomainModalContent = ({
   // Map each step to a corresponding validation function
   const stepValidation: Record<CreateSubdomainModalSteps, () => boolean> = {
     [CreateSubdomainModalSteps.SubdomainInput]: () => {
-      if (newSubdomain.length) {
-        return true;
-      } else {
-        return false;
-      }
+      return !!newSubdomain.length;
     },
     [CreateSubdomainModalSteps.ProfileSettings]: () => {
-      if (subdomainAddress === "" || isAddress(subdomainAddress)) {
-        return true;
-      } else {
-        return false;
-      }
+      return subdomainAddress === "" || isAddress(subdomainAddress);
     },
     [CreateSubdomainModalSteps.Confirmation]: () => true,
     [CreateSubdomainModalSteps.Success]: () => true,
