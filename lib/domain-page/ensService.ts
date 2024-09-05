@@ -52,6 +52,7 @@ export const getENSDomainData = async (
       const domainData = await formatSubgraphDomainData(data);
       return domainData;
     } else {
+      console.log(error);
       toast.error("An Error occurred while loading the data");
     }
     return null;
@@ -105,6 +106,8 @@ const getENSDomainDataThroughResolver = async (
   name: string
 ): Promise<ResolverQueryDomainData> => {
   const resolverAdd = await getResolver(publicClient, { name });
+
+  console.log("domain resolver: ", resolverAdd);
 
   const metadataUrl = await publicClient.readContract({
     address: resolverAdd!,
