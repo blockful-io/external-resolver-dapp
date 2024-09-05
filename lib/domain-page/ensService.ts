@@ -8,6 +8,7 @@ import {
   getOwner,
   getRecords,
   getResolver,
+  getWrapperData,
 } from "@ensdomains/ensjs/public";
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
@@ -26,7 +27,7 @@ import {
   SubgraphEnsData,
 } from "./interfaces";
 import { metadataDomainQuery } from "./queries";
-import { ContractFunctionExecutionError, parseAbiItem } from "viem";
+import { Address, parseAbiItem } from "viem";
 import toast from "react-hot-toast";
 
 // Ensure API key is available
@@ -44,17 +45,21 @@ export const getENSDomainData = async (
     const data = await getENSDomainDataThroughResolver(domain);
     const domainData = formatResolverDomainData(data);
     return domainData;
-    // Case where it's not compatilble
   } catch (error) {
-    if (error instanceof ContractFunctionExecutionError) {
+    try {
       const data = await getENSDomainDataThroughSubgraph(domain);
+
       if (!data) return null;
       const domainData = await formatSubgraphDomainData(data);
       return domainData;
-    } else {
+    } catch (error) {
+      console.error(error);
+
       toast.error("An Error occurred while loading the data");
+
+      // If the resolver is not compatible with the metadata API or subgraph query, return a basic domain data
+      return await getBasicENSDomainData(domain);
     }
-    return null;
   }
 };
 
@@ -98,6 +103,33 @@ export const getENSDomainDataThroughSubgraph = async (
   };
 
   return data;
+};
+
+function getParent(domain: string): string {
+  const parts = domain.split(".");
+
+  // remove the first part and return the remaining domain
+  return parts.slice(1).join(".");
+}
+
+const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
+  const domainAdd = await getResolver(publicClient, { name });
+  const domainOwner = await getOwner(publicClient, { name });
+  const wrapperData = await getWrapperData(publicClient, { name });
+
+  return {
+    owner: domainOwner?.owner ?? "0x",
+    parent: getParent(name),
+    subdomains: [],
+    subdomainCount: 0,
+    resolver: {
+      id: "",
+      address: domainAdd as Address,
+      texts: {},
+      addresses: [],
+    },
+    expiryDate: wrapperData?.expiry?.date?.getTime()!,
+  };
 };
 
 // Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned

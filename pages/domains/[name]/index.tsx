@@ -30,6 +30,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
+      // shouldn't return an error if the resolver is not valid
       const data = await getENSDomainData(name);
       setEnsData(data);
       updateEditModalFieldsWithEnsData(data);
@@ -51,6 +52,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
     handleFetchENSDomainData();
   }, []);
 
+  // If the domain is not available, redirect to the register page
   if (!ensData && error) {
     return (
       <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
