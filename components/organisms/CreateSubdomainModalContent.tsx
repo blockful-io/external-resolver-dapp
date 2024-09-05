@@ -60,6 +60,9 @@ export const CreateSubdomainModalContent = ({
         resolverAddress: currentResolverAddress,
         signerAddress: authedUser.address!,
         name: `${newSubdomain}.${name}`,
+        address: subdomainAddress,
+        website: website,
+        description: description,
       });
       if (response?.ok) {
         !!onRecordsEdited && onRecordsEdited();

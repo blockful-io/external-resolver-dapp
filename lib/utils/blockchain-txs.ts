@@ -124,13 +124,11 @@ export async function handleDBStorage({
   url,
   message,
   authenticatedAddress,
-  multicall,
 }: {
   domain: DomainData;
   url: string;
   message: MessageData;
   authenticatedAddress: `0x${string}`;
-  multicall?: boolean;
 }): Promise<Response> {
   const client = createWalletClient({
     account: authenticatedAddress,
@@ -143,40 +141,22 @@ export async function handleDBStorage({
     message,
     types: {
       Message: [
-        { name: "functionSelector", type: "bytes4" },
+        { name: "callData", type: "bytes" },
         { name: "sender", type: "address" },
-        { name: "parameters", type: "Parameter[]" },
         { name: "expirationTimestamp", type: "uint256" },
-      ],
-      Parameter: [
-        { name: "name", type: "string" },
-        { name: "value", type: "string" },
       ],
     },
     primaryType: "Message",
   });
 
-  let callData;
-  if (multicall) {
-    callData = message.parameters[0].value as `0x${string}`;
-  } else {
-    callData = encodeFunctionData({
-      abi: DomainResolverABI,
-      functionName: message.functionSelector,
-      args: message.parameters.map((arg) => arg.value),
-    });
-  }
-
-  const dbRecordsSavingResponse = await ccipRequest({
+  return await ccipRequest({
     body: {
-      data: callData,
+      data: message.callData,
       signature: { message, domain, signature },
       sender: message.sender,
     },
     url,
   });
-
-  return dbRecordsSavingResponse;
 }
 
 /*
@@ -348,6 +328,7 @@ export const setDomainRecords = async ({
 
     if (!client) throw new Error("WalletClient not found");
 
+    // duplicated function logic on service.ts - createSubdomain
     const calls: Hash[] = [];
 
     for (let i = 0; i < Object.keys(textRecords).length; i++) {
@@ -420,7 +401,6 @@ export const setDomainRecords = async ({
             url,
             message,
             authenticatedAddress,
-            multicall: true,
           });
 
           return 200;
