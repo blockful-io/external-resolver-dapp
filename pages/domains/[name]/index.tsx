@@ -30,7 +30,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
     try {
-      // shouldn't return an error if the resolver is not valid
       const data = await getENSDomainData(name);
       setEnsData(data);
       updateEditModalFieldsWithEnsData(data);
