@@ -133,7 +133,7 @@ const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
   const wrapperData = await getWrapperData(publicClient, { name });
 
   if (!isAddress(domainAdd)) {
-    throw new Error("Invalid Ethereum address");
+    throw new Error(`Invalid Ethereum address: ${domainAdd}`);
   }
 
   return {
