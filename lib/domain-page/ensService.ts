@@ -106,6 +106,20 @@ export const getENSDomainDataThroughSubgraph = async (
   return data;
 };
 
+/**
+ * Extracts the parent domain from a given ENS (Ethereum Name Service) domain.
+ *
+ * This function splits a domain string by periods (`.`) and returns everything
+ * except the first part (the subdomain). It is commonly used to retrieve the
+ * top-level domain from a full ENS domain name.
+ *
+ * @param {string} domain - The full ENS domain (e.g., "subdomain.something.eth").
+ * @returns {string} - The parent domain (e.g., "something.eth" for input "subdomain.something.eth").
+ *
+ * @example
+ * getParent("subdomain.something.eth"); // returns "something.eth"
+ * getParent("something.eth"); // returns "eth"
+ */
 function getParent(domain: string): string {
   const parts = domain.split(".");
 
