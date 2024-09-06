@@ -129,7 +129,7 @@ const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
       texts: {},
       addresses: [],
     },
-    expiryDate: wrapperData?.expiry?.date?.getTime() || undefined,
+    expiryDate: wrapperData?.expiry?.date?.getTime()!,
   };
 };
 
