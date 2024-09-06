@@ -27,7 +27,7 @@ import {
   SubgraphEnsData,
 } from "./interfaces";
 import { metadataDomainQuery } from "./queries";
-import { Address, parseAbiItem } from "viem";
+import { Address, isAddress, parseAbiItem } from "viem";
 import toast from "react-hot-toast";
 
 // Ensure API key is available
@@ -128,9 +128,13 @@ function getParent(domain: string): string {
 }
 
 const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
-  const domainAdd = await getResolver(publicClient, { name });
+  const domainAdd = (await getResolver(publicClient, { name })) as Address;
   const domainOwner = await getOwner(publicClient, { name });
   const wrapperData = await getWrapperData(publicClient, { name });
+
+  if (!isAddress(domainAdd)) {
+    throw new Error("Invalid Ethereum address");
+  }
 
   return {
     owner: domainOwner?.owner ?? "0x",
@@ -139,7 +143,7 @@ const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
     subdomainCount: 0,
     resolver: {
       id: "",
-      address: domainAdd as Address,
+      address: domainAdd,
       texts: {},
       addresses: [],
     },
