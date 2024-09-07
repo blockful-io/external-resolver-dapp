@@ -8,6 +8,7 @@ import {
   getOwner,
   getRecords,
   getResolver,
+  getWrapperData,
 } from "@ensdomains/ensjs/public";
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
@@ -26,7 +27,7 @@ import {
   SubgraphEnsData,
 } from "./interfaces";
 import { metadataDomainQuery } from "./queries";
-import { ContractFunctionExecutionError, parseAbiItem } from "viem";
+import { Address, isAddress, parseAbiItem } from "viem";
 import toast from "react-hot-toast";
 
 // Ensure API key is available
@@ -44,18 +45,22 @@ export const getENSDomainData = async (
     const data = await getENSDomainDataThroughResolver(domain);
     const domainData = formatResolverDomainData(data);
     return domainData;
-    // Case where it's not compatilble
   } catch (error) {
-    if (error instanceof ContractFunctionExecutionError) {
+    try {
       const data = await getENSDomainDataThroughSubgraph(domain);
+
       if (!data) return null;
       const domainData = await formatSubgraphDomainData(data);
       return domainData;
-    } else {
-      console.log(error);
+    } catch (error) {
+      console.error(error);
+
       toast.error("An Error occurred while loading the data");
+
+      // If the resolver is not compatible with the metadata API or subgraph query, return a basic domain data
+      // If that fails, handleFetchENSDomainData will set the error state
+      return await getBasicENSDomainData(domain);
     }
-    return null;
   }
 };
 
@@ -101,12 +106,56 @@ export const getENSDomainDataThroughSubgraph = async (
   return data;
 };
 
+/**
+ * Extracts the parent domain from a given ENS (Ethereum Name Service) domain.
+ *
+ * This function splits a domain string by periods (`.`) and returns everything
+ * except the first part (the subdomain). It is commonly used to retrieve the
+ * top-level domain from a full ENS domain name.
+ *
+ * @param {string} domain - The full ENS domain (e.g., "subdomain.something.eth").
+ * @returns {string} - The parent domain (e.g., "something.eth" for input "subdomain.something.eth").
+ *
+ * @example
+ * getParent("subdomain.something.eth"); // returns "something.eth"
+ * getParent("something.eth"); // returns "eth"
+ */
+function getParent(domain: string): string {
+  const parts = domain.split(".");
+
+  // remove the first part and return the remaining domain
+  return parts.slice(1).join(".");
+}
+
+const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
+  const domainAdd = (await getResolver(publicClient, { name })) as Address;
+  const domainOwner = await getOwner(publicClient, { name });
+  const wrapperData = await getWrapperData(publicClient, { name });
+
+  if (!isAddress(domainAdd)) {
+    throw new Error(`Invalid Ethereum address: ${domainAdd}`);
+  }
+
+  return {
+    owner: domainOwner?.owner ?? "0x",
+    parent: getParent(name),
+    subdomains: [],
+    subdomainCount: 0,
+    resolver: {
+      id: "",
+      address: domainAdd,
+      texts: {},
+      addresses: [],
+    },
+    expiryDate: wrapperData?.expiry?.date?.getTime()!,
+  };
+};
+
 // Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned
 const getENSDomainDataThroughResolver = async (
   name: string
 ): Promise<ResolverQueryDomainData> => {
   const resolverAdd = await getResolver(publicClient, { name });
-
 
   const metadataUrl = await publicClient.readContract({
     address: resolverAdd!,

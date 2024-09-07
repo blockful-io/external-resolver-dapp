@@ -51,6 +51,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
     handleFetchENSDomainData();
   }, [name]);
 
+  // if we have an error while loading the domain data, we show a message
   if (!ensData && error) {
     return (
       <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
