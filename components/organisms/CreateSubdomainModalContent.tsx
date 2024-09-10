@@ -89,7 +89,9 @@ export const CreateSubdomainModalContent = ({
         type="text"
         value={newSubdomain}
         onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
-        suffix={`.${name}`}
+        suffix={
+          <div className="truncate whitespace-nowrap max-w-48">{`.${name}`}</div>
+        }
         error={isSubdomainInvalid()}
       />
     ),
@@ -143,15 +145,20 @@ export const CreateSubdomainModalContent = ({
       </>
     ),
     [CreateSubdomainModalSteps.Success]: (
-      <>
+      <div className="w-full flex flex-col items-center justify-center gap-4 px-10">
         <p className="text-7xl"> 🎉</p>
-        <div>
+        <div className="flex flex-col items-center justify-center">
           <p className="text-lg">
-            <span className="font-bold">Congratulations!</span>
+            <span className="text-[26px] font-bold">
+              Congrats! You&apos;re now owner of
+            </span>
           </p>
-          <p>New subdomain created!</p>
+          <p className="text-[26px] text-center font-bold text-gradient-ens">{`${newSubdomain}.${name}`}</p>
+          <p className="text-gray-400">
+            Your transaction was successfully completed.
+          </p>
         </div>
-      </>
+      </div>
     ),
   };
 
@@ -185,7 +192,7 @@ export const CreateSubdomainModalContent = ({
   };
 
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden">
+    <div className="w-[640px] border rounded-xl overflow-hidden">
       <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
         New subdomain
       </div>
