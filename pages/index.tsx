@@ -11,7 +11,6 @@ import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 import { DomainStatus } from "@/components/02-molecules";
 import toast from "react-hot-toast";
-import { TestenetBanner } from "@/components/01-atoms/TestenetBanner";
 
 export default function Home() {
   const router = useRouter();
