@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { Address, isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
+import { DatabaseCTA } from "../01-atoms/DatabaseCTA";
 
 interface CreateSubdomainModalContentProps {
   name: string;
@@ -193,6 +194,11 @@ export const CreateSubdomainModalContent = ({
         {stepComponents[currentStep]}
 
         {isLoading && <h1>Check your wallet</h1>}
+
+        <DatabaseCTA
+          transactionRequest={handleSaveAction}
+          onSuccess={() => {}}
+        />
       </div>
 
       <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
@@ -210,11 +216,13 @@ export const CreateSubdomainModalContent = ({
               </Button>
             </div>
             {currentStep === CreateSubdomainModalSteps.Confirmation ? (
-              <div>
-                <Button disabled={isLoading} onClick={handleSaveAction}>
-                  {isLoading ? <Spinner color="blue" /> : "Save"}
-                </Button>
-              </div>
+              <>
+                <div>
+                  <Button disabled={isLoading} onClick={handleSaveAction}>
+                    {isLoading ? <Spinner color="blue" /> : "Save"}
+                  </Button>
+                </div>
+              </>
             ) : (
               <div>
                 <Button
