@@ -78,7 +78,7 @@ const connectors = connectorsForWallets(
 
 const wagmiConfig = createConfig({
   connectors,
-  chains: [isTestnet ? sepolia : mainnet],
+  chains: [sepolia, mainnet],
   transports: {
     [mainnet.id]: http(rpcHttpUrl),
     [sepolia.id]: http(rpcHttpUrl),
