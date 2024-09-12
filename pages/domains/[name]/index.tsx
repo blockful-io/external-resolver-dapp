@@ -43,8 +43,9 @@ export function ManageNamePageContent({ name }: { name: string }) {
     try {
       const data = await getENSDomainData({
         domain: name,
-        testPublicClient: publicClient as ClientWithEns & PublicClient,
+        client: publicClient as ClientWithEns & PublicClient,
       });
+
       setEnsData(data);
       updateEditModalFieldsWithEnsData(data);
       setError(null);
