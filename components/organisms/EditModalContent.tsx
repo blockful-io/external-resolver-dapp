@@ -15,7 +15,12 @@ import {
 import { useRouter } from "next/router";
 import { Field } from "@/types/editFieldsTypes";
 import { BlockchainCTA } from "../01-atoms";
-import { PublicClient, TransactionReceipt, isAddress } from "viem";
+import {
+  PublicClient,
+  TransactionReceipt,
+  WalletClient,
+  isAddress,
+} from "viem";
 import {
   TransactionErrorType,
   getBlockchainTransactionError,
@@ -267,7 +272,9 @@ const SaveModalEdits = ({
   const { address } = useAccount();
   const { textRecordsToUpdate, domainAddressesToUpdate } = useFields();
 
-  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+  const publicClient = usePublicClient() as PublicClient &
+    WalletClient &
+    ClientWithEns;
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
@@ -307,6 +314,7 @@ const SaveModalEdits = ({
         domainResolverAddress: resolverAdd,
         textRecords: textRecordsToUpdate,
         addresses: domainAddressesToUpdate,
+        client: publicClient,
       });
 
       if (
@@ -315,7 +323,7 @@ const SaveModalEdits = ({
       ) {
         return null;
       } else {
-        throw new Error(setDomainRecordsRes);
+        throw new Error("Error setting domain records");
       }
     } catch (error) {
       console.error(error);

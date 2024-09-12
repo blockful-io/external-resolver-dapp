@@ -1,17 +1,20 @@
 import { ConnectMetamask } from "@/components/01-atoms";
 import { Table } from "@/components/02-molecules";
-import { client } from "@/lib/wallet/wallet-config";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
 import { Heading, Skeleton } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAccount } from "wagmi";
+import { PublicClient } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
 
 export default function DomainsPage() {
   const [names, setNames] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const { address } = useAccount();
+
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
   useEffect(() => {
     setIsClient(true);
@@ -23,7 +26,7 @@ export default function DomainsPage() {
 
       try {
         if (address) {
-          const result = await getNamesForAddress(client, {
+          const result = await getNamesForAddress(publicClient, {
             address: address,
           });
           const filteredNames = result.map((object) => object.name);

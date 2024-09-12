@@ -1,7 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
-import { walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
@@ -328,6 +327,17 @@ const cryptocurrenciesToCoinType: { [k: string]: string } = {
 /*
   3rd step of a name registration - set text records
 */
+
+interface SetDomainRecordsParams {
+  ensName: ENSName;
+  resolverAddress?: Address;
+  domainResolverAddress?: `0x${string}`;
+  authenticatedAddress: Address;
+  textRecords: Record<string, string>;
+  addresses: Record<string, string>;
+  client: PublicClient & WalletClient;
+}
+
 export const setDomainRecords = async ({
   ensName,
   resolverAddress,
@@ -335,20 +345,10 @@ export const setDomainRecords = async ({
   authenticatedAddress,
   textRecords,
   addresses,
-}: {
-  ensName: ENSName;
-  resolverAddress?: Address;
-  domainResolverAddress?: `0x${string}`;
-  authenticatedAddress: `0x${string}`;
-  textRecords: Record<string, string>;
-  addresses: Record<string, string>;
-}) => {
+  client,
+}: SetDomainRecordsParams) => {
   try {
     const publicAddress = normalize(ensName.name);
-
-    const client = walletClient.extend(publicActions);
-
-    if (!client) throw new Error("WalletClient not found");
 
     // duplicated function logic on service.ts - createSubdomain
     const calls: Hash[] = [];
@@ -380,12 +380,13 @@ export const setDomainRecords = async ({
       }
       const coinType =
         cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
+
       const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
       const addressEncoded = fromBytes(coder.decode(address), "hex");
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
-        args: [namehash(publicAddress), coinType, addressEncoded],
+        args: [namehash(publicAddress), BigInt(coinType), addressEncoded],
       });
       calls.push(callData);
     }
