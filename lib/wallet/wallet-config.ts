@@ -60,7 +60,7 @@ const connectors = connectorsForWallets(
 
 const wagmiConfig = createConfig({
   connectors,
-  chains: [sepolia, mainnet],
+  chains: [sepoliaWithEns, mainnetWithEns],
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [sepolia.id]: http(`https://eth-sepolia.g.alchemy.com/v2/${alchemyApiKey}`),

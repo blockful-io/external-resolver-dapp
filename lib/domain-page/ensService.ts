@@ -27,8 +27,15 @@ import {
   SubgraphEnsData,
 } from "./interfaces";
 import { metadataDomainQuery } from "./queries";
-import { Address, isAddress, parseAbiItem } from "viem";
+import {
+  Address,
+  isAddress,
+  parseAbiItem,
+  PublicClient,
+  WalletClient,
+} from "viem";
 import toast from "react-hot-toast";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -36,13 +43,24 @@ if (!ensSubgraphApiKey) {
   throw new Error("ENS subgraph API key not found");
 }
 
+interface GetENSDomainDataParams {
+  domain: string;
+  testClient?: ClientWithEns;
+  testPublicClient: PublicClient & ClientWithEns;
+  testWalletClient?: WalletClient;
+}
+
 // Fetch ENS data for a given domain
-export const getENSDomainData = async (
-  domain: string
-): Promise<DomainData | null> => {
+export const getENSDomainData = async ({
+  domain,
+  testPublicClient,
+}: GetENSDomainDataParams): Promise<DomainData | null> => {
   // Check if the domain resolver is compatible with metadata, if not it will return an error
   try {
-    const data = await getENSDomainDataThroughResolver(domain);
+    const data = await getENSDomainDataThroughResolver({
+      name: domain,
+      testPublicClient: testPublicClient,
+    });
     const domainData = formatResolverDomainData(data);
     return domainData;
   } catch (error) {
@@ -151,13 +169,19 @@ const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
   };
 };
 
-// Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned
-const getENSDomainDataThroughResolver = async (
-  name: string
-): Promise<ResolverQueryDomainData> => {
-  const resolverAdd = await getResolver(publicClient, { name });
+interface GetENSDomainDataThroughResolverParams {
+  name: string;
+  testPublicClient: ClientWithEns & PublicClient;
+}
 
-  const metadataUrl = await publicClient.readContract({
+// Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned
+const getENSDomainDataThroughResolver = async ({
+  name,
+  testPublicClient,
+}: GetENSDomainDataThroughResolverParams): Promise<ResolverQueryDomainData> => {
+  const resolverAdd = await getResolver(testPublicClient, { name });
+
+  const metadataUrl = await testPublicClient.readContract({
     address: resolverAdd!,
     abi: [parseAbiItem("function metadata() returns (string)")],
     functionName: "metadata",
@@ -170,6 +194,8 @@ const getENSDomainDataThroughResolver = async (
       name,
     }
   );
+
+  console.log("getENSDomainDataThroughResolver", data);
 
   return data.domain;
 };
