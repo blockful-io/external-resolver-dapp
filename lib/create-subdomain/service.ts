@@ -4,14 +4,15 @@ import {
   fromBytes,
   Hash,
   namehash,
+  PublicClient,
   toHex,
 } from "viem";
 import { getRevertErrorData, handleDBStorage } from "../utils/blockchain-txs";
 import { DomainData, MessageData } from "../utils/types";
-import { publicClient } from "../wallet/wallet-config";
 import DomainResolverABI from "../abi/resolver.json";
 import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
@@ -20,6 +21,7 @@ interface CreateSubdomainArgs {
   address: string;
   website: string;
   description: string;
+  client: PublicClient & ClientWithEns;
 }
 
 // TO-DO: Fix function later to accept more text / address params
@@ -30,6 +32,7 @@ export const createSubdomain = async ({
   address,
   website,
   description,
+  client,
 }: CreateSubdomainArgs) => {
   const calls: Hash[] = [];
 
@@ -71,7 +74,7 @@ export const createSubdomain = async ({
     const dnsName = toHex(name),
       ttl = 300,
       owner = signerAddress;
-    await publicClient.simulateContract({
+    await client.simulateContract({
       functionName: "register",
       abi: DomainResolverABI,
       args: [dnsName, ttl, owner, calls],

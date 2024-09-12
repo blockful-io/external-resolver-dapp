@@ -4,9 +4,10 @@ import { buildENSName } from "@namehash/ens-utils";
 import { normalize } from "viem/ens";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Address, isAddress } from "viem";
-import { useAccount } from "wagmi";
+import { Address, isAddress, PublicClient } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface CreateSubdomainModalContentProps {
   name: string;
@@ -39,6 +40,7 @@ export const CreateSubdomainModalContent = ({
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
     CreateSubdomainModalSteps.SubdomainInput
   );
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
   const isSubdomainInvalid = () => {
     try {
@@ -63,6 +65,7 @@ export const CreateSubdomainModalContent = ({
         address: subdomainAddress,
         website: website,
         description: description,
+        client: publicClient,
       });
       if (response?.ok) {
         !!onRecordsEdited && onRecordsEdited();

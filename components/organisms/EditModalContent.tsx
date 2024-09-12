@@ -23,11 +23,9 @@ import {
 import { setDomainRecords } from "@/lib/utils/blockchain-txs";
 import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
-import { publicClient } from "@/lib/wallet/wallet-config";
 import { useAccount, usePublicClient } from "wagmi";
 import cc from "classcat";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
-import toast from "react-hot-toast";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
