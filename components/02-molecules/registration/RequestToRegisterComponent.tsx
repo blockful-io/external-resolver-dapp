@@ -6,10 +6,12 @@ import {
 } from "@/components/01-atoms";
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, usePublicClient } from "wagmi";
 import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
+import { PublicClient } from "viem";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
@@ -27,6 +29,8 @@ export const RequestToRegisterComponent = ({
   });
   const { nameRegistrationData, setCommitSubmitTimestamp, getResolverAddress } =
     useNameRegistration();
+
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
   const commitToRegister = async (): Promise<
     `0x${string}` | TransactionErrorType
@@ -49,6 +53,7 @@ export const RequestToRegisterComponent = ({
       resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
+      publicClient: publicClient,
     });
   };
 

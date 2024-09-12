@@ -1,7 +1,7 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
-import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
+import { walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
@@ -21,6 +21,7 @@ import {
   Hash,
   fromBytes,
   Address,
+  PublicClient,
 } from "viem";
 import { isTestnet, SupportedNetwork } from "../wallet/chains";
 import { sepolia, mainnet } from "viem/chains";
@@ -36,6 +37,7 @@ import { normalize } from "viem/ens";
 import { cryptocurrencies } from "../domain-page";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -59,6 +61,19 @@ const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
   be the same in both functions calls, this is why we store
   it in the local storage.
 */
+
+interface MakeCommitmentParams {
+  name: string;
+  data: string[];
+  secret: string;
+  reverseRecord: boolean;
+  resolverAddress: Address;
+  durationInYears: bigint;
+  ownerControlledFuses: number;
+  authenticatedAddress: Address;
+  publicClient: PublicClient & ClientWithEns;
+}
+
 export async function makeCommitment({
   name,
   data,
@@ -68,16 +83,8 @@ export async function makeCommitment({
   durationInYears,
   ownerControlledFuses,
   authenticatedAddress,
-}: {
-  name: string;
-  secret: string;
-  data: string[];
-  reverseRecord: boolean;
-  resolverAddress: string;
-  durationInYears: bigint;
-  ownerControlledFuses: number;
-  authenticatedAddress: `0x${string}`;
-}) {
+  publicClient,
+}: MakeCommitmentParams) {
   return publicClient
     .readContract({
       account: parseAccount(authenticatedAddress),
@@ -162,19 +169,24 @@ export async function handleDBStorage({
 /*
   1st step of a name registration
 */
+
+interface CommitParams {
+  ensName: ENSName;
+  durationInYears: bigint;
+  resolverAddress: Address;
+  authenticatedAddress: Address;
+  registerAndSetAsPrimaryName: boolean;
+  publicClient: PublicClient & ClientWithEns;
+}
+
 export const commit = async ({
   ensName,
   durationInYears,
   resolverAddress,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
-}: {
-  ensName: ENSName;
-  durationInYears: bigint;
-  resolverAddress: Address;
-  authenticatedAddress: `0x${string}`;
-  registerAndSetAsPrimaryName: boolean;
-}): Promise<`0x${string}` | TransactionErrorType> => {
+  publicClient,
+}: CommitParams): Promise<`0x${string}` | TransactionErrorType> => {
   try {
     const walletClient = createCustomWalletClient(authenticatedAddress);
 
@@ -193,6 +205,7 @@ export const commit = async ({
       reverseRecord: registerAndSetAsPrimaryName,
       resolverAddress: resolverAddress,
       ownerControlledFuses: DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
+      publicClient: publicClient,
     });
 
     const { request } = await client.simulateContract({
@@ -217,19 +230,24 @@ export const commit = async ({
 /*
   2nd step of a name registration
 */
+
+interface RegisterParams {
+  ensName: ENSName;
+  resolverAddress: Address;
+  durationInYears: bigint;
+  authenticatedAddress: Address;
+  registerAndSetAsPrimaryName: boolean;
+  publicClient: PublicClient & ClientWithEns;
+}
+
 export const register = async ({
   ensName,
   resolverAddress,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
-}: {
-  ensName: ENSName;
-  resolverAddress: Address;
-  durationInYears: bigint;
-  authenticatedAddress: `0x${string}`;
-  registerAndSetAsPrimaryName: boolean;
-}): Promise<`0x${string}` | TransactionErrorType> => {
+  publicClient,
+}: RegisterParams): Promise<`0x${string}` | TransactionErrorType> => {
   try {
     const walletClient = createCustomWalletClient(authenticatedAddress);
 
@@ -239,7 +257,11 @@ export const register = async ({
 
     const nameWithoutTLD = ensName.name.replace(".eth", "");
 
-    const namePrice = await getNamePrice({ ensName, durationInYears });
+    const namePrice = await getNamePrice({
+      ensName,
+      durationInYears,
+      publicClient,
+    });
 
     const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
@@ -499,14 +521,19 @@ interface NamePrice {
   premium: bigint;
 }
 
+interface GetNamePriceParams {
+  ensName: ENSName;
+  durationInYears: bigint;
+  publicClient: PublicClient & ClientWithEns;
+}
+
 export const getNamePrice = async ({
   ensName,
   durationInYears,
-}: {
-  ensName: ENSName;
-  durationInYears: bigint;
-}): Promise<bigint> => {
+  publicClient,
+}: GetNamePriceParams): Promise<bigint> => {
   const ensNameDirectSubname = ensName.name.split(".eth")[0];
+
   const price = await publicClient.readContract({
     args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
     address: nameRegistrationContracts.ETH_REGISTRAR,
@@ -520,7 +547,13 @@ export const getNamePrice = async ({
   }
 };
 
-export const getGasPrice = async (): Promise<bigint> => {
+interface GetGasPriceParams {
+  publicClient: PublicClient & ClientWithEns;
+}
+
+export const getGasPrice = async ({
+  publicClient,
+}: GetGasPriceParams): Promise<bigint> => {
   return publicClient
     .getGasPrice()
     .then((gasPrice) => {
@@ -535,7 +568,15 @@ export const getNameRegistrationGasEstimate = (): bigint => {
   return 47606n + 324230n;
 };
 
-export const isNameAvailable = async (ensName: ENSName): Promise<boolean> => {
+interface IsNameAvailableParams {
+  ensName: ENSName;
+  publicClient: PublicClient & ClientWithEns;
+}
+
+export const isNameAvailable = async ({
+  ensName,
+  publicClient,
+}: IsNameAvailableParams): Promise<boolean> => {
   const rawName = ensName.name.split(".eth")[0];
 
   return publicClient

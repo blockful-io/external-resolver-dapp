@@ -13,12 +13,14 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { getOpenNameRegistrationsOfNameByWallet } from "@/lib/name-registration/localStorage";
 import { isEmpty } from "lodash";
 import { LocalNameRegistrationData } from "@/lib/name-registration/types";
 import { ContinueRegistrationModal } from "@/components/organisms/ContinueRegistrationModalContent";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
+import { PublicClient } from "viem";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 export async function getServerSideProps({
   params,
@@ -43,6 +45,8 @@ export default function RegisterNamePage({ name }: { name: string }) {
   const [localNameRegistrationData, setLocalNameRegistrationData] =
     useState<LocalNameRegistrationData>({});
 
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+
   const handleNameChange = useCallback(async () => {
     try {
       normalize(name);
@@ -66,7 +70,7 @@ export default function RegisterNamePage({ name }: { name: string }) {
 
       setNameToRegister(ensName);
 
-      const isAvailable = await isNameAvailable(ensName);
+      const isAvailable = await isNameAvailable({ ensName, publicClient });
       if (address) {
         const localStorageNameRegistrationData =
           getOpenNameRegistrationsOfNameByWallet(address, ensName);
