@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/router";
 import { Field } from "@/types/editFieldsTypes";
 import { BlockchainCTA } from "../01-atoms";
-import { TransactionReceipt, isAddress } from "viem";
+import { PublicClient, TransactionReceipt, isAddress } from "viem";
 import {
   TransactionErrorType,
   getBlockchainTransactionError,
@@ -24,8 +24,10 @@ import { setDomainRecords } from "@/lib/utils/blockchain-txs";
 import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
 import { publicClient } from "@/lib/wallet/wallet-config";
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import cc from "classcat";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import toast from "react-hot-toast";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -267,9 +269,17 @@ const SaveModalEdits = ({
   const { address } = useAccount();
   const { textRecordsToUpdate, domainAddressesToUpdate } = useFields();
 
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
   > => {
+    if (!publicClient) {
+      throw new Error(
+        "Impossible to set the text records of a name without a public client"
+      );
+    }
+
     if (!address) {
       throw new Error(
         "Impossible to set the text records of a name without an authenticated user"
@@ -284,6 +294,7 @@ const SaveModalEdits = ({
 
     try {
       const ensName = buildENSName(router.query.name as string);
+
       const resolverAdd = await getResolver(publicClient, {
         name: ensName.name,
       });
