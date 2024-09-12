@@ -7,7 +7,6 @@ import {
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useAccount, useBalance, usePublicClient } from "wagmi";
-import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { PublicClient } from "viem";
@@ -22,10 +21,11 @@ export const RequestToRegisterComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: RequestToRegisterComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+
   const { data: ethBalance } = useBalance({
     address,
-    chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
+    chainId: chain?.id,
   });
   const { nameRegistrationData, setCommitSubmitTimestamp, getResolverAddress } =
     useNameRegistration();

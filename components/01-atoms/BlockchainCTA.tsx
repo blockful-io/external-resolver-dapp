@@ -14,7 +14,6 @@ import { TransactionReceipt } from "viem";
 import { useEffect, useState } from "react";
 import { ConnectMetamask } from "./ConnectMetamask";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-import { DEFAULT_CHAIN_ID, isTestnet } from "@/lib/wallet/chains";
 
 enum BlockchainCTAState {
   OPEN_WALLET,
@@ -60,11 +59,6 @@ export const BlockchainCTA = ({
   const sendBlockchainTx = async () => {
     if (!address) {
       setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
-      return;
-    }
-
-    if (chain && chain?.id !== DEFAULT_CHAIN_ID) {
-      toast.error(`Please switch to ${isTestnet ? "Sepolia" : "Ethereum"}.`);
       return;
     }
 
@@ -155,6 +149,7 @@ const TransactionRequestConfirmedCTA = ({
   onClick,
   txHash,
 }: BlockchainCTAComponentProps) => {
+  const { chain } = useAccount();
   return (
     <div className="flex flex-col space-y-6 justify">
       <Button
@@ -171,8 +166,8 @@ const TransactionRequestConfirmedCTA = ({
           target="_blank"
           className="flex space-x-2 text-blue-500 font-bold hover:text-blue-400 transition"
           href={
-            isTestnet
-              ? `https://sepolia.etherscan.io/tx/${txHash}`
+            chain?.blockExplorers?.default.url
+              ? `${chain.blockExplorers.default.url}/tx/${txHash}`
               : `https://etherscan.io/tx/${txHash}`
           }
         >
