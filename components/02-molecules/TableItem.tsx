@@ -5,9 +5,9 @@ import { normalize } from "viem/ens";
 
 import CustomImage from "./CustomImage";
 import Avatar from "boring-avatars";
-import { publicClient } from "@/lib/wallet/wallet-config";
 import { Skeleton } from "@ensdomains/thorin";
 import cc from "classcat";
+import { usePublicClient } from "wagmi";
 
 interface TableItemProps {
   domain: string;
@@ -26,12 +26,19 @@ export const TableItem = ({
   const [avatar, setAvatar] = useState("");
   const [isLoadingImage, setIsLoadingImage] = useState(true);
 
+  const publicClient = usePublicClient();
+
   const handleRowClick = (href: string) => {
     router.push(href);
   };
 
   useEffect(() => {
     let normalizedName = "";
+
+    if (!publicClient) {
+      return;
+    }
+
     try {
       normalizedName = normalize(domain);
 
