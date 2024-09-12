@@ -9,7 +9,7 @@ import { PlusCircleIcon } from "./icons/plus-circle-icon";
 import { CogIcon } from "./icons/cog-icon";
 import { HeaderLink } from "./HeaderLink";
 import { sepolia } from "viem/chains";
-import { TestenetBanner } from "./TestenetBanner";
+import { TestnetBanner } from "./TestnetBanner";
 
 export interface HeaderLinkInterface {
   icon: React.ElementType;
@@ -53,7 +53,7 @@ export const DappHeader = () => {
 
   return (
     <>
-      {isConnectedToTestnet() && <TestenetBanner />}
+      {isConnectedToTestnet() && <TestnetBanner />}
       <div className="w-full h-20 bg-white px-6 flex justify-between items-center shadow z-50">
         <div className="w-full max-w-[1216px] flex justify-between items-center mx-auto h-full">
           <div className="flex items-center h-full gap-4">
