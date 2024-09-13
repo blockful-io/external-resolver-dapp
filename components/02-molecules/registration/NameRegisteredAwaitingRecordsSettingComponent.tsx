@@ -19,7 +19,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameRegisteredAwaitingRecordsSettingComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nameRegistrationData, getResolverAddress } = useNameRegistration();
 
   const publicClient = usePublicClient() as PublicClient &
@@ -32,6 +32,12 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
     if (!address) {
       throw new Error(
         "Impossible to set the text records of a name without an authenticated user"
+      );
+    }
+
+    if (!chain) {
+      throw new Error(
+        "Impossible to set the text records of a name without a chain"
       );
     }
 
@@ -58,6 +64,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
         resolverAddress: resolverAddress,
         addresses: nameRegistrationData.domainAddresses,
         client: publicClient,
+        chain: chain,
       });
 
       if (

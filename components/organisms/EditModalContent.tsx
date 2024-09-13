@@ -269,7 +269,7 @@ const SaveModalEdits = ({
   changedFields,
 }: SaveModalEditsProps) => {
   const router = useRouter();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { textRecordsToUpdate, domainAddressesToUpdate } = useFields();
 
   const publicClient = usePublicClient() as PublicClient &
@@ -288,6 +288,12 @@ const SaveModalEdits = ({
     if (!address) {
       throw new Error(
         "Impossible to set the text records of a name without an authenticated user"
+      );
+    }
+
+    if (!chain) {
+      throw new Error(
+        "Impossible to set the text records of a name without a chain"
       );
     }
 
@@ -315,6 +321,7 @@ const SaveModalEdits = ({
         textRecords: textRecordsToUpdate,
         addresses: domainAddressesToUpdate,
         client: publicClient,
+        chain: chain,
       });
 
       if (
