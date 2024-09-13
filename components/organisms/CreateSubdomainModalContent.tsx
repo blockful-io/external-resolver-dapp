@@ -41,6 +41,7 @@ export const CreateSubdomainModalContent = ({
     CreateSubdomainModalSteps.SubdomainInput
   );
   const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+  const { chain } = useAccount();
 
   const isSubdomainInvalid = () => {
     try {
@@ -57,6 +58,11 @@ export const CreateSubdomainModalContent = ({
   const handleSaveAction = async () => {
     setIsloading(true);
 
+    if (!chain) {
+      toast.error("Please connect your wallet");
+      return;
+    }
+
     try {
       const response = await createSubdomain({
         resolverAddress: currentResolverAddress,
@@ -66,6 +72,7 @@ export const CreateSubdomainModalContent = ({
         website: website,
         description: description,
         client: publicClient,
+        chain: chain,
       });
       if (response?.ok) {
         !!onRecordsEdited && onRecordsEdited();

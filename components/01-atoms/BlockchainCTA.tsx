@@ -51,13 +51,18 @@ export const BlockchainCTA = ({
   const { chain, address } = useAccount();
 
   useEffect(() => {
-    if (!address) {
+    if (!address || !chain) {
       setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
     }
-  }, [address]);
+  }, [address, chain]);
 
   const sendBlockchainTx = async () => {
     if (!address) {
+      setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
+      return;
+    }
+
+    if (!chain) {
       setBlockchainCtaStatus(BlockchainCTAState.OPEN_WALLET);
       return;
     }
@@ -107,7 +112,10 @@ export const BlockchainCTA = ({
 
       setBlockchainCtaStatus(BlockchainCTAState.WAITING_FOR_CONFIRMATION);
 
-      const txReceipt = await awaitBlockchainTxReceipt(txHashOrError);
+      const txReceipt = await awaitBlockchainTxReceipt({
+        txHash: txHashOrError,
+        chain: chain,
+      });
 
       if (txReceipt.status === "success") {
         setBlockchainCtaStatus(BlockchainCTAState.CONFIRMED);

@@ -1,5 +1,6 @@
 import {
   Address,
+  Chain,
   encodeFunctionData,
   fromBytes,
   Hash,
@@ -13,6 +14,7 @@ import DomainResolverABI from "../abi/resolver.json";
 import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { useAccount } from "wagmi";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
@@ -22,6 +24,7 @@ interface CreateSubdomainArgs {
   website: string;
   description: string;
   client: PublicClient & ClientWithEns;
+  chain: Chain;
 }
 
 // TO-DO: Fix function later to accept more text / address params
@@ -33,6 +36,7 @@ export const createSubdomain = async ({
   website,
   description,
   client,
+  chain,
 }: CreateSubdomainArgs) => {
   const calls: Hash[] = [];
 
@@ -95,6 +99,7 @@ export const createSubdomain = async ({
         url,
         message,
         authenticatedAddress: signerAddress,
+        chain: chain,
       });
 
       return response;

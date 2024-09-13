@@ -21,9 +21,9 @@ import {
   fromBytes,
   Address,
   PublicClient,
+  Chain,
 } from "viem";
-import { isTestnet, SupportedNetwork } from "../wallet/chains";
-import { sepolia, mainnet } from "viem/chains";
+import { SupportedNetwork } from "../wallet/chains";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
 import {
   TransactionErrorType,
@@ -44,14 +44,6 @@ const walletConnectProjectId =
 if (!walletConnectProjectId) {
   throw new Error("No wallet connect project ID informed");
 }
-
-const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
-  return createWalletClient({
-    account,
-    chain: isTestnet ? sepolia : mainnet,
-    transport: custom(window.ethereum),
-  });
-};
 
 /*
   commitment value is used in both 'commit' and 'register'
@@ -125,20 +117,24 @@ export async function ccipRequest({
   });
 }
 
+interface HandleDBStorageParams {
+  domain: DomainData;
+  url: string;
+  message: MessageData;
+  authenticatedAddress: `0x${string}`;
+  chain: Chain;
+}
+
 export async function handleDBStorage({
   domain,
   url,
   message,
   authenticatedAddress,
-}: {
-  domain: DomainData;
-  url: string;
-  message: MessageData;
-  authenticatedAddress: `0x${string}`;
-}): Promise<Response> {
+  chain,
+}: HandleDBStorageParams): Promise<Response> {
   const client = createWalletClient({
     account: authenticatedAddress,
-    chain: isTestnet ? sepolia : mainnet,
+    chain: chain,
     transport: custom(window.ethereum),
   });
 
@@ -176,6 +172,7 @@ interface CommitParams {
   authenticatedAddress: Address;
   registerAndSetAsPrimaryName: boolean;
   publicClient: PublicClient & ClientWithEns;
+  chain: Chain;
 }
 
 export const commit = async ({
@@ -185,9 +182,14 @@ export const commit = async ({
   authenticatedAddress,
   registerAndSetAsPrimaryName,
   publicClient,
+  chain,
 }: CommitParams): Promise<`0x${string}` | TransactionErrorType> => {
   try {
-    const walletClient = createCustomWalletClient(authenticatedAddress);
+    const walletClient = createWalletClient({
+      account: authenticatedAddress,
+      chain: chain,
+      transport: custom(window.ethereum),
+    });
 
     const client = walletClient.extend(publicActions);
 
@@ -237,6 +239,7 @@ interface RegisterParams {
   authenticatedAddress: Address;
   registerAndSetAsPrimaryName: boolean;
   publicClient: PublicClient & ClientWithEns;
+  chain: Chain;
 }
 
 export const register = async ({
@@ -246,9 +249,14 @@ export const register = async ({
   authenticatedAddress,
   registerAndSetAsPrimaryName,
   publicClient,
+  chain,
 }: RegisterParams): Promise<`0x${string}` | TransactionErrorType> => {
   try {
-    const walletClient = createCustomWalletClient(authenticatedAddress);
+    const walletClient = createWalletClient({
+      account: authenticatedAddress,
+      chain: chain,
+      transport: custom(window.ethereum),
+    });
 
     const client = walletClient.extend(publicActions);
 
@@ -264,7 +272,7 @@ export const register = async ({
 
     const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
-      chain: isTestnet ? sepolia : mainnet,
+      chain: chain,
       account: authenticatedAddress,
       args: [
         nameWithoutTLD,
@@ -298,6 +306,7 @@ export const register = async ({
         url,
         message,
         authenticatedAddress,
+        chain: chain,
       });
 
       if (typeof signedData === "string") {
@@ -336,6 +345,7 @@ interface SetDomainRecordsParams {
   textRecords: Record<string, string>;
   addresses: Record<string, string>;
   client: PublicClient & WalletClient;
+  chain: Chain;
 }
 
 export const setDomainRecords = async ({
@@ -346,6 +356,7 @@ export const setDomainRecords = async ({
   textRecords,
   addresses,
   client,
+  chain,
 }: SetDomainRecordsParams) => {
   try {
     const publicAddress = normalize(ensName.name);
@@ -424,6 +435,7 @@ export const setDomainRecords = async ({
             url,
             message,
             authenticatedAddress,
+            chain: chain,
           });
 
           return 200;
@@ -448,17 +460,22 @@ export const setDomainRecords = async ({
 /*
   4th step of a name registration - set domain as primary name if user wants
 */
+
+interface SetDomainAsPrimaryNameParams {
+  authenticatedAddress: `0x${string}`;
+  ensName: ENSName;
+  chain: Chain;
+}
+
 export const setDomainAsPrimaryName = async ({
   authenticatedAddress,
   ensName,
-}: {
-  authenticatedAddress: `0x${string}`;
-  ensName: ENSName;
-}) => {
+  chain,
+}: SetDomainAsPrimaryNameParams) => {
   try {
     // Create a wallet client for sending transactions to the blockchain
     const walletClient = createWalletClient({
-      chain: isTestnet ? sepolia : mainnet,
+      chain: chain,
       transport: custom(window.ethereum),
       account: authenticatedAddress,
     });
@@ -471,9 +488,8 @@ export const setDomainAsPrimaryName = async ({
       ? ensName.name
       : `${ensName.name}.eth`;
 
-    const network = isTestnet
-      ? SupportedNetwork.TESTNET
-      : SupportedNetwork.MAINNET;
+    // TODO: check if the netwook is supported
+    const network = chain.id as SupportedNetwork;
 
     const publicAddress = normalize(nameWithTLD);
 

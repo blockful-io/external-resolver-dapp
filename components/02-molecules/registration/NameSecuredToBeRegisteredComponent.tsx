@@ -15,7 +15,7 @@ export const NameSecuredToBeRegisteredComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nameRegistrationData, setCommitTxReceipt, getResolverAddress } =
     useNameRegistration();
 
@@ -28,6 +28,10 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error(
         "Impossible to register a name without an authenticated user"
       );
+    }
+
+    if (!chain) {
+      throw new Error("Impossible to register a name without a chain");
     }
 
     if (!nameRegistrationData.name) {
@@ -43,6 +47,7 @@ export const NameSecuredToBeRegisteredComponent = ({
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
       publicClient: publicClient,
+      chain: chain,
     });
   };
 

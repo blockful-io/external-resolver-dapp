@@ -41,6 +41,10 @@ export const RequestToRegisterComponent = ({
       );
     }
 
+    if (!chain) {
+      throw new Error("Impossible to register a name without a chain");
+    }
+
     if (!nameRegistrationData.name) {
       throw new Error("Impossible to register a name without a name");
     }
@@ -54,6 +58,7 @@ export const RequestToRegisterComponent = ({
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
       publicClient: publicClient,
+      chain: chain,
     });
   };
 
