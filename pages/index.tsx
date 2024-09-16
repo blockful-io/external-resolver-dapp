@@ -24,7 +24,7 @@ export default function Home() {
 
   const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
-  const checkDomainAvailability = async (ensName: ENSName) => {
+  const checkDomainAvailability = async (ensName: string) => {
     try {
       const isAvailable: boolean = await isNameAvailable({
         ensName: ensName,
@@ -36,6 +36,7 @@ export default function Home() {
         setDomainStatus(EnsDomainStatus.Registered);
       }
     } catch (error) {
+      console.error(error);
       toast.error("An error has occurred. Please try again later");
     }
   };
@@ -63,7 +64,7 @@ export default function Home() {
       return;
     }
 
-    await checkDomainAvailability(ensName);
+    await checkDomainAvailability(domainWithEth(ensName.name));
   };
 
   const clearDomainSearch = () => {

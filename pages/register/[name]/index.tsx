@@ -70,7 +70,10 @@ export default function RegisterNamePage({ name }: { name: string }) {
 
       setNameToRegister(ensName);
 
-      const isAvailable = await isNameAvailable({ ensName, publicClient });
+      const isAvailable = await isNameAvailable({
+        ensName: ensName.name,
+        publicClient,
+      });
       if (address) {
         const localStorageNameRegistrationData =
           getOpenNameRegistrationsOfNameByWallet(address, ensName);

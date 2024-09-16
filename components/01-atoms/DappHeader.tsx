@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
-import { DEFAULT_CHAIN_ID } from "@/lib/wallet/chains";
 import { UserDropdown } from "@/components/02-molecules";
 import { ConnectMetamask } from "./ConnectMetamask";
 import { useRouter } from "next/router";
@@ -29,17 +28,11 @@ const links: HeaderLinkInterface[] = [
 ];
 
 export const DappHeader = () => {
-  const { address, chain } = useAccount();
-  const { switchChain } = useSwitchChain();
+  const { address } = useAccount();
   const [isClient, setIsClient] = useState(false);
+
   const router = useRouter();
   const currentRoute = router.pathname;
-
-  useEffect(() => {
-    if (chain?.id !== DEFAULT_CHAIN_ID) {
-      switchChain({ chainId: DEFAULT_CHAIN_ID });
-    }
-  }, [chain]);
 
   useEffect(() => {
     setIsClient(true);

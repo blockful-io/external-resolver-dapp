@@ -37,6 +37,7 @@ import { cryptocurrencies } from "../domain-page";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { getAvailable } from "@ensdomains/ensjs/public";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -586,7 +587,7 @@ export const getNameRegistrationGasEstimate = (): bigint => {
 };
 
 interface IsNameAvailableParams {
-  ensName: ENSName;
+  ensName: string;
   publicClient: PublicClient & ClientWithEns;
 }
 
@@ -594,19 +595,9 @@ export const isNameAvailable = async ({
   ensName,
   publicClient,
 }: IsNameAvailableParams): Promise<boolean> => {
-  const rawName = ensName.name.split(".eth")[0];
+  const result = await getAvailable(publicClient, { name: ensName });
 
-  return publicClient
-    .readContract({
-      args: [rawName],
-      address: nameRegistrationContracts.ETH_REGISTRAR,
-      functionName: "available",
-      abi: ETHRegistrarABI,
-    })
-    .then((available) => {
-      return !!available;
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
+  console.log(result);
+
+  return result;
 };
