@@ -18,7 +18,7 @@ export const RecordsSetAwaitingPrimaryNameSetting = ({
   handlePreviousStep,
   handleNextStep,
 }: NameRegisteredAwaitingRecordsSettingComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nameRegistrationData } = useNameRegistration();
 
   useEffect(() => {
@@ -36,6 +36,12 @@ export const RecordsSetAwaitingPrimaryNameSetting = ({
       );
     }
 
+    if (!chain) {
+      throw new Error(
+        "Impossible to set the text records of a name without a chain"
+      );
+    }
+
     if (!nameRegistrationData.name) {
       throw new Error(
         "Impossible to set the text records of a name without a name"
@@ -46,6 +52,7 @@ export const RecordsSetAwaitingPrimaryNameSetting = ({
       const setAsPrimaryNameRes = await setDomainAsPrimaryName({
         authenticatedAddress: address,
         ensName: nameRegistrationData.name,
+        chain: chain,
       });
 
       if (

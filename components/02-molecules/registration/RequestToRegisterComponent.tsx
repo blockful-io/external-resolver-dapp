@@ -6,10 +6,11 @@ import {
 } from "@/components/01-atoms";
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { useAccount, useBalance } from "wagmi";
-import { SupportedNetwork, isTestnet } from "@/lib/wallet/chains";
+import { useAccount, useBalance, usePublicClient } from "wagmi";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
+import { PublicClient } from "viem";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
@@ -20,13 +21,16 @@ export const RequestToRegisterComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: RequestToRegisterComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+
   const { data: ethBalance } = useBalance({
     address,
-    chainId: isTestnet ? SupportedNetwork.TESTNET : SupportedNetwork.MAINNET,
+    chainId: chain?.id,
   });
   const { nameRegistrationData, setCommitSubmitTimestamp, getResolverAddress } =
     useNameRegistration();
+
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
   const commitToRegister = async (): Promise<
     `0x${string}` | TransactionErrorType
@@ -35,6 +39,10 @@ export const RequestToRegisterComponent = ({
       throw new Error(
         "Impossible to register a name without an authenticated user"
       );
+    }
+
+    if (!chain) {
+      throw new Error("Impossible to register a name without a chain");
     }
 
     if (!nameRegistrationData.name) {
@@ -49,6 +57,8 @@ export const RequestToRegisterComponent = ({
       resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
+      publicClient: publicClient,
+      chain: chain,
     });
   };
 

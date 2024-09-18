@@ -4,9 +4,10 @@ import { buildENSName } from "@namehash/ens-utils";
 import { normalize } from "viem/ens";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Address, isAddress } from "viem";
-import { useAccount } from "wagmi";
+import { Address, isAddress, PublicClient } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface CreateSubdomainModalContentProps {
   name: string;
@@ -39,6 +40,8 @@ export const CreateSubdomainModalContent = ({
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
     CreateSubdomainModalSteps.SubdomainInput
   );
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+  const { chain } = useAccount();
 
   const isSubdomainInvalid = () => {
     try {
@@ -55,6 +58,11 @@ export const CreateSubdomainModalContent = ({
   const handleSaveAction = async () => {
     setIsloading(true);
 
+    if (!chain) {
+      toast.error("Impossible to create a subdomain if you are not connected to a chain");
+      return;
+    }
+
     try {
       const response = await createSubdomain({
         resolverAddress: currentResolverAddress,
@@ -63,6 +71,8 @@ export const CreateSubdomainModalContent = ({
         address: subdomainAddress,
         website: website,
         description: description,
+        client: publicClient,
+        chain: chain,
       });
       if (response?.ok) {
         !!onRecordsEdited && onRecordsEdited();

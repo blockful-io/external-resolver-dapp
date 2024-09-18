@@ -1,4 +1,3 @@
-import { client, publicClient } from "../wallet/wallet-config";
 import { defaultTextRecords } from "@/types/textRecords";
 import {
   batch,
@@ -27,8 +26,15 @@ import {
   SubgraphEnsData,
 } from "./interfaces";
 import { metadataDomainQuery } from "./queries";
-import { Address, isAddress, parseAbiItem } from "viem";
+import {
+  Address,
+  isAddress,
+  parseAbiItem,
+  PublicClient,
+  WalletClient,
+} from "viem";
 import toast from "react-hot-toast";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -36,21 +42,38 @@ if (!ensSubgraphApiKey) {
   throw new Error("ENS subgraph API key not found");
 }
 
+interface GetENSDomainDataParams {
+  domain: string;
+  testClient?: ClientWithEns;
+  client: PublicClient & ClientWithEns;
+  testWalletClient?: WalletClient;
+}
+
 // Fetch ENS data for a given domain
-export const getENSDomainData = async (
-  domain: string
-): Promise<DomainData | null> => {
+export const getENSDomainData = async ({
+  domain,
+  client,
+}: GetENSDomainDataParams): Promise<DomainData | null> => {
   // Check if the domain resolver is compatible with metadata, if not it will return an error
   try {
-    const data = await getENSDomainDataThroughResolver(domain);
+    const data = await getENSDomainDataThroughResolver({
+      name: domain,
+      client: client,
+    });
     const domainData = formatResolverDomainData(data);
     return domainData;
   } catch (error) {
     try {
-      const data = await getENSDomainDataThroughSubgraph(domain);
+      const data = await getENSDomainDataThroughSubgraph({
+        domain: domain,
+        client: client,
+      });
 
       if (!data) return null;
-      const domainData = await formatSubgraphDomainData(data);
+      const domainData = await formatSubgraphDomainData({
+        data: data,
+        client: client,
+      });
       return domainData;
     } catch (error) {
       console.error(error);
@@ -59,26 +82,37 @@ export const getENSDomainData = async (
 
       // If the resolver is not compatible with the metadata API or subgraph query, return a basic domain data
       // If that fails, handleFetchENSDomainData will set the error state
-      return await getBasicENSDomainData(domain);
+      return await getBasicENSDomainData({
+        name: domain,
+        client: client,
+      });
     }
   }
 };
 
+interface GetENSDomainDataThroughSubgraphParams {
+  domain: string;
+  client: ClientWithEns & PublicClient;
+}
+
 // Fetch ENS data for a given domain through subgraph
-export const getENSDomainDataThroughSubgraph = async (
-  domain: string
-): Promise<SubgraphEnsData | null> => {
+export const getENSDomainDataThroughSubgraph = async ({
+  domain,
+  client,
+}: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
   validateDomain(domain);
 
   if (await getAvailable(client, { name: domain })) return null;
 
-  const textRecordsKeys = await getSubgraphRecords(client, { name: domain });
+  const textRecordsKeys = await getSubgraphRecords(client, {
+    name: domain,
+  });
   const availableTextRecords = textRecordsKeys?.texts.length
     ? textRecordsKeys?.texts
     : defaultTextRecords;
 
   const [newAvatar, batchResults] = await Promise.all([
-    publicClient.getEnsAvatar({ name: normalize(domain) }),
+    client.getEnsAvatar({ name: normalize(domain) }),
     batch(
       client,
       getRecords.batch({
@@ -127,10 +161,18 @@ function getParent(domain: string): string {
   return parts.slice(1).join(".");
 }
 
-const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
-  const domainAdd = (await getResolver(publicClient, { name })) as Address;
-  const domainOwner = await getOwner(publicClient, { name });
-  const wrapperData = await getWrapperData(publicClient, { name });
+interface GetBasicENSDomainDataParams {
+  name: string;
+  client: ClientWithEns & PublicClient;
+}
+
+const getBasicENSDomainData = async ({
+  name,
+  client,
+}: GetBasicENSDomainDataParams): Promise<DomainData> => {
+  const domainAdd = (await getResolver(client, { name })) as Address;
+  const domainOwner = await getOwner(client, { name });
+  const wrapperData = await getWrapperData(client, { name });
 
   if (!isAddress(domainAdd)) {
     throw new Error(`Invalid Ethereum address: ${domainAdd}`);
@@ -151,13 +193,19 @@ const getBasicENSDomainData = async (name: string): Promise<DomainData> => {
   };
 };
 
-// Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned
-const getENSDomainDataThroughResolver = async (
-  name: string
-): Promise<ResolverQueryDomainData> => {
-  const resolverAdd = await getResolver(publicClient, { name });
+interface GetENSDomainDataThroughResolverParams {
+  name: string;
+  client: ClientWithEns & PublicClient;
+}
 
-  const metadataUrl = await publicClient.readContract({
+// Reads the contract to get the metadata API, if the contract doesn't support it, an error is returned
+const getENSDomainDataThroughResolver = async ({
+  name,
+  client,
+}: GetENSDomainDataThroughResolverParams): Promise<ResolverQueryDomainData> => {
+  const resolverAdd = await getResolver(client, { name });
+
+  const metadataUrl = await client.readContract({
     address: resolverAdd!,
     abi: [parseAbiItem("function metadata() returns (string)")],
     functionName: "metadata",
@@ -174,15 +222,21 @@ const getENSDomainDataThroughResolver = async (
   return data.domain;
 };
 
-const formatSubgraphDomainData = async (
-  data: SubgraphEnsData
-): Promise<DomainData> => {
+interface FormatSubgraphDomainDataParams {
+  data: SubgraphEnsData;
+  client: PublicClient & ClientWithEns;
+}
+
+const formatSubgraphDomainData = async ({
+  data,
+  client,
+}: FormatSubgraphDomainDataParams): Promise<DomainData> => {
   const transformedTexts = transformTextRecords(data.texts);
 
   const updatedTexts = updateAvatarInTexts(transformedTexts, data.newAvatar);
 
   const ownerName = data.owner
-    ? await getName(publicClient, { address: data.owner })
+    ? await getName(client, { address: data.owner })
     : undefined;
 
   const domainData: DomainData = {

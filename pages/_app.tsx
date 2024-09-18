@@ -18,6 +18,7 @@ import { type AppProps } from "next/app";
 import { DappHeader } from "@/components/01-atoms";
 import { Toaster } from "react-hot-toast";
 import localFont from "@next/font/local";
+import ChainChecker from "@/components/organisms/ChainChecker";
 
 const satoshiFont = localFont({
   src: [
@@ -75,6 +76,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <main>
                   <div className="relative z-10 h-full flex-grow">
                     <Toaster position="bottom-right" />
+                    <ChainChecker />
                     <Component {...pageProps} />
                   </div>
                 </main>

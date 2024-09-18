@@ -1,12 +1,10 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
-import { publicClient, walletClient } from "@/lib/wallet/wallet-config";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
-  nameRegistrationContracts,
-  nameRegistrationSCs,
+  nameRegistrationSmartContracts,
 } from "../name-registration/constants";
 
 import {
@@ -21,9 +19,10 @@ import {
   Hash,
   fromBytes,
   Address,
+  PublicClient,
+  Chain,
 } from "viem";
-import { isTestnet, SupportedNetwork } from "../wallet/chains";
-import { sepolia, mainnet } from "viem/chains";
+import { SupportedNetwork } from "../wallet/chains";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
 import {
   TransactionErrorType,
@@ -36,6 +35,8 @@ import { normalize } from "viem/ens";
 import { cryptocurrencies } from "../domain-page";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { getAvailable } from "@ensdomains/ensjs/public";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -44,14 +45,6 @@ if (!walletConnectProjectId) {
   throw new Error("No wallet connect project ID informed");
 }
 
-const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
-  return createWalletClient({
-    account,
-    chain: isTestnet ? sepolia : mainnet,
-    transport: custom(window.ethereum),
-  });
-};
-
 /*
   commitment value is used in both 'commit' and 'register'
   functions in the registrar contract. It works as a secret
@@ -59,6 +52,19 @@ const createCustomWalletClient = (account: `0x${string}`): WalletClient => {
   be the same in both functions calls, this is why we store
   it in the local storage.
 */
+
+interface MakeCommitmentParams {
+  name: string;
+  data: string[];
+  secret: string;
+  reverseRecord: boolean;
+  resolverAddress: Address;
+  durationInYears: bigint;
+  ownerControlledFuses: number;
+  authenticatedAddress: Address;
+  publicClient: PublicClient & ClientWithEns;
+}
+
 export async function makeCommitment({
   name,
   data,
@@ -68,16 +74,17 @@ export async function makeCommitment({
   durationInYears,
   ownerControlledFuses,
   authenticatedAddress,
-}: {
-  name: string;
-  secret: string;
-  data: string[];
-  reverseRecord: boolean;
-  resolverAddress: string;
-  durationInYears: bigint;
-  ownerControlledFuses: number;
-  authenticatedAddress: `0x${string}`;
-}) {
+  publicClient,
+}: MakeCommitmentParams) {
+  const chain = publicClient.chain;
+
+  if (!Object.values(SupportedNetwork).includes(chain.id)) {
+    throw new Error(`Unsupported network: ${chain.id}`);
+  }
+
+  const nameRegistrationContracts =
+    nameRegistrationSmartContracts[chain.id as SupportedNetwork];
+
   return publicClient
     .readContract({
       account: parseAccount(authenticatedAddress),
@@ -119,20 +126,24 @@ export async function ccipRequest({
   });
 }
 
+interface HandleDBStorageParams {
+  domain: DomainData;
+  url: string;
+  message: MessageData;
+  authenticatedAddress: `0x${string}`;
+  chain: Chain;
+}
+
 export async function handleDBStorage({
   domain,
   url,
   message,
   authenticatedAddress,
-}: {
-  domain: DomainData;
-  url: string;
-  message: MessageData;
-  authenticatedAddress: `0x${string}`;
-}): Promise<Response> {
+  chain,
+}: HandleDBStorageParams): Promise<Response> {
   const client = createWalletClient({
     account: authenticatedAddress,
-    chain: isTestnet ? sepolia : mainnet,
+    chain: chain,
     transport: custom(window.ethereum),
   });
 
@@ -162,21 +173,32 @@ export async function handleDBStorage({
 /*
   1st step of a name registration
 */
+
+interface CommitParams {
+  ensName: ENSName;
+  durationInYears: bigint;
+  resolverAddress: Address;
+  authenticatedAddress: Address;
+  registerAndSetAsPrimaryName: boolean;
+  publicClient: PublicClient & ClientWithEns;
+  chain: Chain;
+}
+
 export const commit = async ({
   ensName,
   durationInYears,
   resolverAddress,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
-}: {
-  ensName: ENSName;
-  durationInYears: bigint;
-  resolverAddress: Address;
-  authenticatedAddress: `0x${string}`;
-  registerAndSetAsPrimaryName: boolean;
-}): Promise<`0x${string}` | TransactionErrorType> => {
+  publicClient,
+  chain,
+}: CommitParams): Promise<`0x${string}` | TransactionErrorType> => {
   try {
-    const walletClient = createCustomWalletClient(authenticatedAddress);
+    const walletClient = createWalletClient({
+      account: authenticatedAddress,
+      chain: chain,
+      transport: custom(window.ethereum),
+    });
 
     const client = walletClient.extend(publicActions);
 
@@ -193,7 +215,15 @@ export const commit = async ({
       reverseRecord: registerAndSetAsPrimaryName,
       resolverAddress: resolverAddress,
       ownerControlledFuses: DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
+      publicClient: publicClient,
     });
+
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
+
+    const nameRegistrationContracts =
+      nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
     const { request } = await client.simulateContract({
       account: parseAccount(authenticatedAddress),
@@ -217,21 +247,32 @@ export const commit = async ({
 /*
   2nd step of a name registration
 */
+
+interface RegisterParams {
+  ensName: ENSName;
+  resolverAddress: Address;
+  durationInYears: bigint;
+  authenticatedAddress: Address;
+  registerAndSetAsPrimaryName: boolean;
+  publicClient: PublicClient & ClientWithEns;
+  chain: Chain;
+}
+
 export const register = async ({
   ensName,
   resolverAddress,
   durationInYears,
   authenticatedAddress,
   registerAndSetAsPrimaryName,
-}: {
-  ensName: ENSName;
-  resolverAddress: Address;
-  durationInYears: bigint;
-  authenticatedAddress: `0x${string}`;
-  registerAndSetAsPrimaryName: boolean;
-}): Promise<`0x${string}` | TransactionErrorType> => {
+  publicClient,
+  chain,
+}: RegisterParams): Promise<`0x${string}` | TransactionErrorType> => {
   try {
-    const walletClient = createCustomWalletClient(authenticatedAddress);
+    const walletClient = createWalletClient({
+      account: authenticatedAddress,
+      chain: chain,
+      transport: custom(window.ethereum),
+    });
 
     const client = walletClient.extend(publicActions);
 
@@ -239,11 +280,22 @@ export const register = async ({
 
     const nameWithoutTLD = ensName.name.replace(".eth", "");
 
-    const namePrice = await getNamePrice({ ensName, durationInYears });
+    const namePrice = await getNamePrice({
+      ensName,
+      durationInYears,
+      publicClient,
+    });
+
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
+
+    const nameRegistrationContracts =
+      nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
     const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
-      chain: isTestnet ? sepolia : mainnet,
+      chain: chain,
       account: authenticatedAddress,
       args: [
         nameWithoutTLD,
@@ -277,6 +329,7 @@ export const register = async ({
         url,
         message,
         authenticatedAddress,
+        chain: chain,
       });
 
       if (typeof signedData === "string") {
@@ -306,6 +359,18 @@ const cryptocurrenciesToCoinType: { [k: string]: string } = {
 /*
   3rd step of a name registration - set text records
 */
+
+interface SetDomainRecordsParams {
+  ensName: ENSName;
+  resolverAddress?: Address;
+  domainResolverAddress?: `0x${string}`;
+  authenticatedAddress: Address;
+  textRecords: Record<string, string>;
+  addresses: Record<string, string>;
+  client: PublicClient & WalletClient;
+  chain: Chain;
+}
+
 export const setDomainRecords = async ({
   ensName,
   resolverAddress,
@@ -313,20 +378,11 @@ export const setDomainRecords = async ({
   authenticatedAddress,
   textRecords,
   addresses,
-}: {
-  ensName: ENSName;
-  resolverAddress?: Address;
-  domainResolverAddress?: `0x${string}`;
-  authenticatedAddress: `0x${string}`;
-  textRecords: Record<string, string>;
-  addresses: Record<string, string>;
-}) => {
+  client,
+  chain,
+}: SetDomainRecordsParams) => {
   try {
     const publicAddress = normalize(ensName.name);
-
-    const client = walletClient.extend(publicActions);
-
-    if (!client) throw new Error("WalletClient not found");
 
     // duplicated function logic on service.ts - createSubdomain
     const calls: Hash[] = [];
@@ -358,12 +414,13 @@ export const setDomainRecords = async ({
       }
       const coinType =
         cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
+
       const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
       const addressEncoded = fromBytes(coder.decode(address), "hex");
       const callData = encodeFunctionData({
         functionName: "setAddr",
         abi: DomainResolverABI,
-        args: [namehash(publicAddress), coinType, addressEncoded],
+        args: [namehash(publicAddress), BigInt(coinType), addressEncoded],
       });
       calls.push(callData);
     }
@@ -401,6 +458,7 @@ export const setDomainRecords = async ({
             url,
             message,
             authenticatedAddress,
+            chain: chain,
           });
 
           return 200;
@@ -425,17 +483,22 @@ export const setDomainRecords = async ({
 /*
   4th step of a name registration - set domain as primary name if user wants
 */
+
+interface SetDomainAsPrimaryNameParams {
+  authenticatedAddress: `0x${string}`;
+  ensName: ENSName;
+  chain: Chain;
+}
+
 export const setDomainAsPrimaryName = async ({
   authenticatedAddress,
   ensName,
-}: {
-  authenticatedAddress: `0x${string}`;
-  ensName: ENSName;
-}) => {
+  chain,
+}: SetDomainAsPrimaryNameParams) => {
   try {
     // Create a wallet client for sending transactions to the blockchain
     const walletClient = createWalletClient({
-      chain: isTestnet ? sepolia : mainnet,
+      chain: chain,
       transport: custom(window.ethereum),
       account: authenticatedAddress,
     });
@@ -448,14 +511,16 @@ export const setDomainAsPrimaryName = async ({
       ? ensName.name
       : `${ensName.name}.eth`;
 
-    const network = isTestnet
-      ? SupportedNetwork.TESTNET
-      : SupportedNetwork.MAINNET;
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
+
+    const network = chain.id as SupportedNetwork;
 
     const publicAddress = normalize(nameWithTLD);
 
     const { request } = await client.simulateContract({
-      address: nameRegistrationSCs[network].ENS_REVERSE_REGISTRAR,
+      address: nameRegistrationSmartContracts[network].ENS_REVERSE_REGISTRAR,
       account: authenticatedAddress,
       abi: ENSReverseRegistrarABI,
       functionName: "setName",
@@ -499,14 +564,28 @@ interface NamePrice {
   premium: bigint;
 }
 
+interface GetNamePriceParams {
+  ensName: ENSName;
+  durationInYears: bigint;
+  publicClient: PublicClient & ClientWithEns;
+}
+
 export const getNamePrice = async ({
   ensName,
   durationInYears,
-}: {
-  ensName: ENSName;
-  durationInYears: bigint;
-}): Promise<bigint> => {
+  publicClient,
+}: GetNamePriceParams): Promise<bigint> => {
   const ensNameDirectSubname = ensName.name.split(".eth")[0];
+
+  const chain = publicClient.chain;
+
+  if (!Object.values(SupportedNetwork).includes(chain.id)) {
+    throw new Error(`Unsupported network: ${chain.id}`);
+  }
+
+  const nameRegistrationContracts =
+    nameRegistrationSmartContracts[chain.id as SupportedNetwork];
+
   const price = await publicClient.readContract({
     args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
     address: nameRegistrationContracts.ETH_REGISTRAR,
@@ -520,7 +599,13 @@ export const getNamePrice = async ({
   }
 };
 
-export const getGasPrice = async (): Promise<bigint> => {
+interface GetGasPriceParams {
+  publicClient: PublicClient & ClientWithEns;
+}
+
+export const getGasPrice = async ({
+  publicClient,
+}: GetGasPriceParams): Promise<bigint> => {
   return publicClient
     .getGasPrice()
     .then((gasPrice) => {
@@ -535,20 +620,17 @@ export const getNameRegistrationGasEstimate = (): bigint => {
   return 47606n + 324230n;
 };
 
-export const isNameAvailable = async (ensName: ENSName): Promise<boolean> => {
-  const rawName = ensName.name.split(".eth")[0];
+interface IsNameAvailableParams {
+  ensName: string;
+  publicClient: PublicClient & ClientWithEns;
+}
 
-  return publicClient
-    .readContract({
-      args: [rawName],
-      address: nameRegistrationContracts.ETH_REGISTRAR,
-      functionName: "available",
-      abi: ETHRegistrarABI,
-    })
-    .then((available) => {
-      return !!available;
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
+export const isNameAvailable = async ({
+  ensName,
+  publicClient,
+}: IsNameAvailableParams): Promise<boolean> => {
+  const result = await getAvailable(publicClient, { name: ensName });
+
+
+  return result;
 };
