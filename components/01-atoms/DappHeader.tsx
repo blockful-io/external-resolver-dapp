@@ -30,7 +30,7 @@ const links: HeaderLinkInterface[] = [
 ];
 
 export const DappHeader = () => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const [isClient, setIsClient] = useState(false);
 
   const router = useRouter();
