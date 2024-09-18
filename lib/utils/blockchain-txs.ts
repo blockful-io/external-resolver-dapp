@@ -4,7 +4,6 @@ import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
-  nameRegistrationContracts,
   nameRegistrationSCs,
 } from "../name-registration/constants";
 
@@ -77,6 +76,11 @@ export async function makeCommitment({
   authenticatedAddress,
   publicClient,
 }: MakeCommitmentParams) {
+  const chain = publicClient.chain;
+
+  const nameRegistrationContracts =
+    nameRegistrationSCs[chain.id as SupportedNetwork];
+
   return publicClient
     .readContract({
       account: parseAccount(authenticatedAddress),
@@ -210,6 +214,9 @@ export const commit = async ({
       publicClient: publicClient,
     });
 
+    const nameRegistrationContracts =
+      nameRegistrationSCs[chain.id as SupportedNetwork];
+
     const { request } = await client.simulateContract({
       account: parseAccount(authenticatedAddress),
       address: nameRegistrationContracts.ETH_REGISTRAR,
@@ -270,6 +277,9 @@ export const register = async ({
       durationInYears,
       publicClient,
     });
+
+    const nameRegistrationContracts =
+      nameRegistrationSCs[chain.id as SupportedNetwork];
 
     const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
@@ -551,6 +561,11 @@ export const getNamePrice = async ({
   publicClient,
 }: GetNamePriceParams): Promise<bigint> => {
   const ensNameDirectSubname = ensName.name.split(".eth")[0];
+
+  const chain = publicClient.chain;
+
+  const nameRegistrationContracts =
+    nameRegistrationSCs[chain.id as SupportedNetwork];
 
   const price = await publicClient.readContract({
     args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],

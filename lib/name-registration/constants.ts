@@ -1,5 +1,5 @@
 import { isAddress } from "viem";
-import { DEFAULT_CHAIN_ID, SupportedNetwork } from "../wallet/chains";
+import { SupportedNetwork } from "../wallet/chains";
 
 export enum RegistrationStep {
   RegistrationYears = "RegistrationYears",
@@ -84,8 +84,6 @@ export const ensResolverAddress: Record<EnsResolver, `0x${string}`> = {
   // [EnsResolver.Mainnet]: "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63",
 };
 
-export const nameRegistrationContracts = nameRegistrationSCs[DEFAULT_CHAIN_ID];
-
 export const DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES = 0;
 export const DEFAULT_REGISTRATION_YEARS = 1n;
 
@@ -94,5 +92,4 @@ export const ETHEREUM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 export const MULTICALL_3_CONTRACT_ADDRESS =
   "0xcA11bde05977b3631167028862bE2a173976CA11";
 
-  
 export const ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME = 60000;
