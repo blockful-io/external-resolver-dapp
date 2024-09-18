@@ -5,11 +5,11 @@ import { DatabaseIcon } from "./icons/database";
 import { EthIcon } from "./icons/eth-icon";
 
 const ensResolverConfig = {
-  // [EnsResolver.Mainnet]: {
-  //   icon: EthIcon,
-  //   label: "Mainnet",
-  //   enabled: true,
-  // },
+  [EnsResolver.Mainnet]: {
+    icon: EthIcon,
+    label: "Mainnet",
+    enabled: true,
+  },
   [EnsResolver.Database]: {
     icon: DatabaseIcon,
     label: "Off-chain",
