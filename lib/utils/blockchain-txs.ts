@@ -631,7 +631,6 @@ export const isNameAvailable = async ({
 }: IsNameAvailableParams): Promise<boolean> => {
   const result = await getAvailable(publicClient, { name: ensName });
 
-  console.log(result);
 
   return result;
 };

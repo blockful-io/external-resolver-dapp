@@ -59,7 +59,7 @@ export const CreateSubdomainModalContent = ({
     setIsloading(true);
 
     if (!chain) {
-      toast.error("Please connect your wallet");
+      toast.error("Impossible to create a subdomain if you are not connected to a chain");
       return;
     }
 

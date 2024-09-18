@@ -28,7 +28,7 @@ export const EditResolverModalContent = ({
 
   const handleSaveAction = async () => {
     if (!walletClient) {
-      toast.error("No wallet client found");
+      toast.error("No wallet client found. Please contact our team.");
       return;
     }
 
