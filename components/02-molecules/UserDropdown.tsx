@@ -24,7 +24,7 @@ export const UserDropdown = () => {
 
   const getEnsAvatar = async () => {
     if (!publicClient) {
-      toast.error("No public client found");
+      toast.error("No public client found. Please contact our team.");
       return null;
     }
 
