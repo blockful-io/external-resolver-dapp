@@ -78,6 +78,10 @@ export async function makeCommitment({
 }: MakeCommitmentParams) {
   const chain = publicClient.chain;
 
+  if (!Object.values(SupportedNetwork).includes(chain.id)) {
+    throw new Error(`Unsupported network: ${chain.id}`);
+  }
+
   const nameRegistrationContracts =
     nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
@@ -214,6 +218,10 @@ export const commit = async ({
       publicClient: publicClient,
     });
 
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
+
     const nameRegistrationContracts =
       nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
@@ -277,6 +285,10 @@ export const register = async ({
       durationInYears,
       publicClient,
     });
+
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
 
     const nameRegistrationContracts =
       nameRegistrationSmartContracts[chain.id as SupportedNetwork];
@@ -499,7 +511,10 @@ export const setDomainAsPrimaryName = async ({
       ? ensName.name
       : `${ensName.name}.eth`;
 
-    // TODO: check if the netwook is supported
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
+
     const network = chain.id as SupportedNetwork;
 
     const publicAddress = normalize(nameWithTLD);
@@ -563,6 +578,10 @@ export const getNamePrice = async ({
   const ensNameDirectSubname = ensName.name.split(".eth")[0];
 
   const chain = publicClient.chain;
+
+  if (!Object.values(SupportedNetwork).includes(chain.id)) {
+    throw new Error(`Unsupported network: ${chain.id}`);
+  }
 
   const nameRegistrationContracts =
     nameRegistrationSmartContracts[chain.id as SupportedNetwork];
