@@ -219,8 +219,6 @@ const getENSDomainDataThroughResolver = async ({
     }
   );
 
-  console.log("getENSDomainDataThroughResolver", data);
-
   return data.domain;
 };
 
