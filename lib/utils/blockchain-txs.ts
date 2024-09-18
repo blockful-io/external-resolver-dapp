@@ -4,7 +4,7 @@ import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
-  nameRegistrationSCs,
+  nameRegistrationSmartContracts,
 } from "../name-registration/constants";
 
 import {
@@ -79,7 +79,7 @@ export async function makeCommitment({
   const chain = publicClient.chain;
 
   const nameRegistrationContracts =
-    nameRegistrationSCs[chain.id as SupportedNetwork];
+    nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
   return publicClient
     .readContract({
@@ -215,7 +215,7 @@ export const commit = async ({
     });
 
     const nameRegistrationContracts =
-      nameRegistrationSCs[chain.id as SupportedNetwork];
+      nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
     const { request } = await client.simulateContract({
       account: parseAccount(authenticatedAddress),
@@ -279,7 +279,7 @@ export const register = async ({
     });
 
     const nameRegistrationContracts =
-      nameRegistrationSCs[chain.id as SupportedNetwork];
+      nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
     const txHash = await client.writeContract({
       address: nameRegistrationContracts.ETH_REGISTRAR,
@@ -505,7 +505,7 @@ export const setDomainAsPrimaryName = async ({
     const publicAddress = normalize(nameWithTLD);
 
     const { request } = await client.simulateContract({
-      address: nameRegistrationSCs[network].ENS_REVERSE_REGISTRAR,
+      address: nameRegistrationSmartContracts[network].ENS_REVERSE_REGISTRAR,
       account: authenticatedAddress,
       abi: ENSReverseRegistrarABI,
       functionName: "setName",
@@ -565,7 +565,7 @@ export const getNamePrice = async ({
   const chain = publicClient.chain;
 
   const nameRegistrationContracts =
-    nameRegistrationSCs[chain.id as SupportedNetwork];
+    nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
   const price = await publicClient.readContract({
     args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
