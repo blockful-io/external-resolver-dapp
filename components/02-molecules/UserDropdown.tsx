@@ -5,11 +5,10 @@ import {
   Skeleton,
   SkeletonGroup,
 } from "@ensdomains/thorin";
-import { normalize } from "viem/ens";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from "wagmi";
-import { publicClient } from "@/lib/wallet/wallet-config";
+import { useAccount, useDisconnect, useEnsName, usePublicClient } from "wagmi";
+import toast from "react-hot-toast";
 
 export const UserDropdown = () => {
   const { address } = useAccount();
@@ -19,9 +18,16 @@ export const UserDropdown = () => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const publicClient = usePublicClient();
+
   const router = useRouter();
 
   const getEnsAvatar = async () => {
+    if (!publicClient) {
+      toast.error("No public client found. Please contact our team.");
+      return null;
+    }
+
     setIsLoading(true);
     if (ensName) {
       const ensAvatar = await publicClient.getEnsAvatar({ name: ensName });

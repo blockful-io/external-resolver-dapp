@@ -49,6 +49,7 @@ export const ENSResolverComponent = ({
 
   useEffect(() => {
     setEnsResolver(EnsResolver.Database);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const saveEnsResolverInLocalStorage = () => {

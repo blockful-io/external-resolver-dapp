@@ -2,8 +2,9 @@ import { BackButton, BlockchainCTA } from "@/components/01-atoms";
 import { register } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-import { TransactionReceipt } from "viem";
-import { useAccount } from "wagmi";
+import { PublicClient, TransactionReceipt } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;
@@ -14,9 +15,11 @@ export const NameSecuredToBeRegisteredComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameSecuredToBeRegisteredComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nameRegistrationData, setCommitTxReceipt, getResolverAddress } =
     useNameRegistration();
+
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
   const registerName = async (): Promise<
     `0x${string}` | TransactionErrorType
@@ -25,6 +28,10 @@ export const NameSecuredToBeRegisteredComponent = ({
       throw new Error(
         "Impossible to register a name without an authenticated user"
       );
+    }
+
+    if (!chain) {
+      throw new Error("Impossible to register a name without a chain");
     }
 
     if (!nameRegistrationData.name) {
@@ -39,6 +46,8 @@ export const NameSecuredToBeRegisteredComponent = ({
       resolverAddress: resolverAddress,
       durationInYears: BigInt(nameRegistrationData.registrationYears),
       registerAndSetAsPrimaryName: nameRegistrationData.asPrimaryName,
+      publicClient: publicClient,
+      chain: chain,
     });
   };
 

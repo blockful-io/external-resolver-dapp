@@ -4,10 +4,14 @@ import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import TabBody from "@/components/organisms/TabBody";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
 import { DomainData, getENSDomainData } from "@/lib/domain-page";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 import { Button, Heading, Skeleton, SkeletonGroup } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { PublicClient } from "viem";
+import { usePublicClient } from "wagmi";
 
 export const excludeKeys = [
   "com.twitter",
@@ -26,11 +30,22 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { updateEditModalFieldsWithEnsData } = useFields();
+  const publicClient = usePublicClient();
 
   const handleFetchENSDomainData = async () => {
     setIsLoading(true);
+
+    if (!publicClient) {
+      toast.error("No public client found. Please contact our team.");
+      return;
+    }
+
     try {
-      const data = await getENSDomainData(name);
+      const data = await getENSDomainData({
+        domain: name,
+        client: publicClient as ClientWithEns & PublicClient,
+      });
+
       setEnsData(data);
       updateEditModalFieldsWithEnsData(data);
       setError(null);
@@ -51,6 +66,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
     handleFetchENSDomainData();
   }, [name]);
 
+  // if we have an error while loading the domain data, we show a message
   if (!ensData && error) {
     return (
       <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">

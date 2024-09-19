@@ -13,7 +13,9 @@ import {
   getNameRegistrationGasEstimate,
 } from "@/lib/utils/blockchain-txs";
 import { useEffect, useState } from "react";
-import { formatEther } from "viem";
+import { formatEther, PublicClient } from "viem";
+import { usePublicClient } from "wagmi";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 export const RegistrationSummary = () => {
   const {
@@ -22,6 +24,8 @@ export const RegistrationSummary = () => {
     setEstimatedNetworkFee,
     setRegistrationPrice,
   } = useNameRegistration();
+
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
 
   const {
     registrationYears,
@@ -36,9 +40,12 @@ export const RegistrationSummary = () => {
   useEffect(() => {
     if (!name) return;
 
+    if (!publicClient) return;
+
     getNamePrice({
       ensName: name,
       durationInYears: BigInt(registrationYears),
+      publicClient: publicClient,
     }).then((price) => {
       setNamePrice(price);
     });
@@ -47,7 +54,7 @@ export const RegistrationSummary = () => {
   const [gasPriceInGWei, setGasPriceInGWei] = useState<string>("");
 
   useEffect(() => {
-    getGasPrice().then((gasPrice) => {
+    getGasPrice({ publicClient: publicClient }).then((gasPrice) => {
       setGasPriceInGWei(formatEther(gasPrice, "gwei"));
 
       const estimate = getNameRegistrationGasEstimate();
@@ -56,7 +63,7 @@ export const RegistrationSummary = () => {
     });
 
     setInterval(() => {
-      getGasPrice().then((gasPrice) => {
+      getGasPrice({ publicClient: publicClient }).then((gasPrice) => {
         setGasPriceInGWei(formatEther(gasPrice, "gwei"));
 
         const estimate = getNameRegistrationGasEstimate();

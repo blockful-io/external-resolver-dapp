@@ -1,9 +1,10 @@
-import { chain } from "@/lib/wallet/wallet-config";
+import { wagmiConfig } from "@/lib/wallet/wallet-config";
 import { setResolver } from "@ensdomains/ensjs/wallet";
 import { Button, Input } from "@ensdomains/thorin";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Address, createWalletClient, custom, isAddress } from "viem";
+import { Address, isAddress } from "viem";
+import { useWalletClient } from "wagmi";
 
 interface EditResolverModalContentProps {
   name: string;
@@ -23,13 +24,13 @@ export const EditResolverModalContent = ({
   const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const { data: walletClient } = useWalletClient({ config: wagmiConfig });
 
   const handleSaveAction = async () => {
-    // Create a wallet client for sending transactions to the blockchain
-    const walletClient = createWalletClient({
-      chain: chain,
-      transport: custom(window.ethereum),
-    });
+    if (!walletClient) {
+      toast.error("No wallet client found. Please contact our team.");
+      return;
+    }
 
     const [address] = await walletClient.getAddresses();
 

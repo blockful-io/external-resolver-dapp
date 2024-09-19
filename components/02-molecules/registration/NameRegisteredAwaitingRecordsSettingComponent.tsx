@@ -6,8 +6,9 @@ import {
   getBlockchainTransactionError,
 } from "@/lib/wallet/txError";
 import { useEffect } from "react";
-import { TransactionReceipt } from "viem";
-import { useAccount } from "wagmi";
+import { PublicClient, TransactionReceipt, WalletClient } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;
@@ -18,8 +19,12 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
   handlePreviousStep,
   handleNextStep,
 }: NameRegisteredAwaitingRecordsSettingComponentProps) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nameRegistrationData, getResolverAddress } = useNameRegistration();
+
+  const publicClient = usePublicClient() as PublicClient &
+    WalletClient &
+    ClientWithEns;
 
   const setTextRecords = async (): Promise<
     `0x${string}` | TransactionErrorType | null
@@ -27,6 +32,12 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
     if (!address) {
       throw new Error(
         "Impossible to set the text records of a name without an authenticated user"
+      );
+    }
+
+    if (!chain) {
+      throw new Error(
+        "Impossible to set the text records of a name without a chain"
       );
     }
 
@@ -52,6 +63,8 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
         textRecords: nameRegistrationData.textRecords,
         resolverAddress: resolverAddress,
         addresses: nameRegistrationData.domainAddresses,
+        client: publicClient,
+        chain: chain,
       });
 
       if (

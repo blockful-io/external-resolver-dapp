@@ -4,9 +4,10 @@ import { buildENSName } from "@namehash/ens-utils";
 import { normalize } from "viem/ens";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Address, isAddress } from "viem";
-import { useAccount } from "wagmi";
+import { Address, isAddress, PublicClient } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 interface CreateSubdomainModalContentProps {
   name: string;
@@ -39,6 +40,8 @@ export const CreateSubdomainModalContent = ({
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
     CreateSubdomainModalSteps.SubdomainInput
   );
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+  const { chain } = useAccount();
 
   const isSubdomainInvalid = () => {
     try {
@@ -55,6 +58,11 @@ export const CreateSubdomainModalContent = ({
   const handleSaveAction = async () => {
     setIsloading(true);
 
+    if (!chain) {
+      toast.error("Impossible to create a subdomain if you are not connected to a chain");
+      return;
+    }
+
     try {
       const response = await createSubdomain({
         resolverAddress: currentResolverAddress,
@@ -63,6 +71,8 @@ export const CreateSubdomainModalContent = ({
         address: subdomainAddress,
         website: website,
         description: description,
+        client: publicClient,
+        chain: chain,
       });
       if (response?.ok) {
         !!onRecordsEdited && onRecordsEdited();
@@ -89,7 +99,9 @@ export const CreateSubdomainModalContent = ({
         type="text"
         value={newSubdomain}
         onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
-        suffix={`.${name}`}
+        suffix={
+          <div className="truncate whitespace-nowrap max-w-48">{`.${name}`}</div>
+        }
         error={isSubdomainInvalid()}
       />
     ),
@@ -143,15 +155,20 @@ export const CreateSubdomainModalContent = ({
       </>
     ),
     [CreateSubdomainModalSteps.Success]: (
-      <>
+      <div className="w-full flex flex-col items-center justify-center gap-4 px-10">
         <p className="text-7xl"> 🎉</p>
-        <div>
+        <div className="flex flex-col items-center justify-center">
           <p className="text-lg">
-            <span className="font-bold">Congratulations!</span>
+            <span className="text-[26px] font-bold">
+              Congrats! You&apos;re now owner of
+            </span>
           </p>
-          <p>New subdomain created!</p>
+          <p className="text-[26px] text-center font-bold text-gradient-ens">{`${newSubdomain}.${name}`}</p>
+          <p className="text-gray-400">
+            Your transaction was successfully completed.
+          </p>
         </div>
-      </>
+      </div>
     ),
   };
 
@@ -185,7 +202,7 @@ export const CreateSubdomainModalContent = ({
   };
 
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden">
+    <div className="w-[640px] border rounded-xl overflow-hidden">
       <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
         New subdomain
       </div>

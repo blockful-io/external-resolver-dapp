@@ -1,10 +1,4 @@
-import { Address } from "viem";
-import {
-  EnsResolver,
-  ensResolverAddress,
-  RegistrationBlock,
-  RegistrationStep,
-} from "./constants";
+import { RegistrationBlock, RegistrationStep } from "./constants";
 
 /* NAME REGISTRATION UI RELATED LOGIC ⬇️ */
 

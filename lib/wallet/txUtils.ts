@@ -1,14 +1,18 @@
-import { TransactionReceipt, createPublicClient, custom } from "viem";
-import { isTestnet } from "./chains";
-import { mainnet, sepolia } from "viem/chains";
+import { Chain, TransactionReceipt, createPublicClient, custom } from "viem";
 
-export const awaitBlockchainTxReceipt = async (
-  txHash: `0x${string}`
-): Promise<TransactionReceipt> => {
+interface AwaitBlockchainTxReceiptParams {
+  txHash: `0x${string}`;
+  chain: Chain;
+}
+
+export const awaitBlockchainTxReceipt = async ({
+  txHash,
+  chain,
+}: AwaitBlockchainTxReceiptParams): Promise<TransactionReceipt> => {
   let txReceipt = {} as TransactionReceipt;
 
   const publicClient = createPublicClient({
-    chain: isTestnet ? sepolia : mainnet,
+    chain: chain,
     transport: custom(window.ethereum),
   });
 

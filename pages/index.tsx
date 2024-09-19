@@ -11,6 +11,9 @@ import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 import { DomainStatus } from "@/components/02-molecules";
 import toast from "react-hot-toast";
+import { usePublicClient } from "wagmi";
+import { PublicClient } from "viem";
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 
 export default function Home() {
   const router = useRouter();
@@ -19,15 +22,21 @@ export default function Home() {
     EnsDomainStatus.Invalid
   );
 
-  const checkDomainAvailability = async (ensName: ENSName) => {
+  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
+
+  const checkDomainAvailability = async (ensName: string) => {
     try {
-      const isAvailable: boolean = await isNameAvailable(ensName);
+      const isAvailable: boolean = await isNameAvailable({
+        ensName: ensName,
+        publicClient: publicClient,
+      });
       if (isAvailable) {
         setDomainStatus(EnsDomainStatus.Available);
       } else {
         setDomainStatus(EnsDomainStatus.Registered);
       }
     } catch (error) {
+      console.error(error);
       toast.error("An error has occurred. Please try again later");
     }
   };
@@ -55,7 +64,7 @@ export default function Home() {
       return;
     }
 
-    await checkDomainAvailability(ensName);
+    await checkDomainAvailability(domainWithEth(ensName.name));
   };
 
   const clearDomainSearch = () => {
