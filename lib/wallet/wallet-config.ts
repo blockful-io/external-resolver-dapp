@@ -8,6 +8,8 @@ import { addEnsContracts } from "@ensdomains/ensjs";
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
 
+const thegraphApiKey = process.env.NEXT_PUBLIC_THEGRAPH_KEY;
+
 const mainnetWithEns = addEnsContracts(mainnet);
 const sepoliaWithEns = addEnsContracts(sepolia);
 
@@ -30,7 +32,18 @@ const connectors = connectorsForWallets(
 
 const wagmiConfig = createConfig({
   connectors,
-  chains: [sepoliaWithEns, mainnetWithEns],
+  chains: [
+    sepoliaWithEns,
+    {
+      ...mainnetWithEns,
+      subgraphs: {
+        ens: {
+          url: `https://gateway.thegraph.com/api/${thegraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`,
+        },
+      },
+    },
+  ],
+
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [sepolia.id]: http(
