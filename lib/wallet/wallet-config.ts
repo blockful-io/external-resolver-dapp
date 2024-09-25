@@ -30,6 +30,28 @@ const connectors = connectorsForWallets(
   }
 );
 
+export const walletWagmiConfig = createConfig({
+  connectors,
+  chains: [
+    sepoliaWithEns,
+    {
+      ...mainnetWithEns,
+      subgraphs: {
+        ens: {
+          url: `https://gateway.thegraph.com/api/${thegraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`,
+        },
+      },
+    },
+  ],
+  transports: {
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
+    [sepolia.id]: http(
+      `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
+    ),
+  },
+  ssr: false,
+});
+
 const wagmiConfig = createConfig({
   connectors,
   chains: [
