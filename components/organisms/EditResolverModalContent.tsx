@@ -1,4 +1,4 @@
-import { wagmiConfig } from "@/lib/wallet/wallet-config";
+import { walletWagmiConfig } from "@/lib/wallet/wallet-config";
 import { setResolver } from "@ensdomains/ensjs/wallet";
 import { Button, Input } from "@ensdomains/thorin";
 import { useState } from "react";
@@ -24,7 +24,7 @@ export const EditResolverModalContent = ({
   const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
-  const { data: walletClient } = useWalletClient({ config: wagmiConfig });
+  const { data: walletClient } = useWalletClient({ config: walletWagmiConfig });
 
   const handleSaveAction = async () => {
     if (!walletClient) {
