@@ -205,8 +205,13 @@ const getENSDomainDataThroughResolver = async ({
 }: GetENSDomainDataThroughResolverParams): Promise<ResolverQueryDomainData> => {
   const resolverAdd = await getResolver(client, { name });
 
+  if (!resolverAdd) {
+    toast.error("no Resolver address");
+    throw new Error("no Resolver address");
+  }
+
   const metadataUrl = await client.readContract({
-    address: resolverAdd!,
+    address: resolverAdd,
     abi: [parseAbiItem("function metadata() returns (string)")],
     functionName: "metadata",
   });
@@ -218,6 +223,8 @@ const getENSDomainDataThroughResolver = async ({
       name,
     }
   );
+
+  data.domain.resolver.address = resolverAdd;
 
   return data.domain;
 };
