@@ -90,8 +90,7 @@ export const createSubdomain = async ({
     const arbitrumRegisterParams = (await client.readContract({
       address: resolverAddress,
       abi: L1ResolverABI,
-      functionName: "registerParams", // Se tiver o registerParams é L2, se não é resolver normal
-      args: [toHex(name), ttl],
+      functionName: "registerParams",
     })) as [bigint, bigint, Hex];
 
     const l2Calldata = {
