@@ -40,7 +40,7 @@ export const DappHeader = () => {
                                      arbitrumSepolia.id,
                                      /*add other testnet chain.id here*/];
   const isConnectedToTestnet = () => {
-      return !!chain && testnetChainIds.includes(chain.id);
+    return !!chain && testnetChainIds.includes(chain.id);
   };
 
   useEffect(() => {
