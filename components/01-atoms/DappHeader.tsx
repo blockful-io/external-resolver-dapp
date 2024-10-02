@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { PlusCircleIcon } from "./icons/plus-circle-icon";
 import { CogIcon } from "./icons/cog-icon";
 import { HeaderLink } from "./HeaderLink";
-import { sepolia } from "viem/chains";
+import { sepolia, arbitrumSepolia } from "viem/chains";
 import { TestnetBanner } from "./TestnetBanner";
 
 export interface HeaderLinkInterface {
@@ -36,8 +36,11 @@ export const DappHeader = () => {
   const router = useRouter();
   const currentRoute = router.pathname;
 
+  const testnetChainIds: number[] = [sepolia.id,
+                                     arbitrumSepolia.id,
+                                     /*add other testnet chain.id here*/];
   const isConnectedToTestnet = () => {
-    return !!chain && chain.id === sepolia.id;
+      return !!chain && testnetChainIds.includes(chain.id);
   };
 
   useEffect(() => {
