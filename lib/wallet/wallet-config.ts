@@ -1,6 +1,6 @@
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { mainnet, sepolia } from "viem/chains";
+import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { addEnsContracts } from "@ensdomains/ensjs";
@@ -30,7 +30,7 @@ const connectors = connectorsForWallets(
   }
 );
 
-const wagmiConfig = createConfig({
+export const walletWagmiConfig = createConfig({
   connectors,
   chains: [
     sepoliaWithEns,
@@ -43,11 +43,41 @@ const wagmiConfig = createConfig({
       },
     },
   ],
+  transports: {
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
+    [sepolia.id]: http(
+      `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
+    ),
+  },
+  ssr: false,
+});
+
+const wagmiConfig = createConfig({
+  connectors,
+  chains: [
+    sepoliaWithEns,
+    {
+      ...mainnetWithEns,
+      subgraphs: {
+        ens: {
+          url: `https://gateway.thegraph.com/api/${thegraphApiKey}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`,
+        },
+      },
+    },
+    arbitrum,
+    arbitrumSepolia,
+  ],
 
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [sepolia.id]: http(
       `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
+    ),
+    [arbitrum.id]: http(
+      `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`
+    ),
+    [arbitrumSepolia.id]: http(
+      `https://arb-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
     ),
   },
   ssr: false,

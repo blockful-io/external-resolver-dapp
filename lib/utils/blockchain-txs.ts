@@ -2,6 +2,7 @@
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
+import L1ResolverABI from "../abi/arbitrum-resolver.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
   nameRegistrationSmartContracts,
@@ -37,6 +38,9 @@ import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
+import { getChain } from "../create-subdomain/service";
+import toast from "react-hot-toast";
+import { sepolia } from "viem/chains";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -467,6 +471,39 @@ export const setDomainRecords = async ({
           const errorType = getBlockchainTransactionError(err);
           return errorType;
         }
+      } else if (data?.errorName === "StorageHandledByL2") {
+        const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
+
+        const selectedChain = getChain(Number(chainId));
+
+        if (!selectedChain) {
+          toast.error("error");
+          return;
+        }
+
+        const clientWithWallet = createWalletClient({
+          chain: selectedChain,
+          transport: custom(window.ethereum),
+        }).extend(publicActions);
+
+        await clientWithWallet.addChain({ chain: selectedChain });
+
+        try {
+          const { request } = await clientWithWallet.simulateContract({
+            functionName: "multicall",
+            abi: L1ResolverABI,
+            args: [calls],
+            account: authenticatedAddress,
+            address: contractAddress,
+          });
+          await clientWithWallet.writeContract(request);
+        } catch {
+          await clientWithWallet.switchChain({ id: sepolia.id });
+        }
+
+        await clientWithWallet.switchChain({ id: sepolia.id });
+
+        return 200;
       } else {
         console.error("writing failed: ", { err });
         const errorType = getBlockchainTransactionError(err);
@@ -630,7 +667,6 @@ export const isNameAvailable = async ({
   publicClient,
 }: IsNameAvailableParams): Promise<boolean> => {
   const result = await getAvailable(publicClient, { name: ensName });
-
 
   return result;
 };
