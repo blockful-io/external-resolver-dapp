@@ -85,11 +85,13 @@ export const createSubdomain = async ({
 
   let calldata;
   try {
+    //L2 Resolver
     // if the function registerParams exists, it's an l2 resolver, no error will be thrown
     const ttl = 31556952000n;
-    const arbitrumRegisterParams = (await client.readContract({
+    const [value] = (await client.readContract({
       address: resolverAddress,
       abi: L1ResolverABI,
+      args: [dnsName, ttl],
       functionName: "registerParams",
     })) as [bigint, bigint, Hex];
 
@@ -110,10 +112,11 @@ export const createSubdomain = async ({
 
       address: resolverAddress,
       account: signerAddress,
-      value: arbitrumRegisterParams[0], // price
+      value, // price
     };
     calldata = l2Calldata;
   } catch (error) {
+    // Offchain Resolver
     const ttl = 300;
     const offChainCalldata = {
       functionName: "register",
@@ -203,8 +206,8 @@ export function getChain(chainId: number) {
   ].find((chain) => chain.id === chainId);
 }
 
-// gather the first part of the domain (e.g. floripa.blockful.eth -> floripa)
+// gather the first part of the domain (e.g. floripa.blockful.eth -> floripa, floripa.normal.blockful.eth -> floripa.normal)
 const extractLabelFromName = (name: string): string => {
-  const [, label] = /^(\w+)/.exec(name) || [];
+  const [, label] = /^(.+?)\.\w+\.\w+$/.exec(name) || [];
   return label;
 };
