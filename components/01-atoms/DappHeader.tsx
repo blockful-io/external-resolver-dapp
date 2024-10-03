@@ -35,9 +35,7 @@ export const DappHeader = () => {
   const router = useRouter();
   const currentRoute = router.pathname;
 
-  const isConnectedToTestnet = () => {
-    return !!chain && chain.testnet === true;
-  };
+  const isConnectedToTestnet = () => chain?.testnet;
 
   useEffect(() => {
     setIsClient(true);
