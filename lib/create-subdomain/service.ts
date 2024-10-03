@@ -125,7 +125,7 @@ export const createSubdomain = async ({
       account: signerAddress,
       address: resolverAddress,
     };
-    console.log("error", error);
+    console.error(error);
 
     calldata = offChainCalldata;
   }
