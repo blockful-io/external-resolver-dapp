@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import { PlusCircleIcon } from "./icons/plus-circle-icon";
 import { CogIcon } from "./icons/cog-icon";
 import { HeaderLink } from "./HeaderLink";
-import { sepolia } from "viem/chains";
 import { TestnetBanner } from "./TestnetBanner";
 
 export interface HeaderLinkInterface {
@@ -36,9 +35,7 @@ export const DappHeader = () => {
   const router = useRouter();
   const currentRoute = router.pathname;
 
-  const isConnectedToTestnet = () => {
-    return !!chain && chain.id === sepolia.id;
-  };
+  const isConnectedToTestnet = () => chain?.testnet;
 
   useEffect(() => {
     setIsClient(true);
