@@ -74,8 +74,8 @@ export default function App({ Component, pageProps }: AppProps) {
               >
                 <DappHeader />
                 <main>
+                  <Toaster position="bottom-right" />
                   <div className="relative z-10 h-full flex-grow">
-                    <Toaster position="bottom-right" />
                     <ChainChecker />
                     <Component {...pageProps} />
                   </div>
