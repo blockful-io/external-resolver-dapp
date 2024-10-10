@@ -59,7 +59,9 @@ export const CreateSubdomainModalContent = ({
     setIsloading(true);
 
     if (!chain) {
-      toast.error("Impossible to create a subdomain if you are not connected to a chain");
+      toast.error(
+        "Impossible to create a subdomain if you are not connected to a chain"
+      );
       return;
     }
 
@@ -79,8 +81,8 @@ export const CreateSubdomainModalContent = ({
         toast.success("Subdomain created successfully 🙂");
         setCurrentStep(CreateSubdomainModalSteps.Success);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      toast.error(error?.cause?.reason ?? "Error creating subdomain");
     }
 
     setIsloading(false);
