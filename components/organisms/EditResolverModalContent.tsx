@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Address, isAddress, PublicClient } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { getSupportedInterfaces } from "@ensdomains/ensjs/public";
+import { getUnsupportedResolverInterfaces } from "@/lib/utils/resolverHelpers";
 
 interface EditResolverModalContentProps {
   name: string;
@@ -14,38 +14,6 @@ interface EditResolverModalContentProps {
   onCloseModal: () => void;
   onRecordsEdited?: () => void;
 }
-
-const checkResolverCompatibility = async (
-  publicClient: PublicClient & ClientWithEns,
-  resolverAddress: string
-): Promise<string[]> => {
-  if (!isAddress(resolverAddress)) {
-    return [];
-  }
-
-  const requiredInterfaces: { id: Address; name: string }[] = [
-    { id: "0x01ffc9a7", name: "ERC165" },
-    { id: "0x3b3b57de", name: "addr(bytes32)" },
-    { id: "0xf1cb7e06", name: "addr(bytes32,uint256)" },
-    { id: "0x59d1d43c", name: "text(bytes32,string)" },
-    { id: "0xbc1c58d1", name: "contenthash(bytes32)" },
-    { id: "0x2203ab56", name: "ABI(bytes32,uint256)" },
-    { id: "0xc8690233", name: "pubkey(bytes32)" },
-  ];
-
-  const supportedInterfacesResult = await getSupportedInterfaces(publicClient, {
-    address: resolverAddress,
-    interfaces: requiredInterfaces.map(
-      (resolverInterface) => resolverInterface.id
-    ),
-  });
-
-  const missingInterfaces = requiredInterfaces
-    .filter((_, index) => !supportedInterfacesResult[index])
-    .map((resolverInterface) => resolverInterface.name);
-
-  return missingInterfaces;
-};
 
 export const EditResolverModalContent = ({
   currentResolverAddress,
@@ -66,7 +34,7 @@ export const EditResolverModalContent = ({
 
   useEffect(() => {
     (async () => {
-      const invalidInterfaces = await checkResolverCompatibility(
+      const invalidInterfaces = await getUnsupportedResolverInterfaces(
         publicClient,
         resolverAddress
       );
