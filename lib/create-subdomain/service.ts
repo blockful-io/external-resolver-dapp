@@ -22,6 +22,9 @@ import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
+import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
+import { getNameRegistrationSecret } from "../name-registration/localStorage";
+import { DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES } from "../name-registration/constants";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
@@ -91,7 +94,7 @@ export const createSubdomain = async ({
         address: resolverAddress,
         abi: L1ResolverABI,
         functionName: "registerParams",
-        args: [toHex(name), 31556952000n],
+        args: [toHex(name), SECONDS_PER_YEAR.seconds],
       })) as [bigint, bigint, Hex];
     value = _value;
   } catch {
@@ -104,12 +107,12 @@ export const createSubdomain = async ({
     args: [
       dnsName, // name
       signerAddress, // owner
-      31556952000n,
-      `0x${"a".repeat(64)}` as Hex, // secret
+      SECONDS_PER_YEAR.seconds,
+      getNameRegistrationSecret(), // secret
       resolverAddress,
       calls, // records calldata
       false, // reverseRecord
-      0, // fuses
+      DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES, // fuses
       `0x${"a".repeat(64)}` as Hex, // extraData
     ],
     address: resolverAddress,
