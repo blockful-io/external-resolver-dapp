@@ -163,6 +163,13 @@ export const createSubdomain = async ({
         await clientWithWallet.writeContract(request);
       } catch (error: any) {
         toast.error(error?.cause?.reason ?? "Error creating subdomain");
+        /**
+        *  Since our app does not support Arbitrum Sepolia in a lot of ways
+        *  we want the user to be at this network for the least time possible,
+        *  meaning that if the subdomains request above fails, we want him 
+        *  to be back in a safe place before he starts to use the application
+        *  functionalities once again, to guarantee a nice user experience.
+        */
         await clientWithWallet.switchChain({ id: chains.sepolia.id });
         return { ok: false };
       }
