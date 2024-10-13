@@ -75,7 +75,7 @@ export const EditResolverModalContent = ({
   };
 
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden">
+    <div className="w-[580px] border rounded-xl overflow-hidden">
       <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
         Edit Resolver
       </div>
@@ -105,13 +105,13 @@ export const EditResolverModalContent = ({
         ) : (
           <div className="flex flex-col gap-4">
             {unsupportedInterfaces.length > 0 && (
-              <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-4 flex items-start">
-                <div className="flex-shrink-0 w-6 h-6 mr-3 mt-1.5">
+              <div className="bg-amber-100 border border-amber-400 rounded-xl p-4 mb-4 flex items-center">
+                <div className="flex-shrink-0 w-10 h-10 ml-2 mr-5">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="w-full h-full text-yellow-600"
+                    className="w-full h-full text-yellow-500"
                   >
                     <path
                       fillRule="evenodd"
@@ -121,12 +121,13 @@ export const EditResolverModalContent = ({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-yellow-600 text-sm font-medium">
-                    The following interfaces are not supported by the resolver:
-                  </p>
-                  <p className="text-yellow-800 text-sm mt-1">
-                    {unsupportedInterfaces.join(", ")}
-                  </p>
+                  <ul className="text-gray-800 text-base font-medium">
+                    {unsupportedInterfaces.map((interfaceItem, index) => (
+                      <li key={index}>
+                        - Address does not support {interfaceItem} interface
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             )}
