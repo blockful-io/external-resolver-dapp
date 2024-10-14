@@ -8,14 +8,15 @@ import {
   fromBytes,
   Hash,
   Hex,
+  keccak256,
   namehash,
   publicActions,
   PublicClient,
+  stringToHex,
   toHex,
 } from "viem";
 import { getRevertErrorData, handleDBStorage } from "../utils/blockchain-txs";
 import { DomainData, MessageData } from "../utils/types";
-import DomainResolverABI from "../abi/resolver.json";
 import L1ResolverABI from "../abi/arbitrum-resolver.json";
 import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
@@ -53,7 +54,7 @@ export const createSubdomain = async ({
   if (website) {
     const websiteCallData = encodeFunctionData({
       functionName: "setText",
-      abi: DomainResolverABI,
+      abi: L1ResolverABI,
       args: [namehash(name), "url", website],
     });
 
@@ -63,7 +64,7 @@ export const createSubdomain = async ({
   if (description) {
     const descriptionCallData = encodeFunctionData({
       functionName: "setText",
-      abi: DomainResolverABI,
+      abi: L1ResolverABI,
       args: [namehash(name), "description", description],
     });
 
@@ -77,7 +78,7 @@ export const createSubdomain = async ({
 
     const addressCallData = encodeFunctionData({
       functionName: "setAddr",
-      abi: DomainResolverABI,
+      abi: L1ResolverABI,
       args: [namehash(name), 60, addressEncoded],
     });
 
@@ -88,6 +89,8 @@ export const createSubdomain = async ({
 
   let value = 0n;
 
+  let calldataResolver = resolverAddress;
+
   try {
     const [_value /* commitTime */ /* extraData */, ,] =
       (await client.readContract({
@@ -97,10 +100,18 @@ export const createSubdomain = async ({
         args: [toHex(name), SECONDS_PER_YEAR.seconds],
       })) as [bigint, bigint, Hex];
     value = _value;
+
+    const l2ResolverAddress = (await client.readContract({
+      address: resolverAddress,
+      abi: L1ResolverABI,
+      functionName: "targets",
+      args: [keccak256(stringToHex("resolver"))],
+    })) as Address;
+
+    calldataResolver = l2ResolverAddress; // l2ResolverAddress
   } catch {
     // interface not implemented by the resolver
   }
-
   const calldata = {
     functionName: "register",
     abi: L1ResolverABI,
@@ -109,13 +120,13 @@ export const createSubdomain = async ({
       signerAddress, // owner
       SECONDS_PER_YEAR.seconds,
       getNameRegistrationSecret(), // secret
-      resolverAddress,
+      calldataResolver, // L2
       calls, // records calldata
       false, // reverseRecord
       DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES, // fuses
       `0x${"a".repeat(64)}` as Hex, // extraData
     ],
-    address: resolverAddress,
+    address: resolverAddress, // L1
     account: signerAddress,
     value: value,
   };
@@ -128,7 +139,7 @@ export const createSubdomain = async ({
       const [domain, url, message] = data.args as [
         DomainData,
         string,
-        MessageData
+        MessageData,
       ];
 
       const response = await handleDBStorage({
@@ -167,12 +178,12 @@ export const createSubdomain = async ({
       } catch (error: any) {
         toast.error(error?.cause?.reason ?? "Error creating subdomain");
         /**
-        *  Since our app does not support Arbitrum Sepolia in a lot of ways
-        *  we want the user to be at this network for the least time possible,
-        *  meaning that if the subdomains request above fails, we want him 
-        *  to be back in a safe place before he starts to use the application
-        *  functionalities once again, to guarantee a nice user experience.
-        */
+         *  Since our app does not support Arbitrum Sepolia in a lot of ways
+         *  we want the user to be at this network for the least time possible,
+         *  meaning that if the subdomains request above fails, we want him
+         *  to be back in a safe place before he starts to use the application
+         *  functionalities once again, to guarantee a nice user experience.
+         */
         await clientWithWallet.switchChain({ id: chains.sepolia.id });
         return { ok: false };
       }
