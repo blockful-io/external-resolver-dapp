@@ -12,6 +12,7 @@ import {
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize } from "viem/ens";
+import DomainResolverABI from "../abi/resolver.json";
 import {
   getCoinNameByType,
   getSupportedCoins,
@@ -29,6 +30,7 @@ import { metadataDomainQuery } from "./queries";
 import {
   Address,
   isAddress,
+  namehash,
   parseAbiItem,
   PublicClient,
   WalletClient,
@@ -60,6 +62,7 @@ export const getENSDomainData = async ({
       name: domain,
       client: client,
     });
+
     const domainData = formatResolverDomainData(data);
     return domainData;
   } catch (error) {
@@ -217,12 +220,22 @@ const getENSDomainDataThroughResolver = async ({
   });
 
   const graphQlClient = new GraphQLClient(metadataUrl);
+
   const data = await graphQlClient.request<ResolverQueryDomainResponse>(
     metadataDomainQuery,
     {
       name,
     }
   );
+
+  const ABI = await client.readContract({
+    address: resolverAdd,
+    abi: DomainResolverABI,
+    functionName: "ABI",
+    args: [namehash(name), 0n],
+  });
+
+  console.log("ABI", ABI);
 
   data.domain.resolver.address = resolverAdd;
 
