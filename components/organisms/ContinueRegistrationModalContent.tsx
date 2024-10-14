@@ -7,7 +7,6 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import { BasicInfoKey, SocialAccountsKeys } from "../02-molecules";
 import { endNameRegistrationPreviouslyOpen } from "@/lib/name-registration/localStorage";
 import { useAccount } from "wagmi";
-import { Dispatch, SetStateAction } from "react";
 import { Button, Modal } from "@ensdomains/thorin";
 
 export const ContinueRegistrationModal = ({
@@ -68,7 +67,7 @@ export const ContinueRegistrationModal = ({
       return;
     }
     setCommitSubmitTimestamp(
-      new Date(localNameRegistrationData.commitTimestamp)
+      new Date(localNameRegistrationData.commitTimestamp),
     );
 
     if (localNameRegistrationData.textRecords === undefined) {
@@ -80,8 +79,8 @@ export const ContinueRegistrationModal = ({
       // Checking if some of the basic info is already saved in the text records
       !Object.values(BasicInfoKey).some((key) =>
         Object.keys(
-          localNameRegistrationData.textRecords as Record<string, string>
-        ).includes(key)
+          localNameRegistrationData.textRecords as Record<string, string>,
+        ).includes(key),
       )
     ) {
       setCurrentRegistrationStep(RegistrationStep.SetTextRecordsBasicInfo);
@@ -91,8 +90,8 @@ export const ContinueRegistrationModal = ({
       // Checking if some of the social accounts is already saved in the text records
       !Object.values(SocialAccountsKeys).some((key) =>
         Object.keys(
-          localNameRegistrationData.textRecords as Record<string, string>
-        ).includes(key)
+          localNameRegistrationData.textRecords as Record<string, string>,
+        ).includes(key),
       )
     ) {
       setCurrentRegistrationStep(RegistrationStep.SetTextRecordsSocialAccounts);
@@ -111,7 +110,7 @@ export const ContinueRegistrationModal = ({
 
     const remainingTimer = Math.round(
       ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME / 1000 -
-        Math.round((currentDate.getTime() - commitTimestamp.getTime()) / 1000)
+        Math.round((currentDate.getTime() - commitTimestamp.getTime()) / 1000),
     );
 
     if (remainingTimer > 0) {
@@ -133,18 +132,18 @@ export const ContinueRegistrationModal = ({
 
   return (
     <Modal open={open} onDismiss={() => {}}>
-      <div className="w-[480px] border rounded-xl overflow-hidden">
+      <div className="w-[480px] overflow-hidden rounded-xl border">
         <div className="border-b border-gray-200">
-          <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+          <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
             <span>
-              You have a registration in progress for the name <b>{name}.eth</b>, do
-              you want to
+              You have a registration in progress for the name <b>{name}.eth</b>
+              , do you want to
               <span className="text-sky-500"> continue </span>
               or <span className="text-gray-500"> clear </span> the progress and
               start a new registration?
             </span>
           </div>
-          <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+          <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
             <Button
               onClick={() => {
                 continueRegistration();

@@ -10,19 +10,19 @@ export const SetTextRecordsComponent = ({
   handleNextStep,
 }: SetTextRecordsComponentProps) => {
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} disabled={true} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         <h3 className="text-7xl">⚙️</h3>
         <h3 className="text-start text-[34px] font-medium">
           Let&apos;s set your domain records
         </h3>
-        <p className="text-gray-500 text-left text-base">
+        <p className="text-left text-base text-gray-500">
           Adjust your information and personalize your profile while we secure
           your domain.
         </p>
       </div>
-      <div className="w-full flex">
+      <div className="flex w-full">
         <NextButton onClick={handleNextStep} />
       </div>
     </div>

@@ -15,8 +15,8 @@ export const HeaderLink = ({
   return (
     <Link
       className={cc([
-        "flex items-center h-full px-3 gap-2 font-medium hover:bg-gray-50 text-black transition-colors duration-300",
-        { "border-blue-500 border-b-2 text-blue-500": isActive },
+        "flex h-full items-center gap-2 px-3 font-medium text-black transition-colors duration-300 hover:bg-gray-50",
+        { "border-b-2 border-blue-500 text-blue-500": isActive },
       ])}
       href={href}
     >

@@ -37,7 +37,7 @@ export const RequestToRegisterComponent = ({
   > => {
     if (!address) {
       throw new Error(
-        "Impossible to register a name without an authenticated user"
+        "Impossible to register a name without an authenticated user",
       );
     }
 
@@ -71,15 +71,15 @@ export const RequestToRegisterComponent = ({
   };
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} disabled={true} />
 
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         <h3 className="text-7xl">📝</h3>
         <h3 className="text-start text-[34px] font-medium">
           Start name registration
         </h3>
-        <p className="text-gray-500 text-left text-base">
+        <p className="text-left text-base text-gray-500">
           First, a transaction is performed so that no one else can view the
           name you&apos;re trying to register.
         </p>

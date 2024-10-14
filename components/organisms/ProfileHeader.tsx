@@ -24,11 +24,11 @@ export const ProfileHeader = () => {
   }, [tab]);
 
   return (
-    <div className="w-full border-b border-gray-200 px-[60px] flex items-start">
-      <div className="w-full max-w-[1216px] flex mx-auto justify-between">
+    <div className="flex w-full items-start border-b border-gray-200 px-[60px]">
+      <div className="mx-auto flex w-full max-w-[1216px] justify-between">
         <Link
           href="/domains"
-          className="flex items-center p-4 justify-center flex-shrink text-gray-400 hover:text-black duration-300 transition-colors gap-2"
+          className="flex flex-shrink items-center justify-center gap-2 p-4 text-gray-400 transition-colors duration-300 hover:text-black"
         >
           <LeftChevronSVG /> <p className="text-black">Back</p>
         </Link>
@@ -37,9 +37,9 @@ export const ProfileHeader = () => {
           <button
             className={`h-full p-4 ${
               tab === "profile"
-                ? "text-blue-500 border-b border-blue-500"
+                ? "border-b border-blue-500 text-blue-500"
                 : "text-gray-400"
-            } hover:bg-gray-100 transition-colors duration-300`}
+            } transition-colors duration-300 hover:bg-gray-100`}
             onClick={() => handleTabChange("profile")}
           >
             Profile
@@ -49,9 +49,9 @@ export const ProfileHeader = () => {
           <button
             className={`h-full p-4 ${
               tab === "subdomains"
-                ? "text-blue-500 border-b border-blue-500"
+                ? "border-b border-blue-500 text-blue-500"
                 : "text-gray-400"
-            } hover:bg-gray-100 transition-colors duration-300`}
+            } transition-colors duration-300 hover:bg-gray-100`}
             onClick={() => handleTabChange("subdomains")}
           >
             Subdomains

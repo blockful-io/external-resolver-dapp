@@ -48,21 +48,21 @@ export const UserDomainCard = ({
   const showEditButton: boolean = authedUserName === owner || address === owner;
 
   return (
-    <div className="w-[376px] flex flex-col rounded-md overflow-hidden border border-gray-200 ">
+    <div className="flex w-[376px] flex-col overflow-hidden rounded-md border border-gray-200">
       <div className="h-[120px] w-full bg-gradient-ens" />
 
-      <div className="w-full px-6 pb-6 flex flex-col gap-5">
-        <div className="h-[56px] items-end w-full flex justify-between">
+      <div className="flex w-full flex-col gap-5 px-6 pb-6">
+        <div className="flex h-[56px] w-full items-end justify-between">
           {avatar ? (
             <CustomImage
               alt="avatar image"
               width={100}
               height={100}
               src={avatar}
-              className="w-[100px] h-[100px] border-4 border-white rounded-[10px]"
+              className="h-[100px] w-[100px] rounded-[10px] border-4 border-white"
             />
           ) : (
-            <div className="w-[100px] h-[100px] border-4 bg-gradient-ens border-white rounded-[10px] overflow-hidden">
+            <div className="h-[100px] w-[100px] overflow-hidden rounded-[10px] border-4 border-white bg-gradient-ens">
               <Avatar
                 size={100}
                 square
@@ -91,7 +91,7 @@ export const UserDomainCard = ({
         <div className="flex flex-col">
           <Skeleton>
             <div className="flex items-center gap-2">
-              <h3 className="text-[26px] truncate">{name}</h3>
+              <h3 className="truncate text-[26px]">{name}</h3>
             </div>
             {url && (
               <a href={url} target="_blank" className="text-base text-blue-500">
@@ -118,10 +118,10 @@ export const UserDomainCard = ({
             <Link
               target="_blank"
               href={`mailto:${email}`}
-              className="p-2 flex gap-2 group"
+              className="group flex gap-2 p-2"
             >
-              <EmailIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-              <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+              <EmailIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
+              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
                 {email}
               </h3>
             </Link>
@@ -131,10 +131,10 @@ export const UserDomainCard = ({
             <Link
               target="_blank"
               href={`https://github.com/${github}`}
-              className="p-2 flex gap-2 group"
+              className="group flex gap-2 p-2"
             >
-              <GithubIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-              <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+              <GithubIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
+              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
                 {github}
               </h3>
             </Link>
@@ -144,10 +144,10 @@ export const UserDomainCard = ({
             <Link
               target="_blank"
               href={`https://x.com/${twitter}`}
-              className="p-2 flex gap-2 group"
+              className="group flex gap-2 p-2"
             >
-              <TwitterIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-              <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+              <TwitterIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
+              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
                 {twitter}
               </h3>
             </Link>
@@ -157,10 +157,10 @@ export const UserDomainCard = ({
             <Link
               target="_blank"
               href={`https://www.linkedin.com/in/${linkedIn}`}
-              className="p-2 flex gap-2 group"
+              className="group flex gap-2 p-2"
             >
-              <LinkedInIcon className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors duration-200" />
-              <h3 className="text-gray-400 group-hover:text-black transition-colors duration-300">
+              <LinkedInIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
+              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
                 {linkedIn}
               </h3>
             </Link>

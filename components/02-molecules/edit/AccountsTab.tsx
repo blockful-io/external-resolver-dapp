@@ -7,7 +7,7 @@ export const AccountsTab: React.FC = () => {
   const { accountsFields, updateField } = useFields();
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="flex w-full flex-col">
       <div className="flex flex-col gap-4">
         {accountsFields.map((field, index) => (
           <Input

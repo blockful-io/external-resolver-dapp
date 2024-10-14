@@ -35,7 +35,7 @@ export const UserDropdown = () => {
         setAvatarUrl(ensAvatar);
       } else {
         setAvatarUrl(
-          "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
+          "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF",
         );
       }
     }
@@ -65,9 +65,9 @@ export const UserDropdown = () => {
       ]}
       label={
         <SkeletonGroup loading={isLoading}>
-          <div className="flex whitespace-nowrap items-center justify-center gap-2.5 rounded-full w-full">
+          <div className="flex w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full">
             <Skeleton>
-              <div className="h-6 w-6 bg-gradient-ens rounded-full overflow-hidden">
+              <div className="h-6 w-6 overflow-hidden rounded-full bg-gradient-ens">
                 <img src={avatarUrl} />
               </div>
             </Skeleton>

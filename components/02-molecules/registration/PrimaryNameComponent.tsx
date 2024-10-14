@@ -35,17 +35,17 @@ export const PrimaryNameComponent = ({
   };
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} />
 
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-7 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-7">
         <h3 className="text-start text-[34px] font-medium">
           Do you want to use this domain as your primary name?
         </h3>
 
         <div className="flex gap-3">
           <div
-            className="cursor-pointer border border-gray-200 py-3 px-5 rounded-full"
+            className="cursor-pointer rounded-full border border-gray-200 px-5 py-3"
             onClick={() => handleDivClick(radioButtonRefYes)}
           >
             <RadioButton
@@ -60,7 +60,7 @@ export const PrimaryNameComponent = ({
             />
           </div>
           <div
-            className="cursor-pointer border border-gray-200 py-3 px-5 rounded-full"
+            className="cursor-pointer rounded-full border border-gray-200 px-5 py-3"
             onClick={() => handleDivClick(radioButtonRefNo)}
           >
             <RadioButton
@@ -76,7 +76,7 @@ export const PrimaryNameComponent = ({
           </div>
         </div>
       </div>
-      <div className="w-full flex">
+      <div className="flex w-full">
         <NextButton
           disabled={asPrimaryName === null}
           onClick={() => {

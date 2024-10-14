@@ -75,13 +75,13 @@ export const SetTextRecordsBasicInfoComponent = ({
         ...acc,
         [key]: nameRegistrationData?.textRecords[key] || "",
       }),
-      {}
+      {},
     );
     setBasicInfo({ ...basicInfo, ...basicInfoTextRecords });
   }, []);
 
   const saveTextRecordsInLocalStorage = (
-    textRecords: Record<string, string>
+    textRecords: Record<string, string>,
   ) => {
     if (address && nameRegistrationData.name) {
       setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
@@ -91,22 +91,22 @@ export const SetTextRecordsBasicInfoComponent = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-11 justify-start items-start">
+    <div className="flex w-full flex-col items-start justify-start gap-11">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         <div>
-          <p className="text-sm text-[#9b9ba7]font-bold text-start">
+          <p className="text-[#9b9ba7]font-bold text-start text-sm">
             Profile settings
           </p>
-          <h1 className="text-2xl text-[#1E2122] font-bold">Basic info</h1>
+          <h1 className="text-2xl font-bold text-[#1E2122]">Basic info</h1>
         </div>
-        <form className="flex flex-col space-y-[22px] mb-[10px] w-full">
+        <form className="mb-[10px] flex w-full flex-col space-y-[22px]">
           {Object.values(BasicInfoKey).map((key) => (
             <div
               key={key}
-              className="flex flex-col items-start space-y-2 w-full"
+              className="flex w-full flex-col items-start space-y-2"
             >
-              <label htmlFor={key} className="text-[#1E2122] text-sm">
+              <label htmlFor={key} className="text-sm text-[#1E2122]">
                 {capitalizeString(key)}
               </label>
               <input
@@ -117,7 +117,7 @@ export const SetTextRecordsBasicInfoComponent = ({
                   handleInputChange(key as BasicInfoKey, e.target.value)
                 }
                 className={cc([
-                  "w-full p-3 border-gray-300 border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2",
+                  "min-h-[37px] w-full rounded-lg border-2 border-gray-300 p-3 focus:border-2 focus:border-blue-600",
                   {
                     "border-red-400": hasErrorInKeyValues[key as BasicInfoKey],
                   },
@@ -125,7 +125,7 @@ export const SetTextRecordsBasicInfoComponent = ({
                 aria-invalid={hasErrorInKeyValues[key as BasicInfoKey]}
               />
               {hasErrorInKeyValues[key as BasicInfoKey] && (
-                <p className="text-red-500 text-sm" aria-live="assertive">
+                <p className="text-sm text-red-500" aria-live="assertive">
                   Invalid {key}
                 </p>
               )}
@@ -133,7 +133,7 @@ export const SetTextRecordsBasicInfoComponent = ({
           ))}
         </form>
       </div>
-      <div className="w-[500px] flex">
+      <div className="flex w-[500px]">
         <NextButton
           disabled={hasErrorInKeyValues[BasicInfoKey.WEBSITE]}
           onClick={handleNextStepButton}

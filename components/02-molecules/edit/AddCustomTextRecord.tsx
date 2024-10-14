@@ -17,7 +17,7 @@ const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
   const { addField } = useFields();
 
   const handleAddField = () => {
-    addField(tab, fieldName)
+    addField(tab, fieldName);
     setButtonType(ButtonType.ADD_RECORD);
   };
 
@@ -32,7 +32,7 @@ const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
   }
 
   return (
-    <div className="w-full flex gap-4 items-center justify-center">
+    <div className="flex w-full items-center justify-center gap-4">
       <Input
         hideLabel
         label=""
@@ -46,13 +46,13 @@ const AddCustomTextRecord = ({ tab }: AddCustomTextRecordProps) => {
           }}
           className="p-4"
         >
-          <CrossSVG className="w-4 h-4 text-gray-400" />
+          <CrossSVG className="h-4 w-4 text-gray-400" />
         </button>
         <button
           onClick={handleAddField}
-          className="p-4 border-l border-gray-200"
+          className="border-l border-gray-200 p-4"
         >
-          <CheckSVG className="w-4 h-4 text-gray-400" />
+          <CheckSVG className="h-4 w-4 text-gray-400" />
         </button>
       </div>
     </div>

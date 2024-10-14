@@ -16,17 +16,17 @@ export const Table = ({
   clickable = true,
 }: TableProps) => {
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-gray-200">
       <table className="w-full bg-white">
         <thead className="bg-gray-50">
           <tr>
-            <th className="py-4 px-4 border-b text-left font-normal">
-              <div className="flex gap-2 items-center">
+            <th className="border-b px-4 py-4 text-left font-normal">
+              <div className="flex items-center gap-2">
                 {title} <ListUpSVG className="text-blue-500" />
               </div>
             </th>
             {withRoleColumn && (
-              <th className="py-4 px-4 border-b text-left font-normal">
+              <th className="border-b px-4 py-4 text-left font-normal">
                 Your role
               </th>
             )}

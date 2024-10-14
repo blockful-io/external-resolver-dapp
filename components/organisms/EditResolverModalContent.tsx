@@ -19,7 +19,7 @@ export const EditResolverModalContent = ({
   name,
 }: EditResolverModalContentProps) => {
   const [resolverAddress, setResolverAddress] = useState<string>(
-    currentResolverAddress
+    currentResolverAddress,
   );
   const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
@@ -59,11 +59,11 @@ export const EditResolverModalContent = ({
   };
 
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+    <div className="w-[480px] overflow-hidden rounded-xl border">
+      <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         Edit Resolver
       </div>
-      <div className="bg-white text-black border-b border-gray-200 p-6 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 border-b border-gray-200 bg-white p-6 text-black">
         {transactionSuccess ? (
           <>
             <p className="text-7xl"> 🎉</p>
@@ -77,7 +77,7 @@ export const EditResolverModalContent = ({
             <p className="text-sm">
               Check your transaction:{" "}
               <a
-                className="text-gray-500 underline hover:text-gray-700 transition-colors duration-200"
+                className="text-gray-500 underline transition-colors duration-200 hover:text-gray-700"
                 target="_blank"
                 // TODO: Adjust links once mainnet is supported
                 href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
@@ -105,7 +105,7 @@ export const EditResolverModalContent = ({
         {isLoading && <h1>Check your wallet</h1>}
       </div>
 
-      <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+      <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
         {transactionSuccess ? (
           <>
             <div>

@@ -27,8 +27,8 @@ export const WaitingRegistrationLocktimeComponent = ({
         Math.round(
           (date.getTime() -
             nameRegistrationData.commitSubmitTimestamp.getTime()) /
-            1000
-        )
+            1000,
+        ),
     );
 
     if (remainingTimer < 0) {
@@ -59,9 +59,9 @@ export const WaitingRegistrationLocktimeComponent = ({
   }, [timer]);
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         {timer !== null && (
           <CountdownTimer
             onTimeEnd={() => setTimerDone(true)}
@@ -74,13 +74,13 @@ export const WaitingRegistrationLocktimeComponent = ({
             ? "Your domain is now secured!"
             : "We are securing your domain"}
         </h3>
-        <p className="text-gray-500 text-left text-base">
+        <p className="text-left text-base text-gray-500">
           {timer === 0
             ? "Your domain is prepared to be registered now!"
             : `Please wait ${timeLeft} seconds to confirm the registration commitment.`}
         </p>
       </div>
-      <div className="w-[500px] flex">
+      <div className="flex w-[500px]">
         <NextButton disabled={!timerDone} onClick={handleNextStep} />
       </div>
     </div>

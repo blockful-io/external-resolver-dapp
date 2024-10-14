@@ -38,12 +38,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   }, [timeLeft, duration]);
 
   return (
-    <div className="relative w-[180px] h-[180px]">
-      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+    <div className="relative h-[180px] w-[180px]">
+      <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
         <circle
           className={`${
             timerDone ? "text-green-600" : "text-gray-300"
-          } transition-color duration-500 delay-1000`}
+          } transition-color delay-1000 duration-500`}
           strokeWidth="10"
           stroke="currentColor"
           fill="transparent"
@@ -63,14 +63,14 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         />
       </svg>
       <div
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-200 delay-1000 ${
+        className={`absolute inset-0 flex items-center justify-center transition-all delay-1000 duration-200 ${
           timerDone ? "opacity-0" : "opacity-100"
         }`}
       >
         <p className="text-7xl">🔒</p>
       </div>
       <div
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-200 delay-1000 ${
+        className={`absolute inset-0 flex items-center justify-center transition-all delay-1000 duration-200 ${
           timerDone ? "opacity-100" : "opacity-0"
         }`}
       >

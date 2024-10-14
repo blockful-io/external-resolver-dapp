@@ -29,7 +29,7 @@ export const SetTextRecordsSocialAccountsComponent = ({
         ...acc,
         [key]: nameRegistrationData?.textRecords[key],
       }),
-      {}
+      {},
     );
     setSocialAccounts({ ...socialAccounts, ...socialAccountsTextRecords });
   }, []);
@@ -42,27 +42,27 @@ export const SetTextRecordsSocialAccountsComponent = ({
     }
   };
   return (
-    <div className="w-full flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex w-full flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         <div>
-          <p className="text-sm text-[#9b9ba7] font-bold text-start">
+          <p className="text-start text-sm font-bold text-[#9b9ba7]">
             Profile settings
           </p>
-          <h1 className="text-[30px] text-[#1E2122] font-bold">
+          <h1 className="text-[30px] font-bold text-[#1E2122]">
             Social accounts
           </h1>
         </div>
-        <form className="flex flex-col space-y-[22px] mb-[10px] w-full">
+        <form className="mb-[10px] flex w-full flex-col space-y-[22px]">
           {Object.values(SocialAccountsKeys).map((socialAccount) => (
             <div
               key={socialAccount}
-              className="flex flex-col items-start space-y-2 w-full"
+              className="flex w-full flex-col items-start space-y-2"
             >
-              <div className="flex w-full items-center text-gray-400 justify-between">
+              <div className="flex w-full items-center justify-between text-gray-400">
                 <label
                   htmlFor={socialAccount}
-                  className="text-[#1E2122] text-sm"
+                  className="text-sm text-[#1E2122]"
                 >
                   {socialAccount}
                 </label>
@@ -93,7 +93,7 @@ export const SetTextRecordsSocialAccountsComponent = ({
                     [socialAccount]: e.target.value,
                   })
                 }
-                className="w-full p-3 border-[#e8e8e8] border-2 rounded-lg min-h-[37px] focus:border-blue-600 focus:border-2"
+                className="min-h-[37px] w-full rounded-lg border-2 border-[#e8e8e8] p-3 focus:border-2 focus:border-blue-600"
               />
             </div>
           ))}
@@ -102,7 +102,7 @@ export const SetTextRecordsSocialAccountsComponent = ({
           </Button> */}
         </form>
       </div>
-      <div className="w-[500px] flex">
+      <div className="flex w-[500px]">
         <NextButton
           onClick={() => {
             setTextRecords({

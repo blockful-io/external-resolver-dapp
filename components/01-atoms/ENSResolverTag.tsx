@@ -43,7 +43,7 @@ export const EnsResolverTag = ({ ensResolver }: EnsResolverTagProps) => {
 
   return (
     <div className="flex items-center justify-start gap-1">
-      <config.icon className="w-5 h-5" />
+      <config.icon className="h-5 w-5" />
       <p className="text-gray-400">{config.label}</p>
     </div>
   );

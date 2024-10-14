@@ -38,7 +38,7 @@ export const CreateSubdomainModalContent = ({
   const [isLoading, setIsloading] = useState(false);
   const authedUser = useAccount();
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
-    CreateSubdomainModalSteps.SubdomainInput
+    CreateSubdomainModalSteps.SubdomainInput,
   );
   const publicClient = usePublicClient() as PublicClient & ClientWithEns;
   const { chain } = useAccount();
@@ -59,7 +59,9 @@ export const CreateSubdomainModalContent = ({
     setIsloading(true);
 
     if (!chain) {
-      toast.error("Impossible to create a subdomain if you are not connected to a chain");
+      toast.error(
+        "Impossible to create a subdomain if you are not connected to a chain",
+      );
       return;
     }
 
@@ -100,7 +102,7 @@ export const CreateSubdomainModalContent = ({
         value={newSubdomain}
         onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
         suffix={
-          <div className="truncate whitespace-nowrap max-w-48">{`.${name}`}</div>
+          <div className="max-w-48 truncate whitespace-nowrap">{`.${name}`}</div>
         }
         error={isSubdomainInvalid()}
       />
@@ -155,7 +157,7 @@ export const CreateSubdomainModalContent = ({
       </>
     ),
     [CreateSubdomainModalSteps.Success]: (
-      <div className="w-full flex flex-col items-center justify-center gap-4 px-10">
+      <div className="flex w-full flex-col items-center justify-center gap-4 px-10">
         <p className="text-7xl"> 🎉</p>
         <div className="flex flex-col items-center justify-center">
           <p className="text-lg">
@@ -163,7 +165,7 @@ export const CreateSubdomainModalContent = ({
               Congrats! You&apos;re now owner of
             </span>
           </p>
-          <p className="text-[26px] text-center font-bold text-gradient-ens">{`${newSubdomain}.${name}`}</p>
+          <p className="text-gradient-ens text-center text-[26px] font-bold">{`${newSubdomain}.${name}`}</p>
           <p className="text-gray-400">
             Your transaction was successfully completed.
           </p>
@@ -202,17 +204,17 @@ export const CreateSubdomainModalContent = ({
   };
 
   return (
-    <div className="w-[640px] border rounded-xl overflow-hidden">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+    <div className="w-[640px] overflow-hidden rounded-xl border">
+      <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         New subdomain
       </div>
-      <div className="bg-white text-black border-b border-gray-200 p-6 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 border-b border-gray-200 bg-white p-6 text-black">
         {stepComponents[currentStep]}
 
         {isLoading && <h1>Check your wallet</h1>}
       </div>
 
-      <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+      <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
         {currentStep === CreateSubdomainModalSteps.Success ? (
           <>
             <div>
