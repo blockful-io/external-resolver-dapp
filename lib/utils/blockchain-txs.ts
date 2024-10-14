@@ -121,7 +121,7 @@ export async function ccipRequest({
 }: CcipRequestParameters): Promise<Response> {
   return fetch(url.replace("/{sender}/{data}.json", ""), {
     body: JSON.stringify(body, (_, value) =>
-      typeof value === "bigint" ? value.toString() : value
+      typeof value === "bigint" ? value.toString() : value,
     ),
     method: "POST",
     headers: {
@@ -325,7 +325,7 @@ export const register = async ({
       const [domain, url, message] = data.args as [
         DomainData,
         string,
-        MessageData
+        MessageData,
       ];
 
       const signedData = await handleDBStorage({
@@ -410,7 +410,7 @@ export const setDomainRecords = async ({
       const [cryptocurrencyName, address] = Object.entries(addresses)[i];
       if (
         !Object.keys(cryptocurrencies).includes(
-          cryptocurrencyName.toUpperCase()
+          cryptocurrencyName.toUpperCase(),
         )
       ) {
         console.error(`cryptocurrency ${cryptocurrencyName} not supported`);
@@ -453,7 +453,7 @@ export const setDomainRecords = async ({
         const [domain, url, message] = data.args as [
           DomainData,
           string,
-          MessageData
+          MessageData,
         ];
 
         try {

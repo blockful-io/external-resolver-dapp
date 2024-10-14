@@ -9,14 +9,14 @@ import { LocalNameRegistrationData } from "./types";
 // GET
 export const getOpenNameRegistrations = (): Record<string, any> => {
   const cartData = window.localStorage.getItem(
-    OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY
+    OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY,
   );
   return !!cartData ? JSON.parse(cartData) : {};
 };
 
 // GET (by wallet)
 const getOpenNameRegistrationsForAuthedUser = (
-  authedUser: `0x${string}`
+  authedUser: `0x${string}`,
 ): Record<string, LocalNameRegistrationData> => {
   const openNameRegistrations = getOpenNameRegistrations();
   return openNameRegistrations[authedUser] || {};
@@ -25,7 +25,7 @@ const getOpenNameRegistrationsForAuthedUser = (
 // GET (by wallet, by name)
 export const getOpenNameRegistrationsOfNameByWallet = (
   authedUser: `0x${string}`,
-  name: ENSName
+  name: ENSName,
 ): LocalNameRegistrationData => {
   const walletNameRegistrations =
     getOpenNameRegistrationsForAuthedUser(authedUser);
@@ -36,13 +36,13 @@ export const getOpenNameRegistrationsOfNameByWallet = (
 export const setNameRegistrationInLocalStorage = (
   authedUser: `0x${string}`,
   name: ENSName,
-  newData: Partial<LocalNameRegistrationData>
+  newData: Partial<LocalNameRegistrationData>,
 ): void => {
   const openNameRegistrationsForWallet =
     getOpenNameRegistrationsForAuthedUser(authedUser);
   const nameRegistrationData = getOpenNameRegistrationsOfNameByWallet(
     authedUser,
-    name
+    name,
   );
 
   const newObj = {
@@ -56,14 +56,14 @@ export const setNameRegistrationInLocalStorage = (
   };
   window.localStorage.setItem(
     OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY,
-    JSON.stringify(newObj)
+    JSON.stringify(newObj),
   );
 };
 
 // DELETE
 export const endNameRegistrationPreviouslyOpen = (
   authedUser: `0x${string}`,
-  name: ENSName
+  name: ENSName,
 ): void => {
   const openNameRegistrations = getOpenNameRegistrations();
 
@@ -82,7 +82,7 @@ export const endNameRegistrationPreviouslyOpen = (
       };
       window.localStorage.setItem(
         OPEN_REGISTRATIONS_LOCAL_STORAGE_KEY,
-        JSON.stringify(updatedOpenRegistrations)
+        JSON.stringify(updatedOpenRegistrations),
       );
     }
   }
@@ -92,7 +92,7 @@ export const endNameRegistrationPreviouslyOpen = (
 export const updateNameRegistrationInLocalStorage = (
   authedUser: `0x${string}`,
   name: ENSName,
-  newData: LocalNameRegistrationData
+  newData: LocalNameRegistrationData,
 ): void => {
   const openNameRegistrations =
     getOpenNameRegistrationsForAuthedUser(authedUser);
@@ -107,7 +107,7 @@ export const updateNameRegistrationInLocalStorage = (
 
 export const getNameRegistrationSecret = (): string => {
   const saltFromStorage = window.localStorage.getItem(
-    ENS_REGISTRATIONS_SECRET_KEY
+    ENS_REGISTRATIONS_SECRET_KEY,
   );
 
   if (saltFromStorage) {

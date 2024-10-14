@@ -3,7 +3,7 @@ import { RegistrationBlock, RegistrationStep } from "./constants";
 /* NAME REGISTRATION UI RELATED LOGIC ⬇️ */
 
 export const getRegistrationStepBlock = (
-  step: RegistrationStep
+  step: RegistrationStep,
 ): RegistrationBlock => {
   switch (step) {
     case RegistrationStep.RegistrationYears:

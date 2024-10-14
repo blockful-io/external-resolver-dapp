@@ -21,16 +21,16 @@ const NotSupportedPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)] bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold mb-4 text-gradient-ens">
+    <div className="flex h-[calc(100vh-80px)] flex-col items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-md">
+        <h1 className="text-gradient-ens mb-4 text-3xl font-bold">
           Chain Not Supported
         </h1>
-        <p className="text-gray-700 mb-6">
+        <p className="mb-6 text-gray-700">
           {chain?.name &&
             `You are currently connected to ${chain.name}, which is not supported.`}
         </p>
-        <p className="text-gray-700 mb-6">
+        <p className="mb-6 text-gray-700">
           Please switch to one of the supported networks
         </p>
       </div>

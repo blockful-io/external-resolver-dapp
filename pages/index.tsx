@@ -19,7 +19,7 @@ export default function Home() {
   const router = useRouter();
   const [domain, setDomain] = useState("");
   const [domainStatus, setDomainStatus] = useState<EnsDomainStatus>(
-    EnsDomainStatus.Invalid
+    EnsDomainStatus.Invalid,
   );
 
   const publicClient = usePublicClient() as PublicClient & ClientWithEns;
@@ -93,61 +93,61 @@ export default function Home() {
   };
 
   return (
-    <div className="flex relative h-screen flex-col items-center justify-center bg-white p-4 overflow-clip">
+    <div className="relative flex h-screen flex-col items-center justify-center overflow-clip bg-white p-4">
       <HomepageBg />
 
-      <div className="flex w-full max-w-6xl flex-col items-center justify-center gap-y-8 -translate-y-1/3">
-        <div className="flex items-center justify-center gap-2 px-3 py-2 rounded-full border border-gray-200">
+      <div className="flex w-full max-w-6xl -translate-y-1/3 flex-col items-center justify-center gap-y-8">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-gray-200 px-3 py-2">
           <p>🔎</p>
-          <p className="text-gray-500 text-xl">Search domains</p>
+          <p className="text-xl text-gray-500">Search domains</p>
         </div>
         <div className="text-center">
-          <h1 className="font-semibold text-5xl pb-2 text-[#1E2122] mb-4">
+          <h1 className="mb-4 pb-2 text-5xl font-semibold text-[#1E2122]">
             Simplify your <span className="text-gradient-ens">web3 domain</span>{" "}
             registration
           </h1>
-          <p className="text-gray-500 text-xl font-normal">
+          <p className="text-xl font-normal text-gray-500">
             Type in your desired domain and see what&apos;s available.
           </p>
         </div>
 
         {/* Input  */}
-        <div className="w-full h-[52px] relative max-w-[470px] ">
-          <div className="absolute top-0 left-0 w-full border border-gray-200 rounded-xl overflow-hidden">
-            <div className="flex w-full justify-center items-center p-2 pl-5">
+        <div className="relative h-[52px] w-full max-w-[470px]">
+          <div className="absolute left-0 top-0 w-full overflow-hidden rounded-xl border border-gray-200">
+            <div className="flex w-full items-center justify-center p-2 pl-5">
               <DebounceInput
                 minLength={3}
                 value={domain}
                 debounceTimeout={300}
                 onChange={handleInputChange}
                 onKeyDown={(e) => goToRegisterPage(e)}
-                className="w-full py-2 text-black text-xl"
+                className="w-full py-2 text-xl text-black"
                 placeholder="Search for a domain"
               />
 
               <div className="flex items-center justify-center gap-2">
                 {!!domain && (
                   <button
-                    className="h-full p-2 hover:-translate-y-[1px] transition-all duration-200"
+                    className="h-full p-2 transition-all duration-200 hover:-translate-y-[1px]"
                     onClick={clearDomainSearch}
                   >
-                    <CrossCircleSVG className="text-gray-400 h-4 w-4" />
+                    <CrossCircleSVG className="h-4 w-4 text-gray-400" />
                   </button>
                 )}
               </div>
             </div>
             <div
-              className={`transition-all duration-300 hover:bg-gray-50 overflow-hidden ${
+              className={`overflow-hidden transition-all duration-300 hover:bg-gray-50 ${
                 domain
-                  ? "opacity-100 visible h-[52px]"
-                  : "opacity-0 invisible h-0"
+                  ? "visible h-[52px] opacity-100"
+                  : "invisible h-0 opacity-0"
               }`}
             >
               <Link
                 href={getDomainRedirectionRoute()}
-                className="flex w-full justify-between  bg-transparent items-center border-gray-200 border-t p-4 pl-5"
+                className="flex w-full items-center justify-between border-t border-gray-200 bg-transparent p-4 pl-5"
               >
-                <p className="text-gray-500 min-h-6">
+                <p className="min-h-6 text-gray-500">
                   {domain && domainWithEth(domain)}
                 </p>
                 <DomainStatus status={domainStatus} />
@@ -156,7 +156,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="w-[85%] h-[243px] blur-[125px] bg-gradient-ens absolute bottom-[-200px] rounded-ellipse"></div>
+      <div className="absolute bottom-[-200px] h-[243px] w-[85%] rounded-ellipse bg-gradient-ens blur-[125px]"></div>
     </div>
   );
 }

@@ -1,10 +1,9 @@
 ---
 name: Refactor request
 about: Describe this issue refactoring purpose
-title: 'refactor: '
+title: "refactor: "
 labels: enhancement
-assignees: ''
-
+assignees: ""
 ---
 
 ## Refactor Request

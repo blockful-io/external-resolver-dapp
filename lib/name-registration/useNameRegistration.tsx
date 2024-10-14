@@ -47,7 +47,7 @@ interface NameRegistrationData {
   setEstimatedNetworkFee: (estimatedNetworkFee: bigint) => void;
   setRegistrationPrice: (registrationPrice: bigint) => void;
   setCurrentRegistrationStep: (
-    currentRegistrationStep: RegistrationStep
+    currentRegistrationStep: RegistrationStep,
   ) => void;
   setCommitSubmitTimestamp: (timestamp: Date) => void;
   setRegisterTxReceipt: (txReceipt: TransactionReceipt) => void;
@@ -66,22 +66,22 @@ export const useNameRegistration = (): NameRegistrationData => {
   const { address } = useAccount();
 
   const currentRegistrationStep = useAppSelector(
-    (state) => state.currentRegistrationStep
+    (state) => state.currentRegistrationStep,
   );
   const estimatedNetworkFee = useAppSelector(
-    (state) => state.estimatedNetworkFee
+    (state) => state.estimatedNetworkFee,
   );
   const registrationYears = useAppSelector((state) => state.registrationYears);
   const registrationPrice = useAppSelector((state) => state.registrationPrice);
   const commitSubmitTimestamp = useAppSelector(
-    (state) => state.commitSubmitTimestamp
+    (state) => state.commitSubmitTimestamp,
   );
   const registerTxReceipt = useAppSelector((state) => state.registerTxReceipt);
   const commitTxReceipt = useAppSelector((state) => state.commitTxReceipt);
   const asPrimaryName = useAppSelector((state) => state.asPrimaryName);
 
   const customResolverAddress = useAppSelector(
-    (state) => state.customResolverAddress
+    (state) => state.customResolverAddress,
   );
   const ensResolver = useAppSelector((state) => state.ensResolver);
   const namePrice = useAppSelector((state) => state.namePrice);
@@ -92,7 +92,7 @@ export const useNameRegistration = (): NameRegistrationData => {
   const dispatch = useAppDispatch();
 
   const setCurrentRegistrationStep = (
-    currentRegistrationStep: RegistrationStep
+    currentRegistrationStep: RegistrationStep,
   ) => {
     dispatch(updateCurrentRegistrationStep(currentRegistrationStep));
   };

@@ -4,7 +4,7 @@ import { Address, isAddress, PublicClient } from "viem";
 
 export const getUnsupportedResolverInterfaces = async (
   publicClient: PublicClient & ClientWithEns,
-  resolverAddress: string
+  resolverAddress: string,
 ): Promise<string[]> => {
   if (!isAddress(resolverAddress)) {
     return [];
@@ -23,7 +23,7 @@ export const getUnsupportedResolverInterfaces = async (
   const supportedInterfacesResult = await getSupportedInterfaces(publicClient, {
     address: resolverAddress,
     interfaces: requiredInterfaces.map(
-      (resolverInterface) => resolverInterface.id
+      (resolverInterface) => resolverInterface.id,
     ),
   });
 

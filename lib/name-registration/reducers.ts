@@ -43,7 +43,7 @@ const nameRegistrationReducer = (
   action: {
     type: NameRegistrationAction;
     payload: any;
-  }
+  },
 ) => {
   switch (action.type) {
     case NameRegistrationAction["controller/registrationPrice"]:
