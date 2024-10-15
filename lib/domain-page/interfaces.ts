@@ -31,6 +31,7 @@ export interface DomainData {
   parent: string;
   subdomains: DomainData[];
   subdomainCount: number;
+  contentHash?: string;
   resolver: {
     id: string;
     address: Address;
@@ -51,6 +52,7 @@ export interface ResolverQueryDomainData {
   parent: string;
   subdomains: DomainData[];
   subdomainCount: number;
+  contentHash: string;
   resolver: {
     id: string;
     address: Address;
