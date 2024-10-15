@@ -2,6 +2,7 @@ import { defaultTextRecords } from "@/types/textRecords";
 import {
   batch,
   getAvailable,
+  getContentHashRecord,
   getExpiry,
   getName,
   getOwner,
@@ -12,6 +13,8 @@ import {
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize } from "viem/ens";
+import DomainResolverABI from "../abi/resolver.json";
+
 import {
   getCoinNameByType,
   getSupportedCoins,
@@ -28,13 +31,20 @@ import {
 import { metadataDomainQuery } from "./queries";
 import {
   Address,
+  decodeFunctionResult,
+  encodeFunctionData,
+  Hex,
+  hexToString,
   isAddress,
+  namehash,
   parseAbiItem,
   PublicClient,
+  toHex,
   WalletClient,
 } from "viem";
 import toast from "react-hot-toast";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { decodeContentHash } from "@ensdomains/ensjs/utils";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -124,6 +134,7 @@ export const getENSDomainDataThroughSubgraph = async ({
       getOwner.batch({ name: domain }),
       getExpiry.batch({ name: domain }),
       getResolver.batch({ name: domain }),
+      getContentHashRecord.batch({ name: domain }),
     ),
   ]);
 
@@ -183,6 +194,7 @@ const getBasicENSDomainData = async ({
     parent: getParent(name),
     subdomains: [],
     subdomainCount: 0,
+    contentHash: "",
     resolver: {
       id: "",
       address: domainAdd,
@@ -224,7 +236,23 @@ const getENSDomainDataThroughResolver = async ({
     },
   );
 
+  const encodedContentHash = (await client.readContract({
+    address: resolverAdd,
+    functionName: "contenthash",
+    args: [namehash(name)],
+    abi: DomainResolverABI,
+  })) as Hex;
+
+  const contentHash = hexToString(
+    decodeFunctionResult({
+      abi: DomainResolverABI,
+      functionName: "contenthash",
+      data: encodedContentHash,
+    }) as Hex,
+  );
+
   data.domain.resolver.address = resolverAdd;
+  data.domain.contentHash = contentHash;
 
   return data.domain;
 };
@@ -248,6 +276,7 @@ const formatSubgraphDomainData = async ({
 
   const domainData: DomainData = {
     owner: ownerName?.name ?? data.owner,
+    contentHash: data.contentHash?.decoded,
     resolver: {
       id: "id",
       address: data.resolverAddress,

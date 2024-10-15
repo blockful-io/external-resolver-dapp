@@ -179,6 +179,29 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           </Skeleton>
         </div>
       </div>
+
+      <div className="flex flex-col gap-4">
+        <Skeleton>
+          <h3 className="text-base font-semibold">Content Hash</h3>
+        </Skeleton>
+        <div className="grid grid-cols-2 gap-4">
+          <Skeleton>
+            <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
+              <div className="flex items-center gap-4">
+                <div className="flex gap-4 rounded-md bg-blue-100 p-2">
+                  <DatabaseIcon className="h-5 w-5 text-blue-500" />
+                </div>
+
+                <p className="truncate whitespace-nowrap">
+                  {domainData?.contentHash
+                    ? domainData?.contentHash
+                    : "No Content Hash"}
+                </p>
+              </div>
+            </div>
+          </Skeleton>
+        </div>
+      </div>
       {resolver?.address && (
         <Modal open={editResolverModalOpen} onDismiss={() => {}}>
           <EditResolverModalContent
