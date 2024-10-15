@@ -32,36 +32,38 @@ export const RegistrationYearsComponent = ({
   };
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={() => {}} disabled={true} />
-      <div className="max-w-[500px] w-full flex flex-col gap-7 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col gap-7">
         <h3 className="text-start text-[34px] font-medium">
           How many years do you want to register this domain?
         </h3>
         <div className="flex">
-          <div className="flex justify-between items-center border border-gray-200 rounded-lg overflow-hidden">
+          <div className="flex items-center justify-between overflow-hidden rounded-lg border border-gray-200">
             <button
               disabled={registrationYears === 1}
               onClick={handleMinusButtonClick}
-              className="p-4 border-r border-gray-200 hover:bg-gray-50"
+              className="border-r border-gray-200 p-4 hover:bg-gray-50"
             >
-              <MinusSVG className="w-3 h-3 text-gray-500" />
+              <MinusSVG className="h-3 w-3 text-gray-500" />
             </button>
             <div className="w-[120px]">{registrationYears}</div>
             <button
               onClick={handlePlusButtonClick}
-              className="p-4 border-l border-gray-200 hover:bg-gray-50"
+              className="border-l border-gray-200 p-4 hover:bg-gray-50"
             >
-              <PlusSVG className="w-3 h-3 text-gray-500" />
+              <PlusSVG className="h-3 w-3 text-gray-500" />
             </button>
           </div>
         </div>
       </div>
-      <div className="w-full flex">
-        <NextButton onClick={() => {
-          saveRegistrationYearsInLocalStorage();
-          handleNextStep();
-        }} />
+      <div className="flex w-full">
+        <NextButton
+          onClick={() => {
+            saveRegistrationYearsInLocalStorage();
+            handleNextStep();
+          }}
+        />
       </div>
     </div>
   );

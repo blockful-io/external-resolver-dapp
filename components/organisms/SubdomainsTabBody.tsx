@@ -18,7 +18,7 @@ export const SubdomainsTabBody = ({
     useState(false);
 
   const subdomainsArray: string[] | undefined = domainData?.subdomains.map(
-    (domain) => domain?.name as string
+    (domain) => domain?.name as string,
   );
 
   const router = useRouter();
@@ -26,11 +26,11 @@ export const SubdomainsTabBody = ({
 
   return (
     <>
-      <div className="flex-grow flex gap-8 flex-col">
+      <div className="flex flex-grow flex-col gap-8">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
             <Skeleton>
-              <h3 className=" text-2xl font-bold">Subdomains</h3>
+              <h3 className="text-2xl font-bold">Subdomains</h3>
             </Skeleton>
             <Skeleton>
               <p className="text-base text-gray-400">

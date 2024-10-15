@@ -11,7 +11,7 @@ export const TestnetBanner = () => {
   if (!isClient) return null;
 
   return (
-    <div className="bg-yellow-100 w-full p-2 flex items-center justify-center text-black">
+    <div className="flex w-full items-center justify-center bg-yellow-100 p-2 text-black">
       You are viewing the Nameful app on {chain?.name} testnet.
     </div>
   );

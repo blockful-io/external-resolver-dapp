@@ -10,8 +10,8 @@ export const ProgressBlock = () => {
   const { nameRegistrationData } = useNameRegistration();
 
   return (
-    <div className="w-full h-20 bg-white neon-effect px-[60px] py-4 flex justify-between items-center border-b border-gray-200">
-      <div className="flex justify-between items-center w-full mx-auto">
+    <div className="neon-effect flex h-20 w-full items-center justify-between border-b border-gray-200 bg-white px-[60px] py-4">
+      <div className="mx-auto flex w-full items-center justify-between">
         {progressBlockTabSteps.map((progressBlockTabStep, index) => {
           return (
             <ProgressBlockTabComponent
@@ -21,7 +21,7 @@ export const ProgressBlock = () => {
               registrationBlock={progressBlockTabStep.registrationBlock}
               key={progressBlockTabStep.title}
               currentRegistrationBlock={getRegistrationStepBlock(
-                nameRegistrationData.currentRegistrationStep
+                nameRegistrationData.currentRegistrationStep,
               )}
             />
           );

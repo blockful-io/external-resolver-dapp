@@ -70,7 +70,7 @@ export const EditModalContent = ({
 
     Object.values(profileFields).forEach((field) => {
       const initialProfileField = initialProfileFields.find(
-        ({ label }) => label === field.label
+        ({ label }) => label === field.label,
       ) ?? { value: "" };
       if (field.value !== initialProfileField.value) {
         changedFieldsKeys.push(field);
@@ -78,7 +78,7 @@ export const EditModalContent = ({
     });
     Object.values(accountsFields).forEach((field) => {
       const initialAccountField = initialAccountsFields.find(
-        ({ label }) => label === field.label
+        ({ label }) => label === field.label,
       ) ?? { value: "" };
       if (field.value !== initialAccountField.value) {
         changedFieldsKeys.push(field);
@@ -86,7 +86,7 @@ export const EditModalContent = ({
     });
     Object.values(addressesFields).forEach((field) => {
       const initialAddressField = initialAddressesFields.find(
-        ({ label }) => label === field.label
+        ({ label }) => label === field.label,
       ) ?? { value: "" };
       if (field.value !== initialAddressField.value) {
         changedFieldsKeys.push(field);
@@ -101,21 +101,21 @@ export const EditModalContent = ({
       .some(
         (field) =>
           field.validationFunction &&
-          field.validationFunction(field.value) === false
+          field.validationFunction(field.value) === false,
       );
     const invalidAddressesField = Object.values(addressesFields)
       .flatMap((fields) => fields)
       .some(
         (field) =>
           field.validationFunction &&
-          field.validationFunction(field.value) === false
+          field.validationFunction(field.value) === false,
       );
     const invalidAccountsField = Object.values(accountsFields)
       .flatMap((fields) => fields)
       .some(
         (field) =>
           field.validationFunction &&
-          field.validationFunction(field.value) === false
+          field.validationFunction(field.value) === false,
       );
     return invalidProfileField || invalidAddressesField || invalidAccountsField;
   };
@@ -147,21 +147,21 @@ export const EditModalContent = ({
   }
 
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden">
+    <div className="w-[480px] overflow-hidden rounded-xl border">
       <div className="border-b border-gray-200">
-        <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+        <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
           Edit Records
         </div>
-        <div className="flex justify-around w-full bg-white">
+        <div className="flex w-full justify-around bg-white">
           <button
             onClick={() => {
               setSelectedTab(Tab.Profile);
             }}
             className={cc([
-              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              "flex w-full items-center justify-center border-b py-3 transition-all duration-300 hover:bg-gray-50",
               {
-                "text-blue-500 border-blue-500": selectedTab === Tab.Profile,
-                "text-gray-500 border-gray-200": selectedTab !== Tab.Profile,
+                "border-blue-500 text-blue-500": selectedTab === Tab.Profile,
+                "border-gray-200 text-gray-500": selectedTab !== Tab.Profile,
               },
             ])}
           >
@@ -172,10 +172,10 @@ export const EditModalContent = ({
               setSelectedTab(Tab.Accounts);
             }}
             className={cc([
-              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              "flex w-full items-center justify-center border-b py-3 transition-all duration-300 hover:bg-gray-50",
               {
-                "text-blue-500 border-blue-500": selectedTab === Tab.Accounts,
-                "text-gray-500 border-gray-200": selectedTab !== Tab.Accounts,
+                "border-blue-500 text-blue-500": selectedTab === Tab.Accounts,
+                "border-gray-200 text-gray-500": selectedTab !== Tab.Accounts,
               },
             ])}
           >
@@ -186,10 +186,10 @@ export const EditModalContent = ({
               setSelectedTab(Tab.Addresses);
             }}
             className={cc([
-              "py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300",
+              "flex w-full items-center justify-center border-b py-3 transition-all duration-300 hover:bg-gray-50",
               {
-                "text-blue-500 border-blue-500": selectedTab === Tab.Addresses,
-                "text-gray-500 border-gray-200": selectedTab !== Tab.Addresses,
+                "border-blue-500 text-blue-500": selectedTab === Tab.Addresses,
+                "border-gray-200 text-gray-500": selectedTab !== Tab.Addresses,
               },
             ])}
           >
@@ -208,11 +208,11 @@ export const EditModalContent = ({
             Others
           </button> */}
         </div>
-        <div className="w-full h-[448px] bg-white overflow-y-scroll p-6">
+        <div className="h-[448px] w-full overflow-y-scroll bg-white p-6">
           <CurrentComponent />
         </div>
       </div>
-      <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+      <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
         {/* {!!invalidFieldsKeys.length && (
           <div className="flex flex-col text-sm mr-auto">
             <p className="text-red-400 font-semibold">
@@ -281,25 +281,25 @@ const SaveModalEdits = ({
   > => {
     if (!publicClient) {
       throw new Error(
-        "Impossible to set the text records of a name without a public client"
+        "Impossible to set the text records of a name without a public client",
       );
     }
 
     if (!address) {
       throw new Error(
-        "Impossible to set the text records of a name without an authenticated user"
+        "Impossible to set the text records of a name without an authenticated user",
       );
     }
 
     if (!chain) {
       throw new Error(
-        "Impossible to set the text records of a name without a chain"
+        "Impossible to set the text records of a name without a chain",
       );
     }
 
     if (!router.query.name || !buildENSName(router.query.name as string)) {
       throw new Error(
-        "Impossible to set the text records of a name without a name"
+        "Impossible to set the text records of a name without a name",
       );
     }
 
@@ -340,51 +340,51 @@ const SaveModalEdits = ({
   };
 
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden bg-white">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+    <div className="w-[480px] overflow-hidden rounded-xl border bg-white">
+      <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         Edit Records
       </div>
 
-      <div className="w-full gap-6 flex flex-col bg-white overflow-y-scroll p-6 border-b border-gray-200">
+      <div className="flex w-full flex-col gap-6 overflow-y-scroll border-b border-gray-200 bg-white p-6">
         <div className="text-[18px] text-gray-400">
           Check your information before confirming in your wallet
         </div>
 
-        <div className="flex flex-col rounded-md border border-gray-200 overflow-hidden">
-          <div className="flex justify-between w-full border-b border-gray-200 p-3">
+        <div className="flex flex-col overflow-hidden rounded-md border border-gray-200">
+          <div className="flex w-full justify-between border-b border-gray-200 p-3">
             <div className="flex items-center gap-2">
-              <CheckCircleSVG className="w-4 h-4 text-gray-400" />
+              <CheckCircleSVG className="h-4 w-4 text-gray-400" />
               <p className="text-gray-400">Domain</p>
             </div>
 
-            <div className="flex items-center gap-2 text-gray-400 font-semibold">
+            <div className="flex items-center gap-2 font-semibold text-gray-400">
               <p className="">{router.query.name}</p>
             </div>
           </div>
 
-          <div className="flex justify-between w-full border-b border-gray-200 p-3">
+          <div className="flex w-full justify-between border-b border-gray-200 p-3">
             <div className="flex items-center gap-2">
-              <CounterClockwiseArrowSVG className="w-4 h-4 text-gray-400" />
+              <CounterClockwiseArrowSVG className="h-4 w-4 text-gray-400" />
               <p className="text-gray-400">Action</p>
             </div>
 
-            <div className="flex items-center gap-2 text-gray-400 font-semibold">
+            <div className="flex items-center gap-2 font-semibold text-gray-400">
               <p className="">Update records</p>
             </div>
           </div>
 
-          <div className="flex justify-between items-start w-full p-3">
+          <div className="flex w-full items-start justify-between p-3">
             <div className="flex items-center gap-2">
-              <InfoCircleSVG className="w-4 h-4 text-gray-400" />
+              <InfoCircleSVG className="h-4 w-4 text-gray-400" />
               <p className="text-gray-400">New records</p>
             </div>
 
             <div className="flex items-center gap-2 text-gray-400">
-              <ul className="w-full flex flex-col space-y-2">
+              <ul className="flex w-full flex-col space-y-2">
                 {changedFields.map((field) => (
                   <li
                     key={field.label}
-                    className="w-full flex justify-between space-x-6"
+                    className="flex w-full justify-between space-x-6"
                   >
                     <p>{field.label}</p>
                     <p className="max-w-32 truncate font-semibold">
@@ -407,7 +407,7 @@ const SaveModalEdits = ({
         </div>
       </div>
 
-      <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+      <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
         <div>
           <Button colorStyle="greySecondary" onClick={back}>
             Back
@@ -424,12 +424,12 @@ interface RecordsEditedProps {
 
 const RecordsEdited = ({ back }: RecordsEditedProps) => {
   return (
-    <div className="w-[480px] border rounded-xl overflow-hidden bg-white">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+    <div className="w-[480px] overflow-hidden rounded-xl border bg-white">
+      <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         Edit Records
       </div>
 
-      <div className="w-full gap-6 flex flex-col items-center justify-center bg-white overflow-y-scroll p-6 border-b border-gray-200">
+      <div className="flex w-full flex-col items-center justify-center gap-6 overflow-y-scroll border-b border-gray-200 bg-white p-6">
         <div className="text-7xl text-gray-400">🎉</div>
 
         <div className="flex flex-col items-center gap-1">
@@ -440,7 +440,7 @@ const RecordsEdited = ({ back }: RecordsEditedProps) => {
         </div>
       </div>
 
-      <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+      <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
         <div>
           <Button colorStyle="bluePrimary" onClick={back}>
             Done

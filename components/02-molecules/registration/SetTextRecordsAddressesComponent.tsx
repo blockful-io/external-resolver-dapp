@@ -20,12 +20,15 @@ export type Addresses = {
 };
 
 export const convertAddressesToRecord = (
-  addresses: Addresses
+  addresses: Addresses,
 ): Record<string, string> => {
-  return Object.keys(addresses).reduce((acc, key) => {
-    acc[key] = addresses[key].address;
-    return acc;
-  }, {} as Record<string, string>);
+  return Object.keys(addresses).reduce(
+    (acc, key) => {
+      acc[key] = addresses[key].address;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 };
 
 export const SetTextRecordsAddressesComponent = ({
@@ -41,7 +44,7 @@ export const SetTextRecordsAddressesComponent = ({
   const anyInvalidAddresses = (): boolean => {
     return Object.keys(addresses).some(
       (key) =>
-        !isAddress(addresses[key].address) && addresses[key].address !== ""
+        !isAddress(addresses[key].address) && addresses[key].address !== "",
     );
   };
 
@@ -70,7 +73,7 @@ export const SetTextRecordsAddressesComponent = ({
 
   useEffect(() => {
     const domainsAddressesKeys = Object.keys(
-      nameRegistrationData.domainAddresses
+      nameRegistrationData.domainAddresses,
     );
     if (domainsAddressesKeys.length > 0) {
       const addresses = domainsAddressesKeys.reduce((acc, key) => {
@@ -87,7 +90,7 @@ export const SetTextRecordsAddressesComponent = ({
   }, []);
 
   const saveDomainAddressesInLocalStorage = (
-    domainAddresses: Record<string, string>
+    domainAddresses: Record<string, string>,
   ) => {
     if (address && nameRegistrationData.name) {
       setNameRegistrationInLocalStorage(address, nameRegistrationData.name, {
@@ -96,23 +99,23 @@ export const SetTextRecordsAddressesComponent = ({
     }
   };
   return (
-    <div className="w-full flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex w-full flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         <div>
-          <p className="text-sm text-[#9b9ba7] font-bold text-start">
+          <p className="text-start text-sm font-bold text-[#9b9ba7]">
             Profile settings
           </p>
-          <h1 className="text-[30px] text-[#1E2122] font-bold">Addresses</h1>
+          <h1 className="text-[30px] font-bold text-[#1E2122]">Addresses</h1>
         </div>
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col space-y-[22px] mb-[10px] w-full"
+          className="mb-[10px] flex w-full flex-col space-y-[22px]"
         >
           {Object.keys(addresses).map((address) => (
             <div
               key={address}
-              className="flex flex-col items-start space-y-2 w-full text-start"
+              className="flex w-full flex-col items-start space-y-2 text-start"
             >
               {/* <div className="flex w-full items-center text-gray-400 justify-between">
                 <button
@@ -158,13 +161,13 @@ export const SetTextRecordsAddressesComponent = ({
           </Button> */}
         </form>
       </div>
-      <div className="w-[500px] flex">
+      <div className="flex w-[500px]">
         <NextButton
           onClick={() => {
             if (!anyInvalidAddresses()) {
               setDomainAddresses(convertAddressesToRecord(addresses));
               saveDomainAddressesInLocalStorage(
-                convertAddressesToRecord(addresses)
+                convertAddressesToRecord(addresses),
               );
               handleNextStep();
             } else {

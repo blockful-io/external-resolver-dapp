@@ -86,16 +86,16 @@ export const RegistrationSummary = () => {
   };
 
   return (
-    <div className="w-[474px] border border-gray-200 rounded-xl flex flex-col overflow-hidden">
-      <div className="p-6 border-b border-gray-200 flex flex-col items-start gap-6">
+    <div className="flex w-[474px] flex-col overflow-hidden rounded-xl border border-gray-200">
+      <div className="flex flex-col items-start gap-6 border-b border-gray-200 p-6">
         <Typography fontVariant="extraLarge">Registration summary</Typography>
-        <div className="w-full flex justify-between items-center">
-          <div className="flex gap-4 items-center w-full">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center border border-gray-200">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex w-full items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200">
               <CartIcon className="h-5 w-5" />
             </div>
             <div className="flex-grow flex-col gap-1 space-y-1">
-              <div className="flex justify-between items-center w-full">
+              <div className="flex w-full items-center justify-between">
                 <Typography
                   fontVariant="largeBold"
                   color="green"
@@ -118,55 +118,55 @@ export const RegistrationSummary = () => {
           </div>
         </div>
       </div>
-      <div className="p-6 flex flex-col gap-5 border-b border-gray-200">
-        <div className="flex w-full justify-start items-center">
-          <div className="px-4 py-3 bg-gray-50 rounded-lg gap-2 flex items-center justify-center border-gray-200 border">
+      <div className="flex flex-col gap-5 border-b border-gray-200 p-6">
+        <div className="flex w-full items-center justify-start">
+          <div className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
             <InfoCircleIcon />
             <div>
-              <p className="text-gray-400 text-sm font-semibold">
+              <p className="text-sm font-semibold text-gray-400">
                 {gasPriceInGWei.slice(0, 5)} gwei
               </p>
             </div>
           </div>
           {/* <CurrencyToggle /> */}
         </div>
-        <div className="flex w-full justify-between items-center">
+        <div className="flex w-full items-center justify-between">
           <p>
             {registrationYears} year{registrationYears > 1 && "s"} registration
           </p>
           {namePrice ? (
-            <div className="flex space-x-1 items-center">
+            <div className="flex items-center space-x-1">
               <p>{displayPrice(namePrice)}</p>
               <EthIcon className="h-4 w-4" />
             </div>
           ) : (
-            <div className="w-20 rounded-lg bg-gray-200 animate-pulse h-4"></div>
+            <div className="h-4 w-20 animate-pulse rounded-lg bg-gray-200"></div>
           )}
         </div>
-        <div className="flex w-full justify-between items-center">
+        <div className="flex w-full items-center justify-between">
           <p>Estimated network fee</p>
           {estimatedNetworkFee ? (
-            <div className="flex space-x-1 items-center">
+            <div className="flex items-center space-x-1">
               <p>{displayPrice(estimatedNetworkFee)}</p>
               <EthIcon className="h-4 w-4" />
             </div>
           ) : (
-            <div className="w-20 rounded-lg bg-gray-200 animate-pulse h-4"></div>
+            <div className="h-4 w-20 animate-pulse rounded-lg bg-gray-200"></div>
           )}
         </div>
       </div>
-      <div className="p-6 bg-gray-50">
-        <div className="w-full flex justify-between items-center">
+      <div className="bg-gray-50 p-6">
+        <div className="flex w-full items-center justify-between">
           <Typography fontVariant="bodyBold">Estimated total</Typography>
           {registrationPrice ? (
-            <div className="flex space-x-1 items-center">
+            <div className="flex items-center space-x-1">
               <Typography fontVariant="bodyBold">
                 {displayPrice(registrationPrice)}
               </Typography>
               <EthIcon className="h-4 w-4" />
             </div>
           ) : (
-            <div className="w-40 rounded-lg bg-gray-200 animate-pulse h-4"></div>
+            <div className="h-4 w-40 animate-pulse rounded-lg bg-gray-200"></div>
           )}
         </div>
       </div>

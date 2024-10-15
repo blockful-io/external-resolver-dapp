@@ -26,7 +26,7 @@ export enum NameRegistrationAction {
 
 // Actions
 export const updateCurrentRegistrationStep = (
-  currentRegistrationStep: RegistrationStep
+  currentRegistrationStep: RegistrationStep,
 ) => ({
   type: NameRegistrationAction["model/currentRegistrationStep"],
   payload: currentRegistrationStep,
@@ -53,14 +53,14 @@ export const updateNameToRegister = (nameToRegister: ENSName | null) => ({
 });
 
 export const updateCommitTxReceipt = (
-  txReceipt: TransactionReceipt | null
+  txReceipt: TransactionReceipt | null,
 ) => ({
   type: NameRegistrationAction["controller/commitTxReceipt"],
   payload: txReceipt,
 });
 
 export const updateRegisterTxReceipt = (
-  txReceipt: TransactionReceipt | null
+  txReceipt: TransactionReceipt | null,
 ) => ({
   type: NameRegistrationAction["controller/registerTxReceipt"],
   payload: txReceipt,
@@ -82,7 +82,7 @@ export const updateRegistrationPrice = (registrationPrice: bigint) => ({
 });
 
 export const updateCustomResolverAddress = (
-  customResolverAddress: Address
+  customResolverAddress: Address,
 ) => ({
   type: NameRegistrationAction["model/customResolverAddress"],
   payload: customResolverAddress,
@@ -99,7 +99,7 @@ export const updateTextRecords = (textRecords: Record<string, string>) => ({
 });
 
 export const updateDomainAddresses = (
-  domainAddresses: Record<string, string>
+  domainAddresses: Record<string, string>,
 ) => ({
   type: NameRegistrationAction["controller/domainAddresses"],
   payload: domainAddresses,

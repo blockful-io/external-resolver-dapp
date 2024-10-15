@@ -39,11 +39,11 @@ export type ThunkAction<
   TReturnType,
   TState,
   TExtraThunkArg,
-  TBasicAction extends Action
+  TBasicAction extends Action,
 > = (
   dispatch: ThunkDispatch<TState, TExtraThunkArg, TBasicAction>,
   getState: () => TState,
-  extraArgument: TExtraThunkArg
+  extraArgument: TExtraThunkArg,
 ) => TReturnType;
 
 export default nameRegistrationStore;

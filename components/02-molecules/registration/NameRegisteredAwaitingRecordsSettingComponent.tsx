@@ -31,19 +31,19 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
   > => {
     if (!address) {
       throw new Error(
-        "Impossible to set the text records of a name without an authenticated user"
+        "Impossible to set the text records of a name without an authenticated user",
       );
     }
 
     if (!chain) {
       throw new Error(
-        "Impossible to set the text records of a name without a chain"
+        "Impossible to set the text records of a name without a chain",
       );
     }
 
     if (!nameRegistrationData.name) {
       throw new Error(
-        "Impossible to set the text records of a name without a name"
+        "Impossible to set the text records of a name without a name",
       );
     }
 
@@ -89,14 +89,14 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} disabled={true} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-4 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-4">
         <h3 className="text-7xl">💬</h3>
         <h3 className="text-start text-[34px] font-medium">
           Now let&apos;s set the text records
         </h3>
-        <p className="text-gray-500 text-left text-base">
+        <p className="text-left text-base text-gray-500">
           The domain is already yours and will now be customized! The records
           set in the previous steps will be registered, please sign a message to
           confirm this action.

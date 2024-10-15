@@ -69,8 +69,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
   // if we have an error while loading the domain data, we show a message
   if (!ensData && error) {
     return (
-      <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
-        <Heading level="2" as="h3" className="p-4 text-black text-center">
+      <div className="m-auto mt-[200px] flex w-full max-w-[1216px] flex-col items-center justify-center">
+        <Heading level="2" as="h3" className="p-4 text-center text-black">
           😵
           <br /> We had an error when loading this domain data
         </Heading>
@@ -87,8 +87,8 @@ export function ManageNamePageContent({ name }: { name: string }) {
 
   if (!ensData && !isLoading) {
     return (
-      <div className="w-full max-w-[1216px] m-auto flex flex-col items-center justify-center mt-[200px]">
-        <Heading level="2" as="h3" className="p-4 text-black text-center">
+      <div className="m-auto mt-[200px] flex w-full max-w-[1216px] flex-col items-center justify-center">
+        <Heading level="2" as="h3" className="p-4 text-center text-black">
           👀
           <br /> This domain is not yet registered
         </Heading>
@@ -103,13 +103,13 @@ export function ManageNamePageContent({ name }: { name: string }) {
   const textRecords = resolver?.texts;
 
   return (
-    <div className="text-black flex flex-col items-center justify-start bg-white">
+    <div className="flex flex-col items-center justify-start bg-white text-black">
       <ProfileHeader />
 
       <SkeletonGroup loading={isLoading}>
         <div className="w-full p-[60px]">
-          <div className="w-full max-w-[1216px] mx-auto flex flex-col gap-7">
-            <div className="w-full flex gap-[60px]">
+          <div className="mx-auto flex w-full max-w-[1216px] flex-col gap-7">
+            <div className="flex w-full gap-[60px]">
               <Skeleton>
                 <UserDomainCard
                   owner={ensData?.owner}

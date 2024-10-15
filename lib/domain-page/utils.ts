@@ -10,7 +10,7 @@ export const validateDomain = (domain: string): void => {
 };
 
 export const transformTextRecords = (
-  texts: DecodedText[]
+  texts: DecodedText[],
 ): Record<string, string> => {
   return texts.reduce<Record<string, string>>((acc, item) => {
     acc[item.key] = item.value;
@@ -26,13 +26,16 @@ export const getCoinNameByType = (coin: string) => {
 
 export const updateAvatarInTexts = (
   transformedTexts: Record<string, string>,
-  newAvatar?: string | null
+  newAvatar?: string | null,
 ): Record<string, string> => {
-  return Object.keys(transformedTexts).reduce((acc, key) => {
-    acc[key] =
-      key === "avatar" && newAvatar ? newAvatar : transformedTexts[key];
-    return acc;
-  }, {} as Record<string, string>);
+  return Object.keys(transformedTexts).reduce(
+    (acc, key) => {
+      acc[key] =
+        key === "avatar" && newAvatar ? newAvatar : transformedTexts[key];
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 };
 
 export const getSupportedCoins = (): string[] => [

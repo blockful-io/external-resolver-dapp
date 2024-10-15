@@ -18,9 +18,9 @@ export const ProgressBlockTabComponent = ({
   const isActive = registrationBlock === currentRegistrationBlock;
 
   return (
-    <div className="flex gap-3 items-center justify-center">
+    <div className="flex items-center justify-center gap-3">
       <div
-        className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 ${
+        className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-200 ${
           isActive ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-400"
         }`}
       >
@@ -28,13 +28,13 @@ export const ProgressBlockTabComponent = ({
       </div>
       <div className="flex flex-col">
         <h3
-          className={`text-sm transition-all duration-200  ${
+          className={`text-sm transition-all duration-200 ${
             isActive ? "font-bold text-blue-500" : "font-normal text-black"
           }`}
         >
           {title}
         </h3>
-        <h3 className="text-sm text-gray-400 leading-[16px] font-medium">
+        <h3 className="text-sm font-medium leading-[16px] text-gray-400">
           {subtitle}
         </h3>
       </div>

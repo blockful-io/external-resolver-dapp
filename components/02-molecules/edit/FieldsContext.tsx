@@ -313,7 +313,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     const { texts, addresses: domainAddresses } = domainData.resolver;
     if (!texts || _.isEmpty(texts)) {
       console.warn(
-        "FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts"
+        "FieldsContext - updateFieldsWithEnsData - Empty ENS Data texts",
       );
     }
     const textsKeys = Object.keys(texts || {});
@@ -336,7 +336,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       if (domainCoinNames.includes(addressField.label)) {
         // Find the ENS address matching the label
         const matchedAddress = domainAddresses.find(
-          (domainAddress) => domainAddress.label === addressField.label
+          (domainAddress) => domainAddress.label === addressField.label,
         )?.address;
 
         // Use the found address or default to an empty string if undefined

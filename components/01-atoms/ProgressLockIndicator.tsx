@@ -6,15 +6,15 @@ interface ProgressLockIndicatorProps {
 
 const ProgressLockIndicator = ({ timerDone }: ProgressLockIndicatorProps) => {
   return (
-    <div className="relative w-[180px] h-[180px]">
+    <div className="relative h-[180px] w-[180px]">
       <svg
-        className="animate-spin text-blue-500 h-full w-full"
+        className="h-full w-full animate-spin text-blue-500"
         viewBox="0 0 50 50"
         xmlns="http://www.w3.org/2000/svg"
       >
         <circle
-          className={`transition-all duration-200 w-full h-full ${
-            timerDone ? "opacity-100 text-green-600" : "opacity-25"
+          className={`h-full w-full transition-all duration-200 ${
+            timerDone ? "text-green-600 opacity-100" : "opacity-25"
           }`}
           cx="25"
           cy="25"

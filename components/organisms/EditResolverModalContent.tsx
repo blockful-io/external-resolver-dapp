@@ -21,12 +21,12 @@ export const EditResolverModalContent = ({
   name,
 }: EditResolverModalContentProps) => {
   const [resolverAddress, setResolverAddress] = useState<string>(
-    currentResolverAddress
+    currentResolverAddress,
   );
   const [transactionHash, setTransactionHash] = useState<Address | undefined>();
   const [transactionSuccess, setTransactionSuccess] = useState(false);
   const [unsupportedInterfaces, setUnsupportedInterfaces] = useState<string[]>(
-    []
+    [],
   );
   const [isLoading, setIsloading] = useState(false);
   const { data: walletClient } = useWalletClient({ config: walletWagmiConfig });
@@ -36,7 +36,7 @@ export const EditResolverModalContent = ({
     (async () => {
       const invalidInterfaces = await getUnsupportedResolverInterfaces(
         publicClient,
-        resolverAddress
+        resolverAddress,
       );
       setUnsupportedInterfaces(invalidInterfaces);
     })();
@@ -75,11 +75,11 @@ export const EditResolverModalContent = ({
   };
 
   return (
-    <div className="w-[580px] border rounded-xl overflow-hidden">
-      <div className="py-5 px-6 flex justify-between w-full bg-gray-50 border-b font-semibold text-black">
+    <div className="w-[580px] overflow-hidden rounded-xl border">
+      <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         Edit Resolver
       </div>
-      <div className="bg-white text-black border-b border-gray-200 p-6 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 border-b border-gray-200 bg-white p-6 text-black">
         {transactionSuccess ? (
           <>
             <p className="text-7xl"> 🎉</p>
@@ -93,7 +93,7 @@ export const EditResolverModalContent = ({
             <p className="text-sm">
               Check your transaction:{" "}
               <a
-                className="text-gray-500 underline hover:text-gray-700 transition-colors duration-200"
+                className="text-gray-500 underline transition-colors duration-200 hover:text-gray-700"
                 target="_blank"
                 // TODO: Adjust links once mainnet is supported
                 href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
@@ -105,13 +105,13 @@ export const EditResolverModalContent = ({
         ) : (
           <div className="flex flex-col gap-4">
             {unsupportedInterfaces.length > 0 && (
-              <div className="bg-amber-100 border border-amber-400 rounded-xl p-4 mb-4 flex items-center">
-                <div className="flex-shrink-0 w-10 h-10 ml-2 mr-5">
+              <div className="mb-4 flex items-center rounded-xl border border-amber-400 bg-amber-100 p-4">
+                <div className="ml-2 mr-5 h-10 w-10 flex-shrink-0">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="w-full h-full text-yellow-500"
+                    className="h-full w-full text-yellow-500"
                   >
                     <path
                       fillRule="evenodd"
@@ -121,7 +121,7 @@ export const EditResolverModalContent = ({
                   </svg>
                 </div>
                 <div>
-                  <ul className="text-gray-800 text-base font-medium">
+                  <ul className="text-base font-medium text-gray-800">
                     {unsupportedInterfaces.map((interfaceItem, index) => (
                       <li key={index}>
                         - Address does not support {interfaceItem} interface
@@ -151,7 +151,7 @@ export const EditResolverModalContent = ({
         {isLoading && <h1>Check your wallet</h1>}
       </div>
 
-      <div className="py-5 px-6 flex justify-end w-full bg-white gap-4">
+      <div className="flex w-full justify-end gap-4 bg-white px-6 py-5">
         {transactionSuccess ? (
           <>
             <div>

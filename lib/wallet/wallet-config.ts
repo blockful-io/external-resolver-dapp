@@ -27,7 +27,7 @@ const connectors = connectorsForWallets(
   {
     projectId,
     appName,
-  }
+  },
 );
 
 export const walletWagmiConfig = createConfig({
@@ -46,7 +46,7 @@ export const walletWagmiConfig = createConfig({
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [sepolia.id]: http(
-      `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
+      `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`,
     ),
   },
   ssr: false,
@@ -71,13 +71,13 @@ const wagmiConfig = createConfig({
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [sepolia.id]: http(
-      `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
+      `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`,
     ),
     [arbitrum.id]: http(
-      `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`
+      `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
     ),
     [arbitrumSepolia.id]: http(
-      `https://arb-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`
+      `https://arb-sepolia.g.alchemy.com/v2/${alchemyApiTestnetKey}`,
     ),
   },
   ssr: false,

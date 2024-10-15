@@ -44,10 +44,10 @@ export default function DomainsPage() {
   }, [address]);
 
   return (
-    <div className="w-full text-black px-5 flex h-full flex-col items-center justify-start">
-      <div className="w-full flex-col gap-8 py-10 flex justify-start max-w-[1216px]">
+    <div className="flex h-full w-full flex-col items-center justify-start px-5 text-black">
+      <div className="flex w-full max-w-[1216px] flex-col justify-start gap-8 py-10">
         {!address && isClient ? (
-          <div className="w-full flex flex-col gap-4 items-center justify-center">
+          <div className="flex w-full flex-col items-center justify-center gap-4">
             <Heading level="2" className="text-start text-[26px]">
               You have to connect your wallet to see your domains 😉
             </Heading>
@@ -56,8 +56,8 @@ export default function DomainsPage() {
             </div>
           </div>
         ) : (
-          <Skeleton className="!w-full min-h-[500px]" loading={isLoading}>
-            <div className="flex flex-col w-full gap-4">
+          <Skeleton className="min-h-[500px] !w-full" loading={isLoading}>
+            <div className="flex w-full flex-col gap-4">
               <h3 className="text-start text-[26px]"> Manage domains</h3>
               <Table names={names} />
             </div>

@@ -9,9 +9,9 @@ export const ProgressBar = () => {
   const progressPercentage = (stepIndex / (steps.length - 1)) * 100;
 
   return (
-    <div className="w-full relative h-1 bg-gray-200">
+    <div className="relative h-1 w-full bg-gray-200">
       <div
-        className="absolute w-1/2 h-full bg-blue-500 transition-all duration-200"
+        className="absolute h-full w-1/2 bg-blue-500 transition-all duration-200"
         style={{ width: `${progressPercentage}%` }}
       ></div>
     </div>
