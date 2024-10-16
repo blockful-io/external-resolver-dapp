@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   AccountsTab,
   AddressesTab,
+  OthersTab,
   ProfileTab,
   Tab,
   useFields,
@@ -36,7 +37,7 @@ const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
   [Tab.Accounts]: AccountsTab,
   [Tab.Addresses]: AddressesTab,
-  // [Tab.Others]: OthersTab,
+  [Tab.Others]: OthersTab,
 };
 
 interface EditModalContentProps {
@@ -59,9 +60,11 @@ export const EditModalContent = ({
     profileFields,
     accountsFields,
     addressesFields,
+    othersFields,
     initialProfileFields,
     initialAddressesFields,
     initialAccountsFields,
+    initialOthersFields,
     setFields,
   } = useFields();
 
@@ -92,8 +95,17 @@ export const EditModalContent = ({
         changedFieldsKeys.push(field);
       }
     });
+
+    Object.values(othersFields).forEach((field) => {
+      const initialOthersField = initialOthersFields.find(
+        ({ label }) => label === field.label,
+      ) ?? { value: "" };
+      if (field.value !== initialOthersField.value) {
+        changedFieldsKeys.push(field);
+      }
+    });
     setChangedFields(changedFieldsKeys);
-  }, [profileFields, accountsFields, addressesFields]);
+  }, [profileFields, accountsFields, addressesFields, othersFields]);
 
   const hasAnyInvalidField = () => {
     const invalidProfileField = Object.values(profileFields)
@@ -147,7 +159,7 @@ export const EditModalContent = ({
   }
 
   return (
-    <div className="w-[480px] overflow-hidden rounded-xl border">
+    <div className="w-[580px] overflow-hidden rounded-xl border">
       <div className="border-b border-gray-200">
         <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
           Edit Records
@@ -195,18 +207,18 @@ export const EditModalContent = ({
           >
             Addresses
           </button>
-          {/* <button
+          <button
             onClick={() => {
               setSelectedTab(Tab.Others);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
+            className={`flex w-full items-center justify-center border-b py-3 transition-all duration-300 hover:bg-gray-50 ${
               selectedTab === Tab.Others
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
+                ? "border-blue-500 text-blue-500"
+                : "border-gray-200 text-gray-500"
             }`}
           >
             Others
-          </button> */}
+          </button>
         </div>
         <div className="h-[448px] w-full overflow-y-scroll bg-white p-6">
           <CurrentComponent />
@@ -270,7 +282,8 @@ const SaveModalEdits = ({
 }: SaveModalEditsProps) => {
   const router = useRouter();
   const { address, chain } = useAccount();
-  const { textRecordsToUpdate, domainAddressesToUpdate } = useFields();
+  const { textRecordsToUpdate, domainAddressesToUpdate, othersFieldsToUpdate } =
+    useFields();
 
   const publicClient = usePublicClient() as PublicClient &
     WalletClient &
@@ -320,6 +333,7 @@ const SaveModalEdits = ({
         domainResolverAddress: resolverAdd,
         textRecords: textRecordsToUpdate,
         addresses: domainAddressesToUpdate,
+        others: othersFieldsToUpdate,
         client: publicClient,
         chain: chain,
       });
@@ -340,7 +354,7 @@ const SaveModalEdits = ({
   };
 
   return (
-    <div className="w-[480px] overflow-hidden rounded-xl border bg-white">
+    <div className="w-[580px] overflow-hidden rounded-xl border bg-white">
       <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         Edit Records
       </div>

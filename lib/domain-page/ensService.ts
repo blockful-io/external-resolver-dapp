@@ -31,8 +31,8 @@ import {
 import { metadataDomainQuery } from "./queries";
 import {
   Address,
+  ContractFunctionExecutionError,
   decodeFunctionResult,
-  encodeFunctionData,
   Hex,
   hexToString,
   isAddress,
@@ -45,6 +45,8 @@ import {
 import toast from "react-hot-toast";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { decodeContentHash } from "@ensdomains/ensjs/utils";
+import { getRevertErrorData } from "../utils/blockchain-txs";
+import { stringHasMoreThanOneDot } from "../utils/formats";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -112,7 +114,11 @@ export const getENSDomainDataThroughSubgraph = async ({
 }: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
   validateDomain(domain);
 
-  if (await getAvailable(client, { name: domain })) return null;
+  if (
+    !stringHasMoreThanOneDot(domain) &&
+    (await getAvailable(client, { name: domain }))
+  )
+    return null;
 
   const textRecordsKeys = await getSubgraphRecords(client, {
     name: domain,
@@ -236,23 +242,36 @@ const getENSDomainDataThroughResolver = async ({
     },
   );
 
-  const encodedContentHash = (await client.readContract({
-    address: resolverAdd,
-    functionName: "contenthash",
-    args: [namehash(name)],
-    abi: DomainResolverABI,
-  })) as Hex;
+  let contentHash: string | undefined;
 
-  const contentHash = hexToString(
-    decodeFunctionResult({
-      abi: DomainResolverABI,
+  try {
+    debugger;
+    const encodedContentHash = (await client.readContract({
+      address: resolverAdd,
       functionName: "contenthash",
-      data: encodedContentHash,
-    }) as Hex,
-  );
+      args: [namehash(name)],
+      abi: DomainResolverABI,
+    })) as Hex;
+
+    if (encodedContentHash) {
+      contentHash = hexToString(
+        decodeFunctionResult({
+          abi: DomainResolverABI,
+          functionName: "contenthash",
+          data: encodedContentHash,
+        }) as Hex,
+      );
+      data.domain.contentHash = contentHash;
+    }
+  } catch (error) {
+    if (error instanceof ContractFunctionExecutionError) {
+      console.warn("Content hash not set or not supported by this resolver");
+    } else {
+      console.error("Error getting content hash", error);
+    }
+  }
 
   data.domain.resolver.address = resolverAdd;
-  data.domain.contentHash = contentHash;
 
   return data.domain;
 };
