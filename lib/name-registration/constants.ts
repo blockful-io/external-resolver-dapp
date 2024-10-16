@@ -80,7 +80,7 @@ if (
   !isAddress(mainnetDatabaseResolverAddress)
 ) {
   throw new Error(
-    "NEXT_PUBLIC_DATABASE_RESOLVER_ADDRESS_SEPOLIA and NEXT_PUBLIC_DATABASE_RESOLVER_ADDRESS_MAINNET must be set and valid addresses"
+    "NEXT_PUBLIC_DATABASE_RESOLVER_ADDRESS_SEPOLIA and NEXT_PUBLIC_DATABASE_RESOLVER_ADDRESS_MAINNET must be set and valid addresses",
   );
 }
 

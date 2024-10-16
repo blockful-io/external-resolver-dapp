@@ -7,7 +7,6 @@ const ChainChecker = () => {
   const router = useRouter();
 
   useEffect(() => {
-
     if (address && !chain?.id) {
       router.push("/not-supported");
     }

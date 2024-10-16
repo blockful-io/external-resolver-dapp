@@ -18,11 +18,11 @@ const namesForDeclinedTxStatus = [
 ];
 
 export const getBlockchainTransactionError = (
-  error: any
+  error: any,
 ): TransactionErrorType => {
   if (
     namesForRevertedTxStatus.some(
-      (nameForRevertedTxStatus) => error.status === nameForRevertedTxStatus
+      (nameForRevertedTxStatus) => error.status === nameForRevertedTxStatus,
     )
   ) {
     return TransactionErrorType.REVERTED;

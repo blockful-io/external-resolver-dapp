@@ -70,12 +70,12 @@ export default function App({ Component, pageProps }: AppProps) {
             <RainbowKitProvider>
               <div
                 style={{ background: "#fff" }}
-                className={`${satoshiFont.variable} min-h-screen flex flex-col`}
+                className={`${satoshiFont.variable} flex min-h-screen flex-col`}
               >
                 <DappHeader />
                 <main>
+                  <Toaster position="bottom-right" />
                   <div className="relative z-10 h-full flex-grow">
-                    <Toaster position="bottom-right" />
                     <ChainChecker />
                     <Component {...pageProps} />
                   </div>

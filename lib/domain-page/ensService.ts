@@ -123,7 +123,7 @@ export const getENSDomainDataThroughSubgraph = async ({
       }),
       getOwner.batch({ name: domain }),
       getExpiry.batch({ name: domain }),
-      getResolver.batch({ name: domain })
+      getResolver.batch({ name: domain }),
     ),
   ]);
 
@@ -221,7 +221,7 @@ const getENSDomainDataThroughResolver = async ({
     metadataDomainQuery,
     {
       name,
-    }
+    },
   );
 
   data.domain.resolver.address = resolverAdd;
@@ -272,7 +272,7 @@ const formatSubgraphDomainData = async ({
 };
 
 const formatResolverDomainData = (
-  data: ResolverQueryDomainData
+  data: ResolverQueryDomainData,
 ): DomainData => {
   const transformedTexts = transformTextRecords(data.resolver.texts);
 

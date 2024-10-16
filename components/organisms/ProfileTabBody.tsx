@@ -55,11 +55,11 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
   }
 
   return (
-    <div className="flex-grow flex gap-11 flex-col">
+    <div className="flex flex-grow flex-col gap-11">
       {!!addresses?.length && (
         <div className="flex flex-col gap-4">
           <Skeleton>
-            <h3 className="font-semibold text-base">Addresses</h3>
+            <h3 className="text-base font-semibold">Addresses</h3>
           </Skeleton>
           <div className="grid grid-cols-2 gap-4">
             {addresses.map((coin: CoinInfo | undefined, index: number) => (
@@ -81,7 +81,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
       {Object.keys(filteredRecords).length !== 0 && (
         <div className="flex flex-col gap-4">
           <Skeleton>
-            <h3 className="font-semibold text-base">Other Records</h3>
+            <h3 className="text-base font-semibold">Other Records</h3>
           </Skeleton>
           <div className="grid grid-cols-2 gap-4">
             {Object.entries(filteredRecords).map(([key, value]) => (
@@ -99,7 +99,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
       )}
       <div className="flex flex-col gap-4">
         <Skeleton>
-          <h3 className="font-semibold text-base">Ownership</h3>
+          <h3 className="text-base font-semibold">Ownership</h3>
         </Skeleton>
 
         <div className="grid grid-cols-2 gap-4">
@@ -146,18 +146,18 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
 
       <div className="flex flex-col gap-4">
         <Skeleton>
-          <h3 className="font-semibold text-base">Resolver</h3>
+          <h3 className="text-base font-semibold">Resolver</h3>
         </Skeleton>
         <div className="grid grid-cols-2 gap-4">
           <Skeleton>
-            <div className="flex justify-between items-center gap-4 px-2 py-2 rounded-md bg-gray-50 overflow-hidden">
+            <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
               <div className="flex items-center gap-4">
-                <div className="flex gap-4 p-2 rounded-md bg-blue-100">
+                <div className="flex gap-4 rounded-md bg-blue-100 p-2">
                   <DatabaseIcon className="h-5 w-5 text-blue-500" />
                 </div>
 
                 {resolver?.address && (
-                  <p className="whitespace-nowrap truncate">
+                  <p className="truncate whitespace-nowrap">
                     {formatHexAddress(resolver?.address)}
                   </p>
                 )}

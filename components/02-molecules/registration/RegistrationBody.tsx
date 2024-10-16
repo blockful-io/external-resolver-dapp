@@ -58,7 +58,7 @@ export const RegistrationBody = () => {
     if (address && nameRegistrationData.name) {
       const openRegistration = getOpenNameRegistrationsOfNameByWallet(
         address,
-        nameRegistrationData.name
+        nameRegistrationData.name,
       );
 
       const hasOpenRegistrationForSearchedName = !!openRegistration;

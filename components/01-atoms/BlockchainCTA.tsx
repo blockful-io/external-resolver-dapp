@@ -69,7 +69,7 @@ export const BlockchainCTA = ({
 
     if (!transactionRequest || !onSuccess) {
       throw new Error(
-        "The component should not trigger blockchain related events without a transactionRequest or onSuccess callback"
+        "The component should not trigger blockchain related events without a transactionRequest or onSuccess callback",
       );
     }
 
@@ -159,7 +159,7 @@ const TransactionRequestConfirmedCTA = ({
 }: BlockchainCTAComponentProps) => {
   const { chain } = useAccount();
   return (
-    <div className="flex flex-col space-y-6 justify">
+    <div className="justify flex flex-col space-y-6">
       <Button
         className="pointer-events-none"
         colorStyle="bluePrimary"
@@ -172,7 +172,7 @@ const TransactionRequestConfirmedCTA = ({
       {txHash && (
         <Link
           target="_blank"
-          className="flex space-x-2 text-blue-500 font-bold hover:text-blue-400 transition"
+          className="flex space-x-2 font-bold text-blue-500 transition hover:text-blue-400"
           href={
             chain?.blockExplorers?.default.url
               ? `${chain.blockExplorers.default.url}/tx/${txHash}`
@@ -191,8 +191,8 @@ const TransactionRequestSentCTA = ({
   onClick,
 }: BlockchainCTAComponentProps) => {
   return (
-    <div className="relative group">
-      <div className="z-10 group-hover:translate-y-0 absolute left-0 top-0">
+    <div className="group relative">
+      <div className="absolute left-0 top-0 z-10 group-hover:translate-y-0">
         <Button
           className="pointer-events-none"
           prefix={<AeroplaneSVG />}

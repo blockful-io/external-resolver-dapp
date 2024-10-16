@@ -9,8 +9,8 @@ export const ProfileTab = () => {
 
   return (
     <div className="w-full">
-      <div className="w-full h-[120px] bg-gradient-ens rounded-xl flex items-end justify-center">
-        <div className="rounded-lg translate-y-6 border-2 border-white overflow-hidden">
+      <div className="flex h-[120px] w-full items-end justify-center rounded-xl bg-gradient-ens">
+        <div className="translate-y-6 overflow-hidden rounded-lg border-2 border-white">
           <Avatar
             size={80}
             square

@@ -42,7 +42,7 @@ export const ENSResolverComponent = ({
   const { ensResolver } = nameRegistrationData;
 
   const handleENSResolverSelection = (
-    radioRef: React.RefObject<HTMLInputElement>
+    radioRef: React.RefObject<HTMLInputElement>,
   ) => {
     radioRef?.current?.click();
   };
@@ -61,9 +61,9 @@ export const ENSResolverComponent = ({
   };
 
   return (
-    <div className="flex flex-col gap-[44px] justify-start items-start">
+    <div className="flex flex-col items-start justify-start gap-[44px]">
       <BackButton onClick={handlePreviousStep} />
-      <div className="max-w-[500px] w-full flex items-start flex-col gap-7 min-h-[300px]">
+      <div className="flex min-h-[300px] w-full max-w-[500px] flex-col items-start gap-7">
         <div className="flex flex-col gap-3">
           <h3 className="text-start text-[34px] font-medium">
             Where do you want to store the domain data?
@@ -77,21 +77,21 @@ export const ENSResolverComponent = ({
               href="https://docs.ens.domains/resolvers/quickstart"
               className="flex items-center justify-center gap-1"
             >
-              <ExternalLinkIcon className="w-3 h-3" />
-              <p className="text-blue-500 text-sm">Learn more</p>
+              <ExternalLinkIcon className="h-3 w-3" />
+              <p className="text-sm text-blue-500">Learn more</p>
             </a>
           </div>
         </div>
 
-        <div className="flex flex-col border rounded-[8px] border-gray-200 w-full">
+        <div className="flex w-full flex-col rounded-[8px] border border-gray-200">
           <div
             onClick={() => handleENSResolverSelection(radioButtonRefDatabase)}
-            className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
+            className={`flex cursor-pointer items-center gap-4 border-b border-gray-200 p-3 ${
               ensResolver === null
                 ? "bg-white"
                 : ensResolver === EnsResolver.Database
-                ? "bg-[#EEF5FF]"
-                : "bg-white"
+                  ? "bg-[#EEF5FF]"
+                  : "bg-white"
             }`}
           >
             <div>
@@ -109,7 +109,7 @@ export const ENSResolverComponent = ({
             <div className="flex items-center justify-center gap-2">
               <DatabaseIcon className="h-6 w-6" />
               Off-chain
-              <p className="text-xs mt-1">hosted by blockful</p>
+              <p className="mt-1 text-xs">hosted by blockful</p>
             </div>
           </div>
 
@@ -117,12 +117,12 @@ export const ENSResolverComponent = ({
             onClick={() =>
               handleENSResolverSelection(radioButtonRefCustomDatabase)
             }
-            className={`flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
+            className={`flex cursor-pointer items-center gap-4 border-b border-gray-200 p-3 ${
               ensResolver === null
                 ? "bg-white"
                 : ensResolver === EnsResolver.Custom
-                ? "bg-[#EEF5FF]"
-                : "bg-white"
+                  ? "bg-[#EEF5FF]"
+                  : "bg-white"
             }`}
           >
             <div>
@@ -146,12 +146,12 @@ export const ENSResolverComponent = ({
           <button
             disabled={true}
             onClick={() => handleENSResolverSelection(radioButtonRefArbitrum)}
-            className={`!bg-gray-100 flex grayscale cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
+            className={`flex cursor-pointer items-center gap-4 border-b border-gray-200 !bg-gray-100 p-3 grayscale ${
               ensResolver === null
                 ? "bg-white"
                 : ensResolver === EnsResolver.Arbitrum
-                ? "bg-[#EEF5FF]"
-                : "bg-white"
+                  ? "bg-[#EEF5FF]"
+                  : "bg-white"
             }`}
           >
             <div>
@@ -176,12 +176,12 @@ export const ENSResolverComponent = ({
           <button
             disabled={true}
             onClick={() => handleENSResolverSelection(radioButtonRefOptimism)}
-            className={`!bg-gray-100 grayscale flex cursor-pointer items-center gap-4 p-3 border-b border-gray-200 ${
+            className={`flex cursor-pointer items-center gap-4 border-b border-gray-200 !bg-gray-100 p-3 grayscale ${
               ensResolver === null
                 ? "bg-white"
                 : ensResolver === EnsResolver.Optimism
-                ? "bg-[#EEF5FF]"
-                : "bg-white"
+                  ? "bg-[#EEF5FF]"
+                  : "bg-white"
             }`}
           >
             <div>
@@ -208,7 +208,7 @@ export const ENSResolverComponent = ({
         <Input
           clearable
           label={
-            <span className="w-full flex justify-start">Ens Resolver</span>
+            <span className="flex w-full justify-start">Ens Resolver</span>
           }
           placeholder="Resolver address"
           type="text"
@@ -219,7 +219,7 @@ export const ENSResolverComponent = ({
           }}
         />
       )}
-      <div className="w-full flex">
+      <div className="flex w-full">
         <NextButton
           disabled={
             ensResolver === null ||

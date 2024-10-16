@@ -67,7 +67,7 @@ export const TableItem = ({
         { "cursor-pointer hover:bg-gray-100": clickable },
       ])}
     >
-      <td className="py-2 px-4 border-b align-middle">
+      <td className="border-b px-4 py-2 align-middle">
         <div className="flex items-center gap-2">
           <Skeleton loading={isLoadingImage}>
             {avatar ? (
@@ -80,10 +80,10 @@ export const TableItem = ({
                     ? avatar
                     : "https://source.boringavatars.com/marble/120/Maria%20Mitchell?colors=44BCF0,7298F8,A099FF,FFFFFF"
                 }
-                className="w-10 h-10 rounded-[10px]"
+                className="h-10 w-10 rounded-[10px]"
               />
             ) : (
-              <div className="w-10 h-10 bg-gradient-ens rounded-[10px] overflow-hidden">
+              <div className="h-10 w-10 overflow-hidden rounded-[10px] bg-gradient-ens">
                 <Avatar
                   size={40}
                   square
@@ -98,12 +98,12 @@ export const TableItem = ({
         </div>
       </td>
       {withRoleColumn && (
-        <td className="py-2 px-4 border-b align-middle">
+        <td className="border-b px-4 py-2 align-middle">
           {roles.map((role, index) => (
             <span
               key={index}
               className={cc([
-                "inline-block px-2 py-1 mr-2 rounded",
+                "mr-2 inline-block rounded px-2 py-1",
                 {
                   "bg-yellow-100 text-yellow-800": role === "owner",
                   "bg-green-100 text-green-800": role === "manager",
