@@ -12,11 +12,14 @@ interface FieldsContextType {
   initialAccountsFields: Field[];
   addressesFields: Field[];
   initialAddressesFields: Field[];
+  othersFields: Field[];
+  initialOthersFields: Field[];
   addField: (tab: Tab, fieldName: string) => void;
   setFields: (tab: Tab, fields: Field[]) => void;
   setInitialFields: (tab: Tab, fields: Field[]) => void;
   updateField: (tab: Tab, index: number, newValue: string) => void;
   domainAddressesToUpdate: Record<string, string>;
+  othersFieldsToUpdate: Record<string, string>;
   textRecordsToUpdate: Record<string, string>;
   updateEditModalFieldsWithEnsData: (ensData: DomainData | null) => void;
 }
@@ -32,6 +35,9 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     Record<string, string>
   >({});
   const [domainAddressesToUpdate, setDomainAddressesToUpdate] = useState<
+    Record<string, string>
+  >({});
+  const [othersFieldsToUpdate, setOthersFieldsToUpdate] = useState<
     Record<string, string>
   >({});
 
@@ -56,6 +62,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       [Tab.Profile]: setProfileFieldsState,
       [Tab.Accounts]: setAccountsFieldsState,
       [Tab.Addresses]: setAddressesFieldsState,
+      [Tab.Others]: setOthersFieldsState,
     };
     const deepCopiedFields = _.cloneDeep(fields);
     setStateByTab[tab](deepCopiedFields);
@@ -66,11 +73,13 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       [Tab.Profile]: [...profileFields],
       [Tab.Accounts]: [...accountsFields],
       [Tab.Addresses]: [...addressesFields],
+      [Tab.Others]: [...othersFields],
     };
     const setStateByTab = {
       [Tab.Profile]: setProfileFieldsState,
       [Tab.Accounts]: setAccountsFieldsState,
       [Tab.Addresses]: setAddressesFieldsState,
+      [Tab.Others]: setOthersFieldsState,
     };
     const updatedFields = fieldsByTab[tab];
     updatedFields[index].value = newValue;
@@ -85,6 +94,11 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         ...textRecordsToUpdate,
         [updatedFields[index].label]: newValue,
       });
+    } else if (updatedFields[index].fieldType === FieldType.Others) {
+      setOthersFieldsToUpdate({
+        ...othersFieldsToUpdate,
+        [updatedFields[index].label]: newValue,
+      });
     }
     setStateByTab[tab](updatedFields);
   };
@@ -94,6 +108,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       [Tab.Profile]: setProfileFieldsState,
       [Tab.Accounts]: setAccountsFieldsState,
       [Tab.Addresses]: setAddressesFieldsState,
+      [Tab.Others]: setOthersFieldsState,
     };
     const newField: Field = {
       label: fieldName,
@@ -127,6 +142,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       [Tab.Profile]: setInitialProfileFieldsState,
       [Tab.Accounts]: setInitialAccountsFieldsState,
       [Tab.Addresses]: setInitialAddressesFieldsState,
+      [Tab.Others]: setInitialOthersFieldsState,
     };
     const deepCopiedFields = _.cloneDeep(fields);
     setInitialFieldsByTab[tab](deepCopiedFields);
@@ -176,6 +192,16 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       value: "",
       fieldType: FieldType.Text,
     },
+  ]);
+
+  // INITIAL OTHERS STATE
+  const [initialOthersFields, setInitialOthersFieldsState] = useState<Field[]>([
+    {
+      label: "Content Hash",
+      placeholder: "ipfs://Qm...",
+      value: "",
+      fieldType: FieldType.Others,
+    } as Field,
   ]);
 
   // ADDRESS TAB
@@ -239,6 +265,16 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     //     return fieldIsEmpty || isValidAddress;
     //   },
     // },
+  ]);
+
+  // ADDRESS TAB
+  const [othersFields, setOthersFieldsState] = useState<Field[]>([
+    {
+      label: "Content Hash",
+      placeholder: "ipfs://Qm...",
+      value: "",
+      fieldType: FieldType.Others,
+    } as Field,
   ]);
 
   // INITIAL ADDRESS STATE
@@ -360,13 +396,21 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
       };
     });
 
+    const newOthersFields = othersFields.map((field) => {
+      return {
+        ...field,
+        value: String(texts[field.label] ?? ""),
+      };
+    });
+
     const newFieldsByTab = {
       [Tab.Profile]: newProfileFields,
       [Tab.Accounts]: newAccountsFields,
       [Tab.Addresses]: populatedAddressFields,
+      [Tab.Others]: newOthersFields.flat(), // Flatten the array
     };
 
-    [Tab.Profile, Tab.Accounts, Tab.Addresses].forEach((tab) => {
+    [Tab.Profile, Tab.Accounts, Tab.Addresses, Tab.Others].forEach((tab) => {
       setFields(tab, newFieldsByTab[tab]);
       setInitialFields(tab, newFieldsByTab[tab]);
     });
@@ -378,11 +422,14 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
         profileFields,
         initialProfileFields,
         accountsFields,
+        othersFields,
         initialAccountsFields,
+        initialOthersFields,
         addressesFields,
         initialAddressesFields,
         domainAddressesToUpdate,
         textRecordsToUpdate,
+        othersFieldsToUpdate,
         updateEditModalFieldsWithEnsData,
         addField,
         updateField,
