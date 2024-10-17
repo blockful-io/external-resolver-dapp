@@ -22,6 +22,7 @@ import {
   Address,
   PublicClient,
   Chain,
+  stringToHex,
 } from "viem";
 import { SupportedNetwork } from "../wallet/chains";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
@@ -31,7 +32,7 @@ import {
 } from "../wallet/txError";
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
-import DomainResolverABI from "../abi/resolver.json";
+import DomainResolverABI from "../abi/offchain-resolver.json";
 import { normalize } from "viem/ens";
 import { cryptocurrencies } from "../domain-page";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
@@ -371,6 +372,7 @@ interface SetDomainRecordsParams {
   authenticatedAddress: Address;
   textRecords: Record<string, string>;
   addresses: Record<string, string>;
+  others: Record<string, string>;
   client: PublicClient & WalletClient;
   chain: Chain;
 }
@@ -382,6 +384,7 @@ export const setDomainRecords = async ({
   authenticatedAddress,
   textRecords,
   addresses,
+  others,
   client,
   chain,
 }: SetDomainRecordsParams) => {
@@ -429,6 +432,16 @@ export const setDomainRecords = async ({
       calls.push(callData);
     }
 
+    for (let i = 0; i < Object.keys(others).length; i++) {
+      const [key, value] = Object.entries(others)[i];
+      const callData = encodeFunctionData({
+        functionName: "setContenthash",
+        abi: L1ResolverABI,
+        args: [namehash(publicAddress), stringToHex(value)], // vallue = url
+      });
+      calls.push(callData);
+    }
+
     try {
       let localResolverAddress;
 
@@ -442,7 +455,7 @@ export const setDomainRecords = async ({
 
       await client.simulateContract({
         functionName: "multicall",
-        abi: DomainResolverABI,
+        abi: L1ResolverABI,
         args: [calls],
         account: authenticatedAddress,
         address: localResolverAddress,
