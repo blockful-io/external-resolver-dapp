@@ -13,7 +13,7 @@ import {
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize, packetToBytes } from "viem/ens";
-import DomainResolverABI from "../abi/resolver.json";
+import DomainResolverABI from "../abi/offchain-resolver.json";
 import abiUniversalResolver from "../abi/universal-resolver.json";
 import {
   getCoinNameByType,
