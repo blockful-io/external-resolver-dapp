@@ -1,16 +1,7 @@
-import {
-  Button,
-  CalendarSVG,
-  CogSVG,
-  EthTransparentSVG,
-  HeartSVG,
-  Modal,
-  Skeleton,
-} from "@ensdomains/thorin";
-import { ProfileRecordItem } from "../02-molecules";
+import { Button, Modal, Skeleton, RecordItem } from "@ensdomains/thorin";
 import { DatabaseIcon } from "../01-atoms";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
-import { CoinInfo, DomainData } from "@/lib/domain-page";
+import { formatDate } from "@/lib/utils/formats";
+import { CoinInfo, DomainData, getCoinNameByType } from "@/lib/domain-page";
 import { useAccount, useEnsName } from "wagmi";
 import { useState } from "react";
 import { EditResolverModalContent } from "./EditResolverModalContent";
@@ -56,24 +47,27 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
 
   return (
     <div className="flex flex-grow flex-col gap-11">
+      {/* ADDRESSES */}
       {!!addresses?.length && (
         <div className="flex flex-col gap-4">
           <Skeleton>
             <h3 className="text-base font-semibold">Addresses</h3>
           </Skeleton>
-          <div className="grid grid-cols-2 gap-4">
-            {addresses.map((coin: CoinInfo | undefined, index: number) => (
-              <div key={index}>
-                {coin ? (
-                  <Skeleton key={coin.coin}>
-                    <ProfileRecordItem
-                      icon={EthTransparentSVG}
-                      text={coin.address}
-                    />
-                  </Skeleton>
-                ) : null}
-              </div>
-            ))}
+          <div className="flex flex-col gap-4">
+            {addresses.map((coin: CoinInfo | undefined, index: number) =>
+              coin ? (
+                <Skeleton key={coin.coin}>
+                  <RecordItem
+                    size="large"
+                    className="flex items-center justify-center"
+                    keyLabel={getCoinNameByType(coin.coin)}
+                    value={coin.address}
+                  >
+                    {coin.address}
+                  </RecordItem>
+                </Skeleton>
+              ) : null,
+            )}
           </div>
         </div>
       )}
@@ -83,15 +77,12 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             <h3 className="text-base font-semibold">Other Records</h3>
           </Skeleton>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             {Object.entries(filteredRecords).map(([key, value]) => (
               <Skeleton key={key}>
-                <ProfileRecordItem
-                  icon={EthTransparentSVG}
-                  key={key}
-                  label={key}
-                  text={value}
-                />
+                <RecordItem size="large" keyLabel={key} value={value}>
+                  {value}
+                </RecordItem>
               </Skeleton>
             ))}
           </div>
@@ -102,43 +93,53 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <h3 className="text-base font-semibold">Ownership</h3>
         </Skeleton>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <Skeleton>
-            <ProfileRecordItem
-              icon={CogSVG}
-              label="manager"
-              text={domainData?.owner ?? ""}
-            />
+            <RecordItem
+              size="large"
+              keyLabel="manager"
+              value={domainData?.owner ?? ""}
+            >
+              {domainData?.owner ?? ""}
+            </RecordItem>
           </Skeleton>
 
           <Skeleton>
             {domainData?.owner && (
-              <ProfileRecordItem
-                icon={HeartSVG}
-                label="owner"
-                text={domainData?.owner}
-              />
+              <RecordItem
+                size="large"
+                keyLabel="owner"
+                value={domainData?.owner}
+              >
+                {domainData?.owner}
+              </RecordItem>
             )}
           </Skeleton>
 
           <Skeleton>
             {expiryDate !== undefined && (
-              <ProfileRecordItem
-                icon={CalendarSVG}
-                label="expiry"
-                text={formatDate({
+              <RecordItem
+                size="large"
+                keyLabel="expiry"
+                value={formatDate({
                   unixTimestamp: millisecondsToSeconds(expiryDate),
                 })}
-              />
+              >
+                {formatDate({
+                  unixTimestamp: millisecondsToSeconds(expiryDate),
+                })}
+              </RecordItem>
             )}
           </Skeleton>
           <Skeleton>
             {domainData?.parent && (
-              <ProfileRecordItem
-                icon={EthTransparentSVG}
-                label="parent"
-                text={domainData.parent}
-              />
+              <RecordItem
+                size="large"
+                keyLabel="parent"
+                value={domainData.parent}
+              >
+                {domainData.parent}
+              </RecordItem>
             )}
           </Skeleton>
         </div>
@@ -148,7 +149,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
         <Skeleton>
           <h3 className="text-base font-semibold">Resolver</h3>
         </Skeleton>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <Skeleton>
             <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
               <div className="flex items-center gap-4">
@@ -158,7 +159,7 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
 
                 {resolver?.address && (
                   <p className="truncate whitespace-nowrap">
-                    {formatHexAddress(resolver?.address)}
+                    {resolver?.address}
                   </p>
                 )}
               </div>
@@ -184,21 +185,15 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
         <Skeleton>
           <h3 className="text-base font-semibold">Content Hash</h3>
         </Skeleton>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <Skeleton>
-            <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
-              <div className="flex items-center gap-4">
-                <div className="flex gap-4 rounded-md bg-blue-100 p-2">
-                  <DatabaseIcon className="h-5 w-5 text-blue-500" />
-                </div>
-
-                <p className="truncate whitespace-nowrap">
-                  {domainData?.contentHash
-                    ? domainData?.contentHash
-                    : "No Content Hash"}
-                </p>
-              </div>
-            </div>
+            <RecordItem
+              size="large"
+              keyLabel="content hash"
+              value={domainData?.contentHash || "No Content Hash"}
+            >
+              {domainData?.contentHash || "No Content Hash"}
+            </RecordItem>
           </Skeleton>
         </div>
       </div>
