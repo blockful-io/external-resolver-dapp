@@ -12,9 +12,9 @@ import {
 } from "@ensdomains/ensjs/public";
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
 import DomainResolverABI from "../abi/resolver.json";
-
+import abiUniversalResolver from "../abi/universal-resolver.json";
 import {
   getCoinNameByType,
   getSupportedCoins,
@@ -33,6 +33,7 @@ import {
   Address,
   ContractFunctionExecutionError,
   decodeFunctionResult,
+  encodeFunctionData,
   Hex,
   hexToString,
   isAddress,
@@ -44,9 +45,9 @@ import {
 } from "viem";
 import toast from "react-hot-toast";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
-import { decodeContentHash } from "@ensdomains/ensjs/utils";
-import { getRevertErrorData } from "../utils/blockchain-txs";
 import { stringHasMoreThanOneDot } from "../utils/formats";
+import { nameRegistrationSmartContracts } from "../name-registration/constants";
+import { SupportedNetwork } from "../wallet/chains";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -245,13 +246,23 @@ const getENSDomainDataThroughResolver = async ({
   let contentHash: string | undefined;
 
   try {
-    debugger;
-    const encodedContentHash = (await client.readContract({
-      address: resolverAdd,
-      functionName: "contenthash",
-      args: [namehash(name)],
-      abi: DomainResolverABI,
-    })) as Hex;
+    const dnsName = toHex(packetToBytes(name));
+
+    const [encodedContentHash] = (await client.readContract({
+      address:
+        nameRegistrationSmartContracts[SupportedNetwork.TESTNET]
+          .UNIVERSAL_RESOLVER,
+      functionName: "resolve",
+      abi: abiUniversalResolver,
+      args: [
+        dnsName,
+        encodeFunctionData({
+          abi: DomainResolverABI,
+          functionName: "contenthash",
+          args: [namehash(name)],
+        }),
+      ],
+    })) as [Hex];
 
     if (encodedContentHash) {
       contentHash = hexToString(
@@ -261,6 +272,7 @@ const getENSDomainDataThroughResolver = async ({
           data: encodedContentHash,
         }) as Hex,
       );
+
       data.domain.contentHash = contentHash;
     }
   } catch (error) {
