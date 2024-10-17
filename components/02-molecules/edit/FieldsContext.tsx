@@ -267,7 +267,7 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
     // },
   ]);
 
-  // ADDRESS TAB
+  // OTHERS TAB
   const [othersFields, setOthersFieldsState] = useState<Field[]>([
     {
       label: "Content Hash",
