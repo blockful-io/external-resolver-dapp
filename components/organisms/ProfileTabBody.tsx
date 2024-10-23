@@ -63,8 +63,6 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
   const telegram = textRecords?.["org.telegram"];
   const email = textRecords?.["email"];
 
-  console.log(textRecords);
-
   return (
     <div className="flex flex-grow flex-col gap-11">
       {!!hasAccountKeys && (
