@@ -4,7 +4,11 @@ import {
   RecordItem,
   EthTransparentInvertedSVG,
 } from "@ensdomains/thorin";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
+import {
+  formatBtcAddress,
+  formatDate,
+  formatHexAddress,
+} from "@/lib/utils/formats";
 import { CoinInfo, DomainData } from "@/lib/domain-page";
 import { useState } from "react";
 import { EditResolverModalContent } from "./EditResolverModalContent";
@@ -13,6 +17,8 @@ import { excludeKeys } from "@/pages/domains/[name]";
 import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../01-atoms";
 import { TelegramIcon } from "../01-atoms/icons/telegram";
 import { isAddress } from "viem";
+import { CoinIcon } from "../02-molecules/CoinInfo";
+import { coinNameToTypeMap } from "@ensdomains/address-encoder";
 
 enum AccountKeys {
   Twitter = "com.twitter",
@@ -130,16 +136,12 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                     size="large"
                     inline
                     className="flex items-center justify-center"
-                    // keyLabel={getCoinNameByType(coin.coin)}
-                    icon={
-                      <EthTransparentInvertedSVG
-                        className="text-blue-500"
-                        coin={coin.coin}
-                      />
-                    }
+                    icon={<CoinIcon coin={coin.coin} className="h-6 w-6" />}
                     value={coin.address}
                   >
-                    {formatHexAddress(coin.address)}
+                    {coin.coin !== coinNameToTypeMap.btc.toString()
+                      ? formatHexAddress(coin.address)
+                      : formatBtcAddress(coin.address)}
                   </RecordItem>
                 </Skeleton>
               ) : null,

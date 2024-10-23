@@ -24,3 +24,6 @@ export * from "./icons/pencil-icon";
 export * from "./icons/plus-circle-icon";
 export * from "./icons/cog-icon";
 export * from "./icons/plus-circle-icon";
+export * from "./icons/telegram";
+export * from "./icons/twitter";
+export * from "./icons/bitcoin-icon";
