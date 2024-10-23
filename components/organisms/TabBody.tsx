@@ -10,9 +10,9 @@ interface TabInfo<T = any> {
 }
 
 export enum Tabs {
-  Profile = "profile",
-  Subdomains = "subdomains",
-  Records = "records",
+  Profile = "Profile",
+  Records = "Records",
+  Subdomains = "Subdomains",
 }
 
 // Object mapping each tab to its properties
