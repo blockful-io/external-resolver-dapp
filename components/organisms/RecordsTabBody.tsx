@@ -1,5 +1,4 @@
 import { Button, Modal, Skeleton, RecordItem } from "@ensdomains/thorin";
-import { DatabaseIcon } from "../01-atoms";
 import { formatDate } from "@/lib/utils/formats";
 import { CoinInfo, DomainData, getCoinNameByType } from "@/lib/domain-page";
 import { useAccount, useEnsName } from "wagmi";
@@ -33,6 +32,7 @@ export const RecordsTabBody = ({ domainData }: RecordsTabProps) => {
 
   const addresses = resolver?.addresses;
   const expiryDate = domainData?.expiryDate;
+  const textRecords = domainData?.resolver.texts;
 
   let filteredRecords: Record<string, string> = {};
 
@@ -72,13 +72,13 @@ export const RecordsTabBody = ({ domainData }: RecordsTabProps) => {
         </div>
       )}
 
-      {Object.keys(filteredRecords).length !== 0 && (
+      {textRecords && Object.entries(textRecords)?.length !== 0 && (
         <div className="flex flex-col gap-4">
           <Skeleton>
-            <h3 className="text-base font-semibold">Other Records</h3>
+            <h3 className="text-base font-semibold">Records</h3>
           </Skeleton>
           <div className="flex flex-col gap-4">
-            {Object.entries(filteredRecords).map(([key, value]) => (
+            {Object.entries(textRecords).map(([key, value]) => (
               <Skeleton key={key}>
                 <RecordItem size="large" keyLabel={key} value={value}>
                   {value}
@@ -151,32 +151,30 @@ export const RecordsTabBody = ({ domainData }: RecordsTabProps) => {
         </Skeleton>
         <div className="flex flex-col gap-4">
           <Skeleton>
-            <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
-              <div className="flex items-center gap-4">
-                <div className="flex gap-4 rounded-md bg-blue-100 p-2">
-                  <DatabaseIcon className="h-5 w-5 text-blue-500" />
-                </div>
+            {resolver?.address && (
+              <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50">
+                <RecordItem
+                  size="large"
+                  keyLabel="resolver"
+                  value={resolver?.address}
+                >
+                  {resolver?.address}
+                </RecordItem>
 
-                {resolver?.address && (
-                  <p className="truncate whitespace-nowrap">
-                    {resolver?.address}
-                  </p>
+                {showEditButton && (
+                  <div>
+                    <Button
+                      onClick={() => {
+                        setEditResolverModalOpen(true);
+                      }}
+                      size="small"
+                    >
+                      Edit
+                    </Button>
+                  </div>
                 )}
               </div>
-
-              {showEditButton && (
-                <div>
-                  <Button
-                    onClick={() => {
-                      setEditResolverModalOpen(true);
-                    }}
-                    size="small"
-                  >
-                    Edit
-                  </Button>
-                </div>
-              )}
-            </div>
+            )}
           </Skeleton>
         </div>
       </div>
