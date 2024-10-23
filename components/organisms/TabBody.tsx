@@ -3,14 +3,16 @@ import { ProfileTabBody, ProfileTabProps } from "./ProfileTabBody";
 import { DomainData } from "@/lib/domain-page";
 import { SubdomainsTabBody, SubdomainsTabProps } from "./SubdomainsTabBody";
 import { useRouter } from "next/router";
+import { RecordsTabBody, RecordsTabProps } from "./RecordsTabBody";
 
 interface TabInfo<T = any> {
   component: React.ComponentType<T>;
 }
 
 export enum Tabs {
-  Profile = "profile",
-  Subdomains = "subdomains",
+  Profile = "Profile",
+  Records = "Records",
+  Subdomains = "Subdomains",
 }
 
 // Object mapping each tab to its properties
@@ -20,6 +22,9 @@ export const TabConfig: Record<Tabs, TabInfo> = {
   },
   [Tabs.Subdomains]: {
     component: SubdomainsTabBody as React.ComponentType<SubdomainsTabProps>,
+  },
+  [Tabs.Records]: {
+    component: RecordsTabBody as React.ComponentType<RecordsTabProps>,
   },
 };
 
