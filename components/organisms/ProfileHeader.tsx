@@ -45,6 +45,18 @@ export const ProfileHeader = () => {
             Profile
           </button>
 
+          {/* Records Tab */}
+          <button
+            className={`h-full p-4 ${
+              tab === "records"
+                ? "border-b border-blue-500 text-blue-500"
+                : "text-gray-400"
+            } transition-colors duration-300 hover:bg-gray-100`}
+            onClick={() => handleTabChange("records")}
+          >
+            Records
+          </button>
+
           {/* Subdomains Tab */}
           <button
             className={`h-full p-4 ${
