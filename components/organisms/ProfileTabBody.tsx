@@ -14,6 +14,37 @@ import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../01-atoms";
 import { TelegramIcon } from "../01-atoms/icons/telegram";
 import { isAddress } from "viem";
 
+enum AccountKeys {
+  Twitter = "com.twitter",
+  GitHub = "com.github",
+  LinkedIn = "com.linkedin",
+  Telegram = "org.telegram",
+  Email = "email",
+}
+
+const accountKeysMap = {
+  [AccountKeys.Twitter]: {
+    icon: <TwitterIcon className="text-blue-500" />,
+    urlPrefix: "https://twitter.com/",
+  },
+  [AccountKeys.GitHub]: {
+    icon: <GithubIcon className="text-blue-500" />,
+    urlPrefix: "https://github.com/",
+  },
+  [AccountKeys.LinkedIn]: {
+    icon: <LinkedInIcon className="text-blue-500" />,
+    urlPrefix: "https://www.linkedin.com/in/",
+  },
+  [AccountKeys.Telegram]: {
+    icon: <TelegramIcon className="text-blue-500" />,
+    urlPrefix: "https://t.me/",
+  },
+  [AccountKeys.Email]: {
+    icon: <EmailIcon className="text-blue-500" />,
+    urlPrefix: "mailto:",
+  },
+};
+
 export interface ProfileTabProps {
   domainData: DomainData | null;
 }
@@ -45,105 +76,42 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
       }, {});
   }
 
-  const accountKeys = [
-    "com.twitter",
-    "org.telegram",
-    "com.linkedin",
-    "com.github",
-    "email",
-  ];
+  const accountKeys = Object.values(AccountKeys);
 
   const hasAccountKeys = accountKeys.some(
     (key) => textRecords && key in textRecords,
   );
 
-  const linkedIn = textRecords?.["com.linkedin"];
-  const twitter = textRecords?.["com.twitter"];
-  const github = textRecords?.["com.github"];
-  const telegram = textRecords?.["org.telegram"];
-  const email = textRecords?.["email"];
-
   return (
     <div className="flex flex-grow flex-col gap-11">
+      {/* ACCOUNTS */}
       {!!hasAccountKeys && (
         <div className="flex flex-col gap-4">
           <Skeleton>
             <h3 className="text-base font-semibold">Accounts</h3>
           </Skeleton>
           <div className="flex w-full flex-wrap gap-2 overflow-auto p-1">
-            {linkedIn && (
-              <Skeleton>
-                <RecordItem
-                  inline
-                  size="large"
-                  icon={<LinkedInIcon className="text-blue-500" />}
-                  value={linkedIn}
-                  link={`https://www.linkedin.com/in/${linkedIn}`}
-                  as="a"
-                >
-                  {linkedIn}
-                </RecordItem>
-              </Skeleton>
-            )}
-            {github && (
-              <Skeleton>
-                <RecordItem
-                  inline
-                  size="large"
-                  icon={<GithubIcon className="text-blue-500" />}
-                  value={github}
-                  link={`https://github.com/${github}`}
-                  as="a"
-                >
-                  {github}
-                </RecordItem>
-              </Skeleton>
-            )}
-            {telegram && (
-              <Skeleton>
-                <RecordItem
-                  inline
-                  size="large"
-                  icon={<TelegramIcon className="text-blue-500" />}
-                  value={telegram}
-                  link={`https://t.me/${telegram}`}
-                  as="a"
-                >
-                  {telegram}
-                </RecordItem>
-              </Skeleton>
-            )}
-            {twitter && (
-              <Skeleton>
-                <RecordItem
-                  inline
-                  size="large"
-                  keyLabel="Twitter"
-                  icon={<TwitterIcon className="text-blue-500" />}
-                  value={twitter}
-                  link={`https://twitter.com/${twitter}`}
-                  as="a"
-                >
-                  {twitter}
-                </RecordItem>
-              </Skeleton>
-            )}
-
-            {email && (
-              <Skeleton>
-                <RecordItem
-                  inline
-                  size="large"
-                  keyLabel="Email"
-                  icon={<EmailIcon className="text-blue-500" />}
-                  value={email}
-                  link={`mailto:${email}`}
-                  as="a"
-                >
-                  {email}
-                </RecordItem>
-              </Skeleton>
-            )}
+            {Object.entries(domainData?.resolver.texts ?? {})
+              .filter(([key]) =>
+                Object.values(AccountKeys).includes(key as AccountKeys),
+              )
+              .map(([key, value]) => {
+                const { icon, urlPrefix } = accountKeysMap[key as AccountKeys];
+                return (
+                  <Skeleton key={key}>
+                    <RecordItem
+                      inline
+                      size="large"
+                      icon={icon}
+                      value={value}
+                      link={`${urlPrefix}${value}`}
+                      as="a"
+                    >
+                      {value}
+                    </RecordItem>
+                  </Skeleton>
+                );
+              })}
           </div>
         </div>
       )}
