@@ -1,22 +1,18 @@
-import {
-  Modal,
-  Skeleton,
-  RecordItem,
-  EthTransparentInvertedSVG,
-} from "@ensdomains/thorin";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
-import { CoinInfo, DomainData } from "@/lib/domain-page";
+import { Button, Modal, Skeleton, RecordItem } from "@ensdomains/thorin";
+import { DatabaseIcon } from "../01-atoms";
+import { formatDate } from "@/lib/utils/formats";
+import { CoinInfo, DomainData, getCoinNameByType } from "@/lib/domain-page";
 import { useAccount, useEnsName } from "wagmi";
 import { useState } from "react";
 import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
 
-export interface ProfileTabProps {
+export interface RecordsTabProps {
   domainData: DomainData | null;
 }
 
-export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
+export const RecordsTabBody = ({ domainData }: RecordsTabProps) => {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
   const { address } = useAccount();
 
@@ -57,24 +53,17 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             <h3 className="text-base font-semibold">Addresses</h3>
           </Skeleton>
-          <div className="flex w-full flex-wrap gap-2 overflow-auto">
+          <div className="flex flex-col gap-4">
             {addresses.map((coin: CoinInfo | undefined, index: number) =>
               coin ? (
                 <Skeleton key={coin.coin}>
                   <RecordItem
                     size="large"
-                    inline
                     className="flex items-center justify-center"
-                    // keyLabel={getCoinNameByType(coin.coin)}
-                    icon={
-                      <EthTransparentInvertedSVG
-                        className="text-blue-500"
-                        coin={coin.coin}
-                      />
-                    }
+                    keyLabel={getCoinNameByType(coin.coin)}
                     value={coin.address}
                   >
-                    {formatHexAddress(coin.address)}
+                    {coin.address}
                   </RecordItem>
                 </Skeleton>
               ) : null,
@@ -88,10 +77,10 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             <h3 className="text-base font-semibold">Other Records</h3>
           </Skeleton>
-          <div className="flex w-full flex-wrap gap-4 overflow-auto">
+          <div className="flex flex-col gap-4">
             {Object.entries(filteredRecords).map(([key, value]) => (
               <Skeleton key={key}>
-                <RecordItem inline size="large" keyLabel={key} value={value}>
+                <RecordItem size="large" keyLabel={key} value={value}>
                   {value}
                 </RecordItem>
               </Skeleton>
@@ -104,10 +93,9 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <h3 className="text-base font-semibold">Ownership</h3>
         </Skeleton>
 
-        <div className="flex w-full flex-wrap gap-2 overflow-auto">
+        <div className="flex flex-col gap-4">
           <Skeleton>
             <RecordItem
-              inline
               size="large"
               keyLabel="manager"
               value={domainData?.owner ?? ""}
@@ -119,7 +107,6 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             {domainData?.owner && (
               <RecordItem
-                inline
                 size="large"
                 keyLabel="owner"
                 value={domainData?.owner}
@@ -132,10 +119,8 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             {expiryDate !== undefined && (
               <RecordItem
-                inline
                 size="large"
                 keyLabel="expiry"
-                className="whitespace-nowrap"
                 value={formatDate({
                   unixTimestamp: millisecondsToSeconds(expiryDate),
                 })}
@@ -149,7 +134,6 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             {domainData?.parent && (
               <RecordItem
-                inline
                 size="large"
                 keyLabel="parent"
                 value={domainData.parent}
@@ -157,6 +141,42 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                 {domainData.parent}
               </RecordItem>
             )}
+          </Skeleton>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <Skeleton>
+          <h3 className="text-base font-semibold">Resolver</h3>
+        </Skeleton>
+        <div className="flex flex-col gap-4">
+          <Skeleton>
+            <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
+              <div className="flex items-center gap-4">
+                <div className="flex gap-4 rounded-md bg-blue-100 p-2">
+                  <DatabaseIcon className="h-5 w-5 text-blue-500" />
+                </div>
+
+                {resolver?.address && (
+                  <p className="truncate whitespace-nowrap">
+                    {resolver?.address}
+                  </p>
+                )}
+              </div>
+
+              {showEditButton && (
+                <div>
+                  <Button
+                    onClick={() => {
+                      setEditResolverModalOpen(true);
+                    }}
+                    size="small"
+                  >
+                    Edit
+                  </Button>
+                </div>
+              )}
+            </div>
           </Skeleton>
         </div>
       </div>
