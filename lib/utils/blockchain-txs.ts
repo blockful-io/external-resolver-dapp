@@ -34,8 +34,11 @@ import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage"
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/offchain-resolver.json";
 import { normalize } from "viem/ens";
-import { cryptocurrencies } from "../domain-page";
-import { getCoderByCoinName } from "@ensdomains/address-encoder";
+import { supportedCoinTypes } from "../domain-page";
+import {
+  coinNameToTypeMap,
+  getCoderByCoinName,
+} from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
@@ -350,17 +353,6 @@ export const register = async ({
   }
 };
 
-const cryptocurrenciesToCoinType: { [k: string]: string } = {
-  [cryptocurrencies.BTC]: "0",
-  [cryptocurrencies.LTC]: "2",
-  [cryptocurrencies.DOGE]: "3",
-  [cryptocurrencies.ETH]: "60",
-  [cryptocurrencies.BNB]: "714",
-  [cryptocurrencies.ARB1]: "2147525809",
-  [cryptocurrencies.OP]: "2147483658",
-  [cryptocurrencies.MATIC]: "2147483658",
-};
-
 /*
   3rd step of a name registration - set text records
 */
@@ -411,16 +403,13 @@ export const setDomainRecords = async ({
 
     for (let i = 0; i < Object.keys(addresses).length; i++) {
       const [cryptocurrencyName, address] = Object.entries(addresses)[i];
-      if (
-        !Object.keys(cryptocurrencies).includes(
-          cryptocurrencyName.toUpperCase(),
-        )
-      ) {
+      if (supportedCoinTypes.includes(cryptocurrencyName.toUpperCase())) {
         console.error(`cryptocurrency ${cryptocurrencyName} not supported`);
         continue;
       }
+
       const coinType =
-        cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
+        coinNameToTypeMap[cryptocurrencyName as keyof typeof coinNameToTypeMap];
 
       const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
       const addressEncoded = fromBytes(coder.decode(address), "hex");

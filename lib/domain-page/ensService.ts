@@ -17,7 +17,7 @@ import DomainResolverABI from "../abi/offchain-resolver.json";
 import abiUniversalResolver from "../abi/universal-resolver.json";
 import {
   getCoinNameByType,
-  getSupportedCoins,
+  supportedCoinTypes,
   transformTextRecords,
   updateAvatarInTexts,
   validateDomain,
@@ -135,7 +135,7 @@ export const getENSDomainDataThroughSubgraph = async ({
       getRecords.batch({
         name: domain,
         texts: availableTextRecords,
-        coins: getSupportedCoins(),
+        coins: supportedCoinTypes,
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
