@@ -22,6 +22,20 @@ export function formatHexAddress(hexAddress: string): string {
   return `0x${start}...${end}`;
 }
 
+export function formatBtcAddress(btcAddress: string): string {
+  const startLength = 6;
+  const endLength = 6;
+
+  if (!btcAddress) {
+    return "";
+  }
+
+  const start = btcAddress.slice(0, startLength);
+  const end = btcAddress.slice(-endLength);
+
+  return `${start}...${end}`;
+}
+
 export const formatDate = ({ unixTimestamp }: { unixTimestamp: number }) => {
   const date = moment.unix(unixTimestamp);
   const formattedDate = date.format("D MMMM, YYYY");
