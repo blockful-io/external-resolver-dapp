@@ -6,11 +6,13 @@ import {
 } from "@ensdomains/thorin";
 import { formatDate, formatHexAddress } from "@/lib/utils/formats";
 import { CoinInfo, DomainData } from "@/lib/domain-page";
-import { useAccount, useEnsName } from "wagmi";
 import { useState } from "react";
 import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
+import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../01-atoms";
+import { TelegramIcon } from "../01-atoms/icons/telegram";
+import { isAddress } from "viem";
 
 export interface ProfileTabProps {
   domainData: DomainData | null;
@@ -18,17 +20,9 @@ export interface ProfileTabProps {
 
 export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
-  const { address } = useAccount();
 
   const router = useRouter();
   const { name } = router.query; // Dynamic route parameter
-
-  const { data: authedUserName } = useEnsName({
-    address: address,
-  });
-
-  const showEditButton: boolean =
-    authedUserName === domainData?.owner || address === domainData?.owner;
 
   const millisecondsToSeconds = (millisecodNumber: number): number =>
     millisecodNumber / 1000;
@@ -40,6 +34,8 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
 
   let filteredRecords: Record<string, string> = {};
 
+  const textRecords = domainData?.resolver.texts;
+
   if (domainData && typeof domainData.resolver.texts === "object") {
     filteredRecords = Object.entries(domainData.resolver.texts)
       .filter(([key]) => !excludeKeys.includes(key))
@@ -49,8 +45,111 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
       }, {});
   }
 
+  const accountKeys = [
+    "com.twitter",
+    "org.telegram",
+    "com.linkedin",
+    "com.github",
+    "email",
+  ];
+
+  const hasAccountKeys = accountKeys.some(
+    (key) => textRecords && key in textRecords,
+  );
+
+  const linkedIn = textRecords?.["com.linkedin"];
+  const twitter = textRecords?.["com.twitter"];
+  const github = textRecords?.["com.github"];
+  const telegram = textRecords?.["org.telegram"];
+  const email = textRecords?.["email"];
+
+  console.log(textRecords);
+
   return (
     <div className="flex flex-grow flex-col gap-11">
+      {!!hasAccountKeys && (
+        <div className="flex flex-col gap-4">
+          <Skeleton>
+            <h3 className="text-base font-semibold">Accounts</h3>
+          </Skeleton>
+          <div className="flex w-full flex-wrap gap-2 overflow-auto p-1">
+            {linkedIn && (
+              <Skeleton>
+                <RecordItem
+                  inline
+                  size="large"
+                  icon={<LinkedInIcon className="text-blue-500" />}
+                  value={linkedIn}
+                  link={`https://www.linkedin.com/in/${linkedIn}`}
+                  as="a"
+                >
+                  {linkedIn}
+                </RecordItem>
+              </Skeleton>
+            )}
+            {github && (
+              <Skeleton>
+                <RecordItem
+                  inline
+                  size="large"
+                  icon={<GithubIcon className="text-blue-500" />}
+                  value={github}
+                  link={`https://github.com/${github}`}
+                  as="a"
+                >
+                  {github}
+                </RecordItem>
+              </Skeleton>
+            )}
+            {telegram && (
+              <Skeleton>
+                <RecordItem
+                  inline
+                  size="large"
+                  icon={<TelegramIcon className="text-blue-500" />}
+                  value={telegram}
+                  link={`https://t.me/${telegram}`}
+                  as="a"
+                >
+                  {telegram}
+                </RecordItem>
+              </Skeleton>
+            )}
+            {twitter && (
+              <Skeleton>
+                <RecordItem
+                  inline
+                  size="large"
+                  keyLabel="Twitter"
+                  icon={<TwitterIcon className="text-blue-500" />}
+                  value={twitter}
+                  link={`https://twitter.com/${twitter}`}
+                  as="a"
+                >
+                  {twitter}
+                </RecordItem>
+              </Skeleton>
+            )}
+
+            {email && (
+              <Skeleton>
+                <RecordItem
+                  inline
+                  size="large"
+                  keyLabel="Email"
+                  icon={<EmailIcon className="text-blue-500" />}
+                  value={email}
+                  link={`mailto:${email}`}
+                  as="a"
+                >
+                  {email}
+                </RecordItem>
+              </Skeleton>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ADDRESSES */}
       {!!addresses?.length && (
         <div className="flex flex-col gap-4">
@@ -106,14 +205,18 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
 
         <div className="flex w-full flex-wrap gap-2 overflow-auto">
           <Skeleton>
-            <RecordItem
-              inline
-              size="large"
-              keyLabel="manager"
-              value={domainData?.owner ?? ""}
-            >
-              {domainData?.owner ?? ""}
-            </RecordItem>
+            {domainData?.owner && (
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="manager"
+                value={domainData?.owner ?? ""}
+              >
+                {isAddress(domainData?.owner)
+                  ? formatHexAddress(domainData?.owner)
+                  : domainData?.owner}
+              </RecordItem>
+            )}
           </Skeleton>
 
           <Skeleton>
@@ -124,7 +227,9 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                 keyLabel="owner"
                 value={domainData?.owner}
               >
-                {domainData?.owner}
+                {isAddress(domainData?.owner)
+                  ? formatHexAddress(domainData?.owner)
+                  : domainData?.owner}
               </RecordItem>
             )}
           </Skeleton>
@@ -161,22 +266,44 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <Skeleton>
-          <h3 className="text-base font-semibold">Content Hash</h3>
-        </Skeleton>
+      {domainData?.contentHash && (
         <div className="flex flex-col gap-4">
           <Skeleton>
-            <RecordItem
-              size="large"
-              keyLabel="content hash"
-              value={domainData?.contentHash || "No Content Hash"}
-            >
-              {domainData?.contentHash || "No Content Hash"}
-            </RecordItem>
+            <h3 className="text-base font-semibold">Content Hash</h3>
           </Skeleton>
+          <div className="flex flex-col gap-4">
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="content hash"
+                value={domainData?.contentHash}
+              >
+                {domainData?.contentHash}
+              </RecordItem>
+            </Skeleton>
+          </div>
         </div>
-      </div>
+      )}
+      {domainData?.resolver && (
+        <div className="flex flex-col gap-4">
+          <Skeleton>
+            <h3 className="text-base font-semibold">Resolver</h3>
+          </Skeleton>
+          <div className="flex flex-col gap-4">
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="resolver"
+                value={domainData.resolver.address}
+              >
+                {domainData.resolver.address}
+              </RecordItem>
+            </Skeleton>
+          </div>
+        </div>
+      )}
       {resolver?.address && (
         <Modal open={editResolverModalOpen} onDismiss={() => {}}>
           <EditResolverModalContent
