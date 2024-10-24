@@ -2,8 +2,8 @@ import { FieldType, Tab } from "@/types/editFieldsTypes";
 import { Input, Textarea } from "@ensdomains/thorin";
 import React from "react";
 import { useFields } from "./FieldsContext";
-import Avatar from "boring-avatars";
-import Image from "next/image";
+import FallbackAvatar from "boring-avatars";
+import CustomImage from "../CustomImage";
 
 export const ProfileTab = () => {
   const { profileFields, updateField } = useFields();
@@ -16,7 +16,7 @@ export const ProfileTab = () => {
       <div className="flex h-[120px] w-full items-end justify-center rounded-xl bg-gradient-ens">
         <div className="translate-y-6 overflow-hidden rounded-lg">
           {avatarSrc ? (
-            <Image
+            <CustomImage
               alt="avatar image"
               width={100}
               loading="lazy"
@@ -27,7 +27,7 @@ export const ProfileTab = () => {
             />
           ) : (
             <div className="h-[100px] w-[100px] overflow-hidden rounded-[10px] border-4 border-white bg-gradient-ens">
-              <Avatar
+              <FallbackAvatar
                 size={100}
                 square
                 name="Margaret Bourke"
