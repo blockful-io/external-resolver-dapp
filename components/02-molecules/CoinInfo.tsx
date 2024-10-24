@@ -5,7 +5,10 @@ import {
   ArbitrumIcon,
   BitcoinIcon,
 } from "@/components/01-atoms/";
-import { coinNameToTypeMap } from "@ensdomains/address-encoder";
+import {
+  coinNameToTypeMap,
+  coinTypeToNameMap,
+} from "@ensdomains/address-encoder";
 
 interface CoinIconProps {
   coin: CoinInfo["coin"];
@@ -28,8 +31,10 @@ const coinInfoMap: Record<string, { icon: React.ReactNode }> = {
 };
 
 export const CoinIcon = ({ coin, className }: CoinIconProps) => {
-  const { icon } = coinInfoMap[coin] || (
-    <EthSVG className="h-6 w-6 text-blue-500" />
+  const icon = coinInfoMap[coin]?.icon || (
+    <p className="rounded-full text-sm font-bold text-blue-500">
+      {coinTypeToNameMap[coin as keyof typeof coinTypeToNameMap][0]}
+    </p>
   );
 
   if (!icon) {

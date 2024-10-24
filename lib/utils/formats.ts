@@ -26,10 +26,6 @@ export function formatBtcAddress(btcAddress: string): string {
   const startLength = 6;
   const endLength = 6;
 
-  if (!btcAddress) {
-    return "";
-  }
-
   const start = btcAddress.slice(0, startLength);
   const end = btcAddress.slice(-endLength);
 
