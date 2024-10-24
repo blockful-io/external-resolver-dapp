@@ -143,6 +143,7 @@ const OpenWalletCTA = ({ onClick }: BlockchainCTAComponentProps) => {
 
   return (
     <Button
+      className="w-full"
       size="medium"
       onClick={onClick}
       colorStyle="bluePrimary"
@@ -159,7 +160,7 @@ const TransactionRequestConfirmedCTA = ({
 }: BlockchainCTAComponentProps) => {
   const { chain } = useAccount();
   return (
-    <div className="justify flex flex-col space-y-6">
+    <div className="justify flex w-full flex-col space-y-6">
       <Button
         className="pointer-events-none"
         colorStyle="bluePrimary"
@@ -191,7 +192,7 @@ const TransactionRequestSentCTA = ({
   onClick,
 }: BlockchainCTAComponentProps) => {
   return (
-    <div className="group relative">
+    <div className="group relative w-full">
       <div className="absolute left-0 top-0 z-10 group-hover:translate-y-0">
         <Button
           className="pointer-events-none"

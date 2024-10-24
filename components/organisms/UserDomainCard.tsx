@@ -5,6 +5,7 @@ import { PencilIcon } from "../01-atoms";
 import { EditModalContent } from "./EditModalContent";
 import { useState } from "react";
 import { useAccount, useEnsName } from "wagmi";
+import { SetPrimaryNameModal } from "./SetPrimaryNameModal";
 
 interface UserDomainCardProps {
   url?: string;
@@ -28,6 +29,7 @@ export const UserDomainCard = ({
   owner,
 }: UserDomainCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [primaryNameModalOpen, setPrimaryNameModalOpen] = useState(false);
   const { address } = useAccount();
 
   const { data: authedUserName } = useEnsName({
@@ -92,6 +94,15 @@ export const UserDomainCard = ({
         <Skeleton>
           <p className="text-base text-gray-400">{description}</p>
         </Skeleton>
+        <Button
+          size="small"
+          colorStyle="background"
+          onClick={() => {
+            setPrimaryNameModalOpen(true);
+          }}
+        >
+          Set as primary name
+        </Button>
         {/* 
         We don't support primary name setting yet
 
@@ -111,6 +122,16 @@ export const UserDomainCard = ({
           }}
         />
       </Modal>
+      <SetPrimaryNameModal
+        name={name || ""}
+        onDismiss={() => {
+          setPrimaryNameModalOpen(false);
+        }}
+        isOpen={primaryNameModalOpen}
+        closeModal={() => {
+          setPrimaryNameModalOpen(false);
+        }}
+      />
     </div>
   );
 };
