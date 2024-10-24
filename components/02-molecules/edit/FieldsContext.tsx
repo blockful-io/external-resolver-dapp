@@ -44,6 +44,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   // PROFILE TAB
   const [profileFields, setProfileFieldsState] = useState<Field[]>([
     {
+      label: "avatar",
+      placeholder: "avatar url",
+      value: "",
+      fieldType: FieldType.Text,
+    },
+    {
       label: "url",
       placeholder: "https://coolcats.com",
       value: "",
@@ -123,6 +129,12 @@ const FieldsProvider: React.FC<FieldsProviderProps> = ({ children }) => {
   const [initialProfileFields, setInitialProfileFieldsState] = useState<
     Field[]
   >([
+    {
+      label: "avatar",
+      placeholder: "avatar url",
+      value: "",
+      fieldType: FieldType.Text,
+    },
     {
       label: "url",
       placeholder: "https://coolcats.com",
