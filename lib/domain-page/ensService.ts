@@ -198,7 +198,7 @@ const getBasicENSDomainData = async ({
   }
 
   return {
-    owner: domainOwner?.owner || "",
+    owner: domainOwner?.owner,
     parent: getParent(name),
     subdomains: [],
     subdomainCount: 0,
