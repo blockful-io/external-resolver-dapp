@@ -172,8 +172,8 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
         </Skeleton>
 
         <div className="flex w-full flex-wrap gap-2 overflow-auto">
-          <Skeleton>
-            {domainData?.owner && (
+          {domainData?.owner && (
+            <Skeleton>
               <RecordItem
                 inline
                 size="large"
@@ -184,11 +184,11 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                   ? formatHexAddress(domainData?.owner)
                   : domainData?.owner}
               </RecordItem>
-            )}
-          </Skeleton>
+            </Skeleton>
+          )}
 
-          <Skeleton>
-            {domainData?.owner && (
+          {domainData?.owner && (
+            <Skeleton>
               <RecordItem
                 inline
                 size="large"
@@ -199,11 +199,10 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                   ? formatHexAddress(domainData?.owner)
                   : domainData?.owner}
               </RecordItem>
-            )}
-          </Skeleton>
-
-          <Skeleton>
-            {expiryDate !== undefined && (
+            </Skeleton>
+          )}
+          {expiryDate !== undefined && (
+            <Skeleton>
               <RecordItem
                 inline
                 size="large"
@@ -217,10 +216,10 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
                   unixTimestamp: millisecondsToSeconds(expiryDate),
                 })}
               </RecordItem>
-            )}
-          </Skeleton>
-          <Skeleton>
-            {domainData?.parent && (
+            </Skeleton>
+          )}
+          {domainData?.parent && (
+            <Skeleton>
               <RecordItem
                 inline
                 size="large"
@@ -229,8 +228,8 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
               >
                 {domainData.parent}
               </RecordItem>
-            )}
-          </Skeleton>
+            </Skeleton>
+          )}
         </div>
       </div>
 
