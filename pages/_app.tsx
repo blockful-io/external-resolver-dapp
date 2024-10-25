@@ -68,19 +68,16 @@ export default function App({ Component, pageProps }: AppProps) {
           <ThemeProvider theme={lightTheme}>
             <ThorinGlobalStyles />
             <RainbowKitProvider>
-              <div
+              <main
                 style={{ background: "#fff" }}
-                className={`${satoshiFont.variable} flex min-h-screen flex-col`}
+                className="flex min-h-screen flex-col"
               >
+                <Toaster position="bottom-right" />
                 <DappHeader />
-                <main>
-                  <Toaster position="bottom-right" />
-                  <div className="relative z-10 h-full flex-grow">
-                    <ChainChecker />
-                    <Component {...pageProps} />
-                  </div>
-                </main>
-              </div>
+
+                <ChainChecker />
+                <Component {...pageProps} />
+              </main>
             </RainbowKitProvider>
           </ThemeProvider>
         </QueryClientProvider>
