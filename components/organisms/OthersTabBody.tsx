@@ -21,7 +21,8 @@ export const OthersTabBody = ({ domainData }: OthersTabBodyProps) => {
   });
 
   const showEditButton: boolean =
-    authedUserName === domainData?.owner || address === domainData?.owner;
+    (authedUserName === domainData?.owner || address === domainData?.owner) &&
+    !!address;
 
   const resolver = domainData?.resolver;
 
