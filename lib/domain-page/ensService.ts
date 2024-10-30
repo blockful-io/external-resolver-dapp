@@ -20,7 +20,6 @@ import {
   supportedCoinTypes,
   transformTextRecords,
   updateAvatarInTexts,
-  validateDomain,
 } from "./utils";
 import {
   DomainData,
@@ -114,8 +113,6 @@ export const getENSDomainDataThroughSubgraph = async ({
   domain,
   client,
 }: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
-  validateDomain(domain);
-
   if (
     !stringHasMoreThanOneDot(domain) &&
     (await getAvailable(client, { name: domain }))
