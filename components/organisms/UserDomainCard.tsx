@@ -34,7 +34,8 @@ export const UserDomainCard = ({
     address: address,
   });
 
-  const showEditButton: boolean = authedUserName === owner || address === owner;
+  const showEditButton: boolean =
+    (authedUserName === owner || address === owner) && !!address;
 
   return (
     <div className="flex w-[376px] flex-col overflow-hidden rounded-md border border-gray-200">
