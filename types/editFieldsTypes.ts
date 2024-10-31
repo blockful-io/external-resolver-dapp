@@ -10,11 +10,12 @@ export type Field = {
 export enum FieldType {
   Address = "Address",
   Text = "Text",
+  Others = "Others",
 }
 
 export enum Tab {
   Profile,
   Accounts,
   Addresses,
-  // Others,
+  Others,
 }

@@ -58,6 +58,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
 
     try {
       const setDomainRecordsRes = await setDomainRecords({
+        others: {},
         authenticatedAddress: address,
         ensName: nameRegistrationData.name,
         textRecords: nameRegistrationData.textRecords,

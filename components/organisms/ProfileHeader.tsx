@@ -2,26 +2,38 @@ import { LeftChevronSVG } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import classcat from "classcat";
+import { Tabs } from "./TabBody";
+
+// Extract tab names into an enum for better type safety and to avoid typos
 
 export const ProfileHeader = () => {
-  // https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes
   const router = useRouter();
-  const { name } = router.query; // Dynamic route parameter
-  const { tab } = router.query; // Query parameter
+  const { name, tab } = router.query;
 
-  // To handle tab changes and update the route
-  const handleTabChange = (newTab: string) => {
-    router.push({
-      pathname: `/domains/${name}`,
-      query: { tab: newTab },
-    });
+  // Use object destructuring to clean up the handleTabChange function
+  const handleTabChange = (newTab: Tabs) => {
+    router.push({ pathname: `/domains/${name}`, query: { tab: newTab } });
   };
 
   useEffect(() => {
-    if (!tab) {
-      handleTabChange("profile");
-    }
+    if (!tab) handleTabChange(Tabs.Profile);
   }, [tab]);
+
+  // Extract the tab button into a separate component to reduce duplication
+  const TabButton = ({ tabName }: { tabName: Tabs }) => (
+    <button
+      className={classcat([
+        "h-full p-4 transition-colors duration-300 hover:bg-gray-100",
+        tabName === tab
+          ? "border-b border-blue-500 text-blue-500"
+          : "text-gray-400",
+      ])}
+      onClick={() => handleTabChange(tabName)}
+    >
+      {tabName}
+    </button>
+  );
 
   return (
     <div className="flex w-full items-start border-b border-gray-200 px-[60px]">
@@ -33,29 +45,9 @@ export const ProfileHeader = () => {
           <LeftChevronSVG /> <p className="text-black">Back</p>
         </Link>
         <div className="flex items-center">
-          {/* Profile Tab */}
-          <button
-            className={`h-full p-4 ${
-              tab === "profile"
-                ? "border-b border-blue-500 text-blue-500"
-                : "text-gray-400"
-            } transition-colors duration-300 hover:bg-gray-100`}
-            onClick={() => handleTabChange("profile")}
-          >
-            Profile
-          </button>
-
-          {/* Subdomains Tab */}
-          <button
-            className={`h-full p-4 ${
-              tab === "subdomains"
-                ? "border-b border-blue-500 text-blue-500"
-                : "text-gray-400"
-            } transition-colors duration-300 hover:bg-gray-100`}
-            onClick={() => handleTabChange("subdomains")}
-          >
-            Subdomains
-          </button>
+          {Object.values(Tabs).map((tab) => (
+            <TabButton key={tab} tabName={tab} />
+          ))}
         </div>
       </div>
     </div>

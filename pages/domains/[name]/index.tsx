@@ -15,7 +15,7 @@ import { usePublicClient } from "wagmi";
 
 export const excludeKeys = [
   "com.twitter",
-  // "org.telegram", telegram is not yet shown in UserDomainCard
+  "org.telegram",
   "com.linkedin",
   "avatar",
   "com.github",

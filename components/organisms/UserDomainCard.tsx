@@ -1,14 +1,7 @@
 import Avatar from "boring-avatars";
 import CustomImage from "../02-molecules/CustomImage";
 import { Button, Modal, Skeleton } from "@ensdomains/thorin";
-import {
-  EmailIcon,
-  GithubIcon,
-  LinkedInIcon,
-  PencilIcon,
-  TwitterIcon,
-} from "../01-atoms";
-import Link from "next/link";
+import { PencilIcon } from "../01-atoms";
 import { EditModalContent } from "./EditModalContent";
 import { useState } from "react";
 import { useAccount, useEnsName } from "wagmi";
@@ -30,10 +23,6 @@ export const UserDomainCard = ({
   url,
   name,
   avatar,
-  email,
-  github,
-  twitter,
-  linkedIn,
   description,
   onRecordsEdited,
   owner,
@@ -45,7 +34,8 @@ export const UserDomainCard = ({
     address: address,
   });
 
-  const showEditButton: boolean = authedUserName === owner || address === owner;
+  const showEditButton: boolean =
+    (authedUserName === owner || address === owner) && !!address;
 
   return (
     <div className="flex w-[376px] flex-col overflow-hidden rounded-md border border-gray-200">
@@ -113,59 +103,6 @@ export const UserDomainCard = ({
           <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
         </div>
       </Skeleton> */}
-        <div className="flex flex-col items-start justify-center gap-1">
-          {!!email && (
-            <Link
-              target="_blank"
-              href={`mailto:${email}`}
-              className="group flex gap-2 p-2"
-            >
-              <EmailIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {email}
-              </h3>
-            </Link>
-          )}
-
-          {!!github && (
-            <Link
-              target="_blank"
-              href={`https://github.com/${github}`}
-              className="group flex gap-2 p-2"
-            >
-              <GithubIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {github}
-              </h3>
-            </Link>
-          )}
-
-          {!!twitter && (
-            <Link
-              target="_blank"
-              href={`https://x.com/${twitter}`}
-              className="group flex gap-2 p-2"
-            >
-              <TwitterIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {twitter}
-              </h3>
-            </Link>
-          )}
-
-          {!!linkedIn && (
-            <Link
-              target="_blank"
-              href={`https://www.linkedin.com/in/${linkedIn}`}
-              className="group flex gap-2 p-2"
-            >
-              <LinkedInIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {linkedIn}
-              </h3>
-            </Link>
-          )}
-        </div>
       </div>
       <Modal open={modalOpen} onDismiss={() => {}}>
         <EditModalContent
