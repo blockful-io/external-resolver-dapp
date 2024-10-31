@@ -15,7 +15,7 @@ import nameRegistrationStore from "@/lib/globalStore";
 
 import { type AppProps } from "next/app";
 
-import { DappHeader } from "@/components/01-atoms";
+import { DappHeader } from "@/components/atoms";
 import { Toaster } from "react-hot-toast";
 import localFont from "@next/font/local";
 import ChainChecker from "@/components/organisms/ChainChecker";

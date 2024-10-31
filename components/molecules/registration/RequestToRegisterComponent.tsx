@@ -3,7 +3,7 @@ import {
   BackButton,
   BlockchainCTA,
   TransactionConfirmedInBlockchainCTA,
-} from "@/components/01-atoms";
+} from "@/components/atoms";
 import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useAccount, useBalance, usePublicClient } from "wagmi";

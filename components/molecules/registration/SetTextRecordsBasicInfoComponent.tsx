@@ -1,4 +1,4 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
+import { BackButton, NextButton } from "@/components/atoms";
 import { useEffect, useState } from "react";
 import cc from "classcat";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";

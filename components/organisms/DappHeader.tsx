@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
-import { UserDropdown } from "@/components/02-molecules";
-import { ConnectMetamask } from "./ConnectMetamask";
+import { UserDropdown } from "@/components/molecules";
+import { ConnectMetamask } from "../atoms/ConnectMetamask";
 import { useRouter } from "next/router";
-import { PlusCircleIcon } from "./icons/plus-circle-icon";
-import { CogIcon } from "./icons/cog-icon";
-import { HeaderLink } from "./HeaderLink";
-import { TestnetBanner } from "./TestnetBanner";
+import { PlusCircleIcon } from "../atoms/icons/plus-circle-icon";
+import { CogIcon } from "../atoms/icons/cog-icon";
+import { HeaderLink } from "../atoms/HeaderLink";
+import { TestnetBanner } from "../atoms/TestnetBanner";
 
 export interface HeaderLinkInterface {
   icon: React.ElementType;
