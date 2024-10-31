@@ -17,7 +17,7 @@ import { excludeKeys } from "@/pages/domains/[name]";
 import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../atoms";
 import { TelegramIcon } from "../atoms/icons/telegram";
 import { isAddress } from "viem";
-import { CoinIcon } from "@/components/molecules/CoinInfo";
+import { CoinIcon } from "../molecules/CoinInfo";
 import { coinNameToTypeMap } from "@ensdomains/address-encoder";
 
 enum AccountKeys {

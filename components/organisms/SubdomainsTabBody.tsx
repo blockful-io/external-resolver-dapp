@@ -1,5 +1,5 @@
 import { Button, Modal, Skeleton } from "@ensdomains/thorin";
-import { Table } from "@/components/molecules";
+import { Table } from "../molecules";
 import { DomainData } from "@/lib/domain-page";
 import { useState } from "react";
 import { CreateSubdomainModalContent } from "./CreateSubdomainModalContent";
