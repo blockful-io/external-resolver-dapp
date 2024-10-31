@@ -1,8 +1,8 @@
 import Avatar from "boring-avatars";
-import CustomImage from "@/components/molecules/CustomImage";
+import CustomImage from "../molecules/CustomImage";
 import { Button, Modal, Skeleton } from "@ensdomains/thorin";
-import { PencilIcon } from "@/components/atoms";
-import { EditModalContent } from "@/components/organisms";
+import { PencilIcon } from "../atoms";
+import { EditModalContent } from "./EditModalContent";
 import { useState, useEffect } from "react";
 import { useAccount, useEnsName } from "wagmi";
 
