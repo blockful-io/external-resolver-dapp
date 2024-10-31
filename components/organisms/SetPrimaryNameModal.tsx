@@ -6,7 +6,7 @@ import { TransactionReceipt } from "viem";
 import { useWalletClient } from "wagmi";
 import { walletWagmiConfig } from "@/lib/wallet/wallet-config";
 import toast from "react-hot-toast";
-import { BlockchainCTA } from "../01-atoms";
+import { BlockchainCTA } from "@/components/atoms";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 
 interface SetPrimaryNameModalProps {
