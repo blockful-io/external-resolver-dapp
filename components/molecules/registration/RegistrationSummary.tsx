@@ -6,7 +6,7 @@ import {
   EnsResolverTag,
   EthIcon,
   InfoCircleIcon,
-} from "@/components/01-atoms";
+} from "@/components/atoms";
 import {
   getGasPrice,
   getNamePrice,
