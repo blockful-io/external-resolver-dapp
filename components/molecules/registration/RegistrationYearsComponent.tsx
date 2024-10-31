@@ -1,4 +1,4 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
+import { BackButton, NextButton } from "@/components/atoms";
 import { MinusSVG, PlusSVG } from "@ensdomains/thorin";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";

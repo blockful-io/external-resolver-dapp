@@ -1,4 +1,4 @@
-import { FieldsProvider, useFields } from "@/components/02-molecules";
+import { FieldsProvider, useFields } from "@/components/molecules";
 
 import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import TabBody from "@/components/organisms/TabBody";

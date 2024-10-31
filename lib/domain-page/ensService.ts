@@ -20,7 +20,6 @@ import {
   supportedCoinTypes,
   transformTextRecords,
   updateAvatarInTexts,
-  validateDomain,
 } from "./utils";
 import {
   DomainData,
@@ -86,6 +85,7 @@ export const getENSDomainData = async ({
       const domainData = await formatSubgraphDomainData({
         data: data,
         client: client,
+        domain: domain,
       });
       return domainData;
     } catch (error) {
@@ -113,8 +113,6 @@ export const getENSDomainDataThroughSubgraph = async ({
   domain,
   client,
 }: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
-  validateDomain(domain);
-
   if (
     !stringHasMoreThanOneDot(domain) &&
     (await getAvailable(client, { name: domain }))
@@ -151,7 +149,7 @@ export const getENSDomainDataThroughSubgraph = async ({
     newAvatar,
     ...textRecords,
     ...owner,
-    owner: owner?.owner ?? "0x",
+    owner: owner?.owner,
     ...expiry,
   };
 
@@ -197,7 +195,7 @@ const getBasicENSDomainData = async ({
   }
 
   return {
-    owner: domainOwner?.owner ?? "0x",
+    owner: domainOwner?.owner,
     parent: getParent(name),
     subdomains: [],
     subdomainCount: 0,
@@ -291,11 +289,13 @@ const getENSDomainDataThroughResolver = async ({
 interface FormatSubgraphDomainDataParams {
   data: SubgraphEnsData;
   client: PublicClient & ClientWithEns;
+  domain: string;
 }
 
 const formatSubgraphDomainData = async ({
   data,
   client,
+  domain,
 }: FormatSubgraphDomainDataParams): Promise<DomainData> => {
   const transformedTexts = transformTextRecords(data.texts);
 
@@ -325,7 +325,7 @@ const formatSubgraphDomainData = async ({
     expiryDate: data.expiry?.date?.getTime()!,
     subdomains: [],
     subdomainCount: 0,
-    parent: "eth",
+    parent: getParent(domain),
   };
 
   return domainData;

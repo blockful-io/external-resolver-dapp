@@ -33,7 +33,6 @@ const connectors = connectorsForWallets(
 export const walletWagmiConfig = createConfig({
   connectors,
   chains: [
-    sepoliaWithEns,
     {
       ...mainnetWithEns,
       subgraphs: {
@@ -42,6 +41,7 @@ export const walletWagmiConfig = createConfig({
         },
       },
     },
+    sepoliaWithEns,
   ],
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
@@ -55,7 +55,6 @@ export const walletWagmiConfig = createConfig({
 const wagmiConfig = createConfig({
   connectors,
   chains: [
-    sepoliaWithEns,
     {
       ...mainnetWithEns,
       subgraphs: {
@@ -64,6 +63,7 @@ const wagmiConfig = createConfig({
         },
       },
     },
+    sepoliaWithEns,
     arbitrum,
     arbitrumSepolia,
   ],

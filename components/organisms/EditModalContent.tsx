@@ -6,7 +6,7 @@ import {
   ProfileTab,
   Tab,
   useFields,
-} from "../02-molecules";
+} from "@/components/molecules";
 import {
   Button,
   CheckCircleSVG,
@@ -15,7 +15,7 @@ import {
 } from "@ensdomains/thorin";
 import { useRouter } from "next/router";
 import { Field } from "@/types/editFieldsTypes";
-import { BlockchainCTA } from "../01-atoms";
+import { BlockchainCTA } from "@/components/atoms";
 import {
   PublicClient,
   TransactionReceipt,

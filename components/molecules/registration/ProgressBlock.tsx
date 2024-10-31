@@ -1,4 +1,4 @@
-import { ProgressBlockTabComponent } from "@/components/01-atoms";
+import { ProgressBlockTabComponent } from "@/components/atoms";
 import {
   ProgressBlockTabStep,
   RegistrationBlock,

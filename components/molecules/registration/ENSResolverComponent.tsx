@@ -4,10 +4,10 @@ import {
   DatabaseIcon,
   NextButton,
   OptimismIcon,
-} from "@/components/01-atoms";
+} from "@/components/atoms";
 import { EnsResolver } from "@/lib/name-registration/constants";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import ExternalLinkIcon from "@/components/01-atoms/icons/external-link";
+import ExternalLinkIcon from "@/components/atoms/icons/external-link";
 import { Input, RadioButton, Typography } from "@ensdomains/thorin";
 import { useEffect, useRef, useState } from "react";
 import { isAddress } from "viem";

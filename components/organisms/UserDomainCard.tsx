@@ -1,9 +1,9 @@
 import Avatar from "boring-avatars";
-import CustomImage from "../02-molecules/CustomImage";
+import CustomImage from "../molecules/CustomImage";
 import { Button, Modal, Skeleton } from "@ensdomains/thorin";
-import { PencilIcon } from "../01-atoms";
+import { PencilIcon } from "../atoms";
 import { EditModalContent } from "./EditModalContent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount, useEnsName } from "wagmi";
 import { SetPrimaryNameModal } from "./SetPrimaryNameModal";
 
@@ -30,13 +30,23 @@ export const UserDomainCard = ({
 }: UserDomainCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [primaryNameModalOpen, setPrimaryNameModalOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { address } = useAccount();
 
   const { data: authedUserName } = useEnsName({
     address: address,
   });
 
-  const showEditButton: boolean = authedUserName === owner || address === owner;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const showEditButton: boolean =
+    !!address && (authedUserName === owner || address === owner);
+
+  if (!isClient) {
+    return null; // Return null on the server-side
+  }
 
   return (
     <div className="flex w-[376px] flex-col overflow-hidden rounded-md border border-gray-200">
@@ -85,7 +95,12 @@ export const UserDomainCard = ({
               <h3 className="truncate text-[26px]">{name}</h3>
             </div>
             {url && (
-              <a href={url} target="_blank" className="text-base text-blue-500">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500"
+              >
                 {url}
               </a>
             )}
@@ -114,7 +129,7 @@ export const UserDomainCard = ({
         </div>
       </Skeleton> */}
       </div>
-      <Modal open={modalOpen} onDismiss={() => {}}>
+      <Modal open={modalOpen} onDismiss={() => setModalOpen(false)}>
         <EditModalContent
           onRecordsEdited={onRecordsEdited}
           closeModal={() => {

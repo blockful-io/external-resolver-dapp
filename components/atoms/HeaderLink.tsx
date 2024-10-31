@@ -1,6 +1,6 @@
 import cc from "classcat";
 import Link from "next/link";
-import { HeaderLinkInterface } from "./DappHeader";
+import { HeaderLinkInterface } from "../organisms/DappHeader";
 
 interface HeaderLinkProps extends HeaderLinkInterface {
   isActive: boolean;
