@@ -1,10 +1,6 @@
 import { CoinInfo } from "@/lib/domain-page";
 import { EthSVG, EthTransparentInvertedSVG } from "@ensdomains/thorin";
-import {
-  OptimismIcon,
-  ArbitrumIcon,
-  BitcoinIcon,
-} from "@/components/01-atoms/";
+import { OptimismIcon, ArbitrumIcon, BitcoinIcon } from "@/components/atoms";
 import {
   coinNameToTypeMap,
   coinTypeToNameMap,

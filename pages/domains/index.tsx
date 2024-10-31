@@ -1,5 +1,5 @@
-import { ConnectMetamask } from "@/components/01-atoms";
-import { Table } from "@/components/02-molecules";
+import { ConnectMetamask } from "@/components/atoms";
+import { Table } from "@/components/molecules";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getNamesForAddress } from "@ensdomains/ensjs/subgraph";
 import { Heading, Skeleton } from "@ensdomains/thorin";

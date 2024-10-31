@@ -1,4 +1,4 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
+import { BackButton, NextButton } from "@/components/atoms";
 
 interface SetTextRecordsComponentProps {
   handlePreviousStep: () => void;

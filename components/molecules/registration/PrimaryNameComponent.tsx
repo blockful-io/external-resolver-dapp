@@ -1,4 +1,4 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
+import { BackButton, NextButton } from "@/components/atoms";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { RadioButton } from "@ensdomains/thorin";

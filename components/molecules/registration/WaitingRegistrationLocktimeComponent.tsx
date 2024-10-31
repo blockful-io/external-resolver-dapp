@@ -1,5 +1,5 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
-import CountdownTimer from "@/components/01-atoms/CountdownTimer";
+import { BackButton, NextButton } from "@/components/atoms";
+import CountdownTimer from "@/components/atoms/CountdownTimer";
 import { ENS_NAME_REGISTRATION_COMMITMENT_LOCKUP_TIME } from "@/lib/name-registration/constants";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";

@@ -14,10 +14,10 @@ import { useState } from "react";
 import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
-import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../01-atoms";
-import { TelegramIcon } from "../01-atoms/icons/telegram";
+import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../atoms";
+import { TelegramIcon } from "../atoms/icons/telegram";
 import { isAddress } from "viem";
-import { CoinIcon } from "../02-molecules/CoinInfo";
+import { CoinIcon } from "../molecules/CoinInfo";
 import { coinNameToTypeMap } from "@ensdomains/address-encoder";
 
 enum AccountKeys {

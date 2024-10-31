@@ -1,4 +1,4 @@
-import { BackButton } from "@/components/01-atoms";
+import { BackButton } from "@/components/atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { Button } from "@ensdomains/thorin";
 import Link from "next/link";

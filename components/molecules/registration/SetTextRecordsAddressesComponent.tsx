@@ -1,4 +1,4 @@
-import { BackButton, NextButton } from "@/components/01-atoms";
+import { BackButton, NextButton } from "@/components/atoms";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useEffect, useState } from "react";
 import { isAddress } from "viem";

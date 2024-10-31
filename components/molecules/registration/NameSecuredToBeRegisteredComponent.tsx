@@ -1,4 +1,4 @@
-import { BackButton, BlockchainCTA } from "@/components/01-atoms";
+import { BackButton, BlockchainCTA } from "@/components/atoms";
 import { register } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";

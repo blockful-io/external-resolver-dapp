@@ -1,6 +1,6 @@
 export * from "./BackButton";
 export * from "./BlockchainCTA";
-export * from "./DappHeader";
+export * from "../organisms/DappHeader";
 export * from "./HomepageBg";
 export * from "./NextButton";
 export * from "./ProgressBar";
