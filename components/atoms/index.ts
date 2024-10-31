@@ -8,6 +8,7 @@ export * from "./ProgressBlockTab";
 export * from "./ENSResolverTag";
 export * from "./ConnectMetamask";
 export * from "./HeaderLink";
+export * from "./TestnetBanner";
 
 // exports from ./icons
 export * from "./icons/arbitrum";
