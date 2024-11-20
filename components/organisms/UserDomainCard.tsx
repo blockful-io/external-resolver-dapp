@@ -17,6 +17,7 @@ interface UserDomainCardProps {
   description?: string;
   name?: string;
   owner?: string;
+  resolverAddress?: string;
   onRecordsEdited?: () => void;
 }
 
@@ -27,6 +28,7 @@ export const UserDomainCard = ({
   description,
   onRecordsEdited,
   owner,
+  resolverAddress,
 }: UserDomainCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [primaryNameModalOpen, setPrimaryNameModalOpen] = useState(false);
@@ -138,6 +140,7 @@ export const UserDomainCard = ({
         />
       </Modal>
       <SetPrimaryNameModal
+        resolverAddress={resolverAddress || ""}
         name={name || ""}
         onDismiss={() => {
           setPrimaryNameModalOpen(false);

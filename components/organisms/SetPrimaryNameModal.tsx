@@ -1,28 +1,35 @@
 import { setPrimaryName } from "@ensdomains/ensjs/wallet";
 
 import { CrossSVG, Modal } from "@ensdomains/thorin";
-import { TransactionReceipt } from "viem";
+import {
+  namehash,
+  publicActions,
+  PublicClient,
+  TransactionReceipt,
+} from "viem";
 
-import { useWalletClient } from "wagmi";
+import { usePublicClient, useWalletClient } from "wagmi";
 import { walletWagmiConfig } from "@/lib/wallet/wallet-config";
 import toast from "react-hot-toast";
 import { BlockchainCTA } from "@/components/atoms";
 import { TransactionErrorType } from "@/lib/wallet/txError";
-
+import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import DomainResolverABI from "./../../lib/abi/offchain-resolver.json";
 interface SetPrimaryNameModalProps {
   closeModal: () => void;
   onRecordsEdited?: () => void;
   onDismiss: () => void;
   isOpen: boolean;
   name: string;
+  resolverAddress: string;
 }
 
 export const SetPrimaryNameModal = ({
   closeModal,
-  onRecordsEdited,
   onDismiss,
   isOpen,
   name,
+  resolverAddress,
 }: SetPrimaryNameModalProps) => {
   const { data: walletClient } = useWalletClient({ config: walletWagmiConfig });
 
@@ -34,13 +41,19 @@ export const SetPrimaryNameModal = ({
       return null;
     }
 
-    try {
-      return setPrimaryName(walletClient, {
-        name: name,
-      });
-    } catch (error) {
-      return null;
-    }
+    const client = walletClient.extend(publicActions);
+
+    const { request } = await client.simulateContract({
+      address: resolverAddress as `0x${string}`,
+      account: walletClient.account.address as `0x${string}`,
+      abi: DomainResolverABI,
+      functionName: "setName",
+      args: [namehash(name), name],
+    });
+
+    const setAsPrimaryNameRes = await client.writeContract(request);
+
+    return setAsPrimaryNameRes ? setAsPrimaryNameRes : null;
   };
 
   return (

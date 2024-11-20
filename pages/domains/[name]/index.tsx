@@ -112,6 +112,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
             <div className="flex w-full gap-[60px]">
               <Skeleton>
                 <UserDomainCard
+                  resolverAddress={resolver?.address}
                   owner={ensData?.owner}
                   name={name}
                   avatar={textRecords?.avatar}
