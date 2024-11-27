@@ -2,11 +2,11 @@
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
-import L1ResolverABI from "../abi/arbitrum-resolver.json";
+import L1ResolverABI from "../lib/abi/arbitrum-resolver.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
   nameRegistrationSmartContracts,
-} from "../name-registration/constants";
+} from "../lib/name-registration/constants";
 
 import {
   namehash,
@@ -24,25 +24,29 @@ import {
   Chain,
   stringToHex,
 } from "viem";
-import { SupportedNetwork } from "../wallet/chains";
+import { SupportedNetwork } from "../lib/wallet/chains";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
 import {
   TransactionErrorType,
   getBlockchainTransactionError,
-} from "../wallet/txError";
+} from "../lib/wallet/txError";
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
-import DomainResolverABI from "../abi/offchain-resolver.json";
+import DomainResolverABI from "../lib/abi/offchain-resolver.json";
 import { normalize } from "viem/ens";
-import { supportedCoinTypes } from "../domain-page";
+import { supportedCoinTypes } from "../lib/domain-page";
 import {
   coinNameToTypeMap,
   getCoderByCoinName,
 } from "@ensdomains/address-encoder";
-import { CcipRequestParameters, DomainData, MessageData } from "./types";
+import {
+  CcipRequestParameters,
+  DomainData,
+  MessageData,
+} from "../lib/utils/types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
-import { getChain } from "../create-subdomain/service";
+import { getChain } from "./create-subdomain/service";
 import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
 

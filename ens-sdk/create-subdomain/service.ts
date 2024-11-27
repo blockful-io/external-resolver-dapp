@@ -15,17 +15,17 @@ import {
   stringToHex,
   toHex,
 } from "viem";
-import { getRevertErrorData, handleDBStorage } from "../utils/blockchain-txs";
-import { DomainData, MessageData } from "../utils/types";
-import L1ResolverABI from "../abi/arbitrum-resolver.json";
+import { getRevertErrorData, handleDBStorage } from "@/ens-sdk";
+import { DomainData, MessageData } from "@/lib/utils/types";
+import L1ResolverABI from "../../lib/abi/arbitrum-resolver.json";
 import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
 import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
-import { getNameRegistrationSecret } from "../name-registration/localStorage";
-import { DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES } from "../name-registration/constants";
+import { getNameRegistrationSecret } from "../../lib/name-registration/localStorage";
+import { DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES } from "../../lib/name-registration/constants";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
