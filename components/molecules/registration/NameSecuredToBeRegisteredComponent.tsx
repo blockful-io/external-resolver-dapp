@@ -1,5 +1,5 @@
 import { BackButton, BlockchainCTA } from "@/components/atoms";
-import { register } from "@/lib/utils/blockchain-txs";
+import { register } from "@/ens-sdk";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { PublicClient, TransactionReceipt } from "viem";

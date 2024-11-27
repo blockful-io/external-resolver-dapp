@@ -7,15 +7,16 @@ import {
   EthIcon,
   InfoCircleIcon,
 } from "@/components/atoms";
-import {
-  getGasPrice,
-  getNamePrice,
-  getNameRegistrationGasEstimate,
-} from "@/lib/utils/blockchain-txs";
+
 import { useEffect, useState } from "react";
 import { formatEther, PublicClient } from "viem";
 import { usePublicClient } from "wagmi";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import {
+  getGasPrice,
+  getNamePrice,
+  getNameRegistrationGasEstimate,
+} from "@/ens-sdk";
 
 export const RegistrationSummary = () => {
   const {

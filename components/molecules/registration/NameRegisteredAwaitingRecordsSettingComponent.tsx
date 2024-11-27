@@ -1,5 +1,5 @@
 import { BackButton, BlockchainCTA } from "@/components/atoms";
-import { setDomainRecords } from "@/lib/utils/blockchain-txs";
+import { setDomainRecords } from "@/ens-sdk";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import {
   TransactionErrorType,

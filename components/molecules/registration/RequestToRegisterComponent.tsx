@@ -1,16 +1,16 @@
-import { Button, WalletSVG } from "@ensdomains/thorin";
+import { Button } from "@ensdomains/thorin";
 import {
   BackButton,
   BlockchainCTA,
   TransactionConfirmedInBlockchainCTA,
 } from "@/components/atoms";
-import { commit } from "@/lib/utils/blockchain-txs";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { useAccount, useBalance, usePublicClient } from "wagmi";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { PublicClient } from "viem";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { commit } from "@/ens-sdk";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;

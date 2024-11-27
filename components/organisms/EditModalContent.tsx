@@ -26,7 +26,7 @@ import {
   TransactionErrorType,
   getBlockchainTransactionError,
 } from "@/lib/wallet/txError";
-import { setDomainRecords } from "@/lib/utils/blockchain-txs";
+import { setDomainRecords } from "@/ens-sdk";
 import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "@ensdomains/ensjs/public";
 import { useAccount, usePublicClient } from "wagmi";

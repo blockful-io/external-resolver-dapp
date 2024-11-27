@@ -1,4 +1,4 @@
-import { createSubdomain } from "@/lib/create-subdomain/service";
+import { createSubdomain } from "@/ens-sdk";
 import { Button, Input, Spinner } from "@ensdomains/thorin";
 import { buildENSName } from "@namehash/ens-utils";
 import { normalize } from "viem/ens";
