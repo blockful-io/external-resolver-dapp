@@ -5,3 +5,4 @@ export * from "./getGasPrice";
 export * from "./createNameRegistrationSecret";
 export * from "./getNameRegistrationGasEstimate";
 export * from "./isNameAvailable";
+export * from "./getRevertErrorData";
