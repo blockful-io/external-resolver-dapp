@@ -120,7 +120,7 @@ export function getChain(chainId: number) {
 }
 
 // gather the first part of the domain (e.g. floripa.blockful.eth -> floripa, floripa.normal.blockful.eth -> floripa.normal)
-const extractLabelFromName = (name: string): string => {
+export const extractLabelFromName = (name: string): string => {
   const [, label] = /^(.+?)\.\w+\.\w+$/.exec(name) || [];
   return label;
 };
