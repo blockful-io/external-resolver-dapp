@@ -46,9 +46,10 @@ import {
 } from "../lib/utils/types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
-import { getChain } from "./create-subdomain/service";
 import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
+import { getChain, getNamePrice } from "./utils";
+import { getRevertErrorData } from "./errorHandling";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -58,12 +59,23 @@ if (!walletConnectProjectId) {
 }
 
 /*
+  create subdmains
+  create domains with records - with a different resolver
+  set domain as primary name
+  set text records
+  set addresses
+  set abi / contenthash
+*/
+
+/*
   commitment value is used in both 'commit' and 'register'
   functions in the registrar contract. It works as a secret
   to prevent frontrunning attacks. The commitment value must
   be the same in both functions calls, this is why we store
   it in the local storage.
 */
+
+type EnsPublicClient = PublicClient & ClientWithEns;
 
 interface MakeCommitmentParams {
   name: string;
@@ -74,7 +86,7 @@ interface MakeCommitmentParams {
   durationInYears: bigint;
   ownerControlledFuses: number;
   authenticatedAddress: Address;
-  publicClient: PublicClient & ClientWithEns;
+  publicClient: EnsPublicClient;
 }
 
 export async function makeCommitment({
@@ -192,7 +204,7 @@ interface CommitParams {
   resolverAddress: Address;
   authenticatedAddress: Address;
   registerAndSetAsPrimaryName: boolean;
-  publicClient: PublicClient & ClientWithEns;
+  publicClient: EnsPublicClient;
   chain: Chain;
 }
 
@@ -266,7 +278,7 @@ interface RegisterParams {
   durationInYears: bigint;
   authenticatedAddress: Address;
   registerAndSetAsPrimaryName: boolean;
-  publicClient: PublicClient & ClientWithEns;
+  publicClient: EnsPublicClient;
   chain: Chain;
 }
 
@@ -580,99 +592,4 @@ export const setDomainAsPrimaryName = async ({
     const errorType = getBlockchainTransactionError(err);
     return errorType;
   }
-};
-
-// Error handling ⬇️
-
-export function getRevertErrorData(err: unknown) {
-  if (!(err instanceof BaseError)) return undefined;
-  const error = err.walk() as RawContractError;
-  return error?.data as { errorName: string; args: unknown[] };
-}
-
-// Utils ⬇️
-
-export const createNameRegistrationSecret = (): string => {
-  const platformHex = namehash("blockful-ens-external-resolver").slice(2, 10);
-  const platformBytes = platformHex.length;
-  const randomHex = [...Array(64 - platformBytes)]
-    .map(() => Math.floor(Math.random() * 16).toString(16))
-    .join("");
-
-  return "0x" + platformHex + randomHex;
-};
-
-interface NamePrice {
-  base: bigint;
-  premium: bigint;
-}
-
-interface GetNamePriceParams {
-  ensName: ENSName;
-  durationInYears: bigint;
-  publicClient: PublicClient & ClientWithEns;
-}
-
-export const getNamePrice = async ({
-  ensName,
-  durationInYears,
-  publicClient,
-}: GetNamePriceParams): Promise<bigint> => {
-  const ensNameDirectSubname = ensName.name.split(".eth")[0];
-
-  const chain = publicClient.chain;
-
-  if (!Object.values(SupportedNetwork).includes(chain.id)) {
-    throw new Error(`Unsupported network: ${chain.id}`);
-  }
-
-  const nameRegistrationContracts =
-    nameRegistrationSmartContracts[chain.id as SupportedNetwork];
-
-  const price = await publicClient.readContract({
-    args: [ensNameDirectSubname, durationInYears * SECONDS_PER_YEAR.seconds],
-    address: nameRegistrationContracts.ETH_REGISTRAR,
-    functionName: "rentPrice",
-    abi: ETHRegistrarABI,
-  });
-  if (price) {
-    return (price as NamePrice).base + (price as NamePrice).premium;
-  } else {
-    throw new Error("Error getting name price");
-  }
-};
-
-interface GetGasPriceParams {
-  publicClient: PublicClient & ClientWithEns;
-}
-
-export const getGasPrice = async ({
-  publicClient,
-}: GetGasPriceParams): Promise<bigint> => {
-  return publicClient
-    .getGasPrice()
-    .then((gasPrice) => {
-      return gasPrice;
-    })
-    .catch((error) => {
-      return error;
-    });
-};
-
-export const getNameRegistrationGasEstimate = (): bigint => {
-  return 47606n + 324230n;
-};
-
-interface IsNameAvailableParams {
-  ensName: string;
-  publicClient: PublicClient & ClientWithEns;
-}
-
-export const isNameAvailable = async ({
-  ensName,
-  publicClient,
-}: IsNameAvailableParams): Promise<boolean> => {
-  const result = await getAvailable(publicClient, { name: ensName });
-
-  return result;
 };

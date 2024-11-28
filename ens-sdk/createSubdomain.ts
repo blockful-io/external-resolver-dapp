@@ -15,17 +15,19 @@ import {
   stringToHex,
   toHex,
 } from "viem";
-import { getRevertErrorData, handleDBStorage } from "@/ens-sdk";
+import { handleDBStorage } from "@/ens-sdk";
 import { DomainData, MessageData } from "@/lib/utils/types";
-import L1ResolverABI from "../../lib/abi/arbitrum-resolver.json";
+import L1ResolverABI from "../lib/abi/arbitrum-resolver.json";
 import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
 import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
-import { getNameRegistrationSecret } from "../../lib/name-registration/localStorage";
-import { DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES } from "../../lib/name-registration/constants";
+import { getNameRegistrationSecret } from "../lib/name-registration/localStorage";
+import { DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES } from "../lib/name-registration/constants";
+import { getChain } from "./utils";
+import { getRevertErrorData } from "./errorHandling";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
@@ -38,7 +40,23 @@ interface CreateSubdomainArgs {
   chain: Chain;
 }
 
-// TO-DO: Fix function later to accept more text / address params
+/**
+ * Creates a subdomain with associated records (website, description, and address) for an ENS name.
+ * This function is specifically designed to handle offchain and L2 domains.
+ *
+ * The function performs the following steps:
+ * 1. Prepares call data for setting text records (website and description) if provided.
+ * 2. Prepares call data for setting the address record if provided.
+ * 3. Calculates the registration fee and retrieves necessary parameters from the resolver contract.
+ * 4. Attempts to simulate the contract call for subdomain creation.
+ * 5. Handles two specific scenarios based on the simulation result:
+ *    - If storage is handled by an off-chain database, it processes the request accordingly.
+ *    - If storage is handled by an L2 network, it switches to the appropriate network,
+ *      performs the transaction, and switches back to the original network.
+ *
+ * Note: This function does not support standard L1 ENS registrations. It is specifically
+ * tailored for offchain storage solutions and L2 network integrations.
+ */
 export const createSubdomain = async ({
   resolverAddress,
   signerAddress,
@@ -192,36 +210,8 @@ export const createSubdomain = async ({
 
       return { ok: true };
     } else {
-      toast.error("error");
+      toast.error("Unsupported domain type");
       console.error("writing failed: ", { error });
     }
   }
-};
-
-export function getChain(chainId: number) {
-  return [
-    ...Object.values(chains),
-    defineChain({
-      id: Number(chainId),
-      name: "Arbitrum Local",
-      nativeCurrency: {
-        name: "Arbitrum Sepolia Ether",
-        symbol: "ETH",
-        decimals: 18,
-      },
-      rpcUrls: {
-        default: {
-          http: [
-            `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY}`,
-          ],
-        },
-      },
-    }),
-  ].find((chain) => chain.id === chainId);
-}
-
-// gather the first part of the domain (e.g. floripa.blockful.eth -> floripa, floripa.normal.blockful.eth -> floripa.normal)
-const extractLabelFromName = (name: string): string => {
-  const [, label] = /^(.+?)\.\w+\.\w+$/.exec(name) || [];
-  return label;
 };
