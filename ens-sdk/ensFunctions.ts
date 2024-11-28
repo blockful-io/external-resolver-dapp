@@ -46,7 +46,7 @@ import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
 import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
-import { getChain, getNamePrice } from "./utils";
+import { getNamePrice, getChain } from "./utils";
 import { getRevertErrorData } from "./errorHandling";
 import { EnsPublicClient } from "./types";
 
