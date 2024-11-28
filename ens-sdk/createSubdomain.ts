@@ -15,7 +15,7 @@ import {
   stringToHex,
   toHex,
 } from "viem";
-import { handleDBStorage } from "@/ens-sdk";
+import { storeDataInDb } from "@/ens-sdk";
 import { DomainData, MessageData } from "@/lib/utils/types";
 import L1ResolverABI from "../lib/abi/arbitrum-resolver.json";
 import toast from "react-hot-toast";
@@ -160,7 +160,7 @@ export const createSubdomain = async ({
         MessageData,
       ];
 
-      const response = await handleDBStorage({
+      const response = await storeDataInDb({
         domain,
         url,
         message,

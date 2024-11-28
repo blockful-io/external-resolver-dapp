@@ -15,8 +15,6 @@ import {
   encodeFunctionData,
   createWalletClient,
   custom,
-  BaseError,
-  RawContractError,
   Hash,
   fromBytes,
   Address,
@@ -135,7 +133,7 @@ export async function makeCommitment({
     });
 }
 
-export async function ccipRequest({
+export async function sendCcipRequest({
   body,
   url,
 }: CcipRequestParameters): Promise<Response> {
@@ -150,7 +148,7 @@ export async function ccipRequest({
   });
 }
 
-interface HandleDBStorageParams {
+interface HandleDbStorageParams {
   domain: DomainData;
   url: string;
   message: MessageData;
@@ -158,13 +156,13 @@ interface HandleDBStorageParams {
   chain: Chain;
 }
 
-export async function handleDBStorage({
+export async function storeDataInDb({
   domain,
   url,
   message,
   authenticatedAddress,
   chain,
-}: HandleDBStorageParams): Promise<Response> {
+}: HandleDbStorageParams): Promise<Response> {
   const client = createWalletClient({
     account: authenticatedAddress,
     chain: chain,
@@ -184,7 +182,7 @@ export async function handleDBStorage({
     primaryType: "Message",
   });
 
-  return await ccipRequest({
+  return await sendCcipRequest({
     body: {
       data: message.callData,
       signature: { message, domain, signature },
@@ -348,7 +346,7 @@ export const register = async ({
         MessageData,
       ];
 
-      const signedData = await handleDBStorage({
+      const signedData = await storeDataInDb({
         domain,
         url,
         message,
@@ -465,8 +463,8 @@ export const setDomainRecords = async ({
         account: authenticatedAddress,
         address: localResolverAddress,
       });
-    } catch (err) {
-      const data = getRevertErrorData(err);
+    } catch (error) {
+      const data = getRevertErrorData(error);
       if (data?.errorName === "StorageHandledByOffChainDatabase") {
         const [domain, url, message] = data.args as [
           DomainData,
@@ -475,7 +473,7 @@ export const setDomainRecords = async ({
         ];
 
         try {
-          await handleDBStorage({
+          await storeDataInDb({
             domain,
             url,
             message,
@@ -485,8 +483,8 @@ export const setDomainRecords = async ({
 
           return 200;
         } catch (error) {
-          console.error("writing failed: ", { err });
-          const errorType = getBlockchainTransactionError(err);
+          console.error("writing failed: ", { error });
+          const errorType = getBlockchainTransactionError(error);
           return errorType;
         }
       } else if (data?.errorName === "StorageHandledByL2") {
@@ -523,8 +521,8 @@ export const setDomainRecords = async ({
 
         return 200;
       } else {
-        console.error("writing failed: ", { err });
-        const errorType = getBlockchainTransactionError(err);
+        console.error("writing failed: ", { error });
+        const errorType = getBlockchainTransactionError(error);
         return errorType;
       }
     }
@@ -551,6 +549,10 @@ export const setDomainAsPrimaryName = async ({
   chain,
 }: SetDomainAsPrimaryNameParams) => {
   try {
+    if (!Object.values(SupportedNetwork).includes(chain.id)) {
+      throw new Error(`Unsupported network: ${chain.id}`);
+    }
+
     // Create a wallet client for sending transactions to the blockchain
     const walletClient = createWalletClient({
       chain: chain,
@@ -566,10 +568,6 @@ export const setDomainAsPrimaryName = async ({
       ? ensName.name
       : `${ensName.name}.eth`;
 
-    if (!Object.values(SupportedNetwork).includes(chain.id)) {
-      throw new Error(`Unsupported network: ${chain.id}`);
-    }
-
     const network = chain.id as SupportedNetwork;
 
     const publicAddress = normalize(nameWithTLD);
@@ -582,14 +580,14 @@ export const setDomainAsPrimaryName = async ({
       args: [publicAddress],
     });
 
-    const setAsPrimaryNameRes = await client.writeContract(request);
+    const setAsPrimaryNameResult = await client.writeContract(request);
 
-    if (!!setAsPrimaryNameRes) {
+    if (!!setAsPrimaryNameResult) {
       return 200;
     }
-  } catch (err) {
-    console.error("writing failed: ", { err });
-    const errorType = getBlockchainTransactionError(err);
+  } catch (error) {
+    console.error("writing failed: ", { error });
+    const errorType = getBlockchainTransactionError(error);
     return errorType;
   }
 };
