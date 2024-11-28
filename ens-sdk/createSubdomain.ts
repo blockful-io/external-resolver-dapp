@@ -3,7 +3,6 @@ import {
   Chain,
   createWalletClient,
   custom,
-  defineChain,
   encodeFunctionData,
   fromBytes,
   Hash,
@@ -11,16 +10,14 @@ import {
   keccak256,
   namehash,
   publicActions,
-  PublicClient,
   stringToHex,
   toHex,
 } from "viem";
-import { storeDataInDb } from "@/ens-sdk";
+import { EnsPublicClient, storeDataInDb } from "@/ens-sdk";
 import { DomainData, MessageData } from "@/lib/utils/types";
 import L1ResolverABI from "../lib/abi/arbitrum-resolver.json";
 import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
 import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
@@ -36,7 +33,7 @@ interface CreateSubdomainArgs {
   address: string;
   website: string;
   description: string;
-  client: PublicClient & ClientWithEns;
+  client: EnsPublicClient;
   chain: Chain;
 }
 

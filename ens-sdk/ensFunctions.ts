@@ -48,6 +48,7 @@ import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
 import { getChain, getNamePrice } from "./utils";
 import { getRevertErrorData } from "./errorHandling";
+import { EnsPublicClient } from "./types";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -57,23 +58,22 @@ if (!walletConnectProjectId) {
 }
 
 /*
-  create subdmains
-  create domains with records - with a different resolver
-  set domain as primary name
-  set text records
-  set addresses
-  set abi / contenthash
+  This file contains functions for ENS operations:
+  - Creating subdomains
+  - Creating domains with records (using a different resolver)
+  - Setting a domain as the primary name
+  - Setting text records
+  - Setting addresses
+  - Setting ABI / contenthash
 */
 
 /*
-  commitment value is used in both 'commit' and 'register'
-  functions in the registrar contract. It works as a secret
+  The commitment value is used in both 'commit' and 'register'
+  functions in the registrar contract. It acts as a secret
   to prevent frontrunning attacks. The commitment value must
-  be the same in both functions calls, this is why we store
-  it in the local storage.
+  be the same in both function calls, which is why we store
+  it in local storage.
 */
-
-type EnsPublicClient = PublicClient & ClientWithEns;
 
 interface MakeCommitmentParams {
   name: string;
@@ -87,6 +87,16 @@ interface MakeCommitmentParams {
   publicClient: EnsPublicClient;
 }
 
+/**
+ * Generates a commitment for ENS name registration
+ *
+ * This function creates a commitment hash that is used in the two-step ENS registration process.
+ * It helps prevent front-running attacks by keeping the details of the registration secret until
+ * the actual registration takes place.
+ *
+ * @param {MakeCommitmentParams} params - The parameters required for making the commitment
+ * @returns {Promise<Hash | TransactionErrorType>} - The generated commitment hash or an error
+ */
 export async function makeCommitment({
   name,
   data,
@@ -133,6 +143,15 @@ export async function makeCommitment({
     });
 }
 
+/**
+ * Sends a CCIP (Cross-Chain Interoperability Protocol) request
+ *
+ * This function is used to send off-chain requests, typically for resolving ENS names
+ * or storing data related to ENS operations.
+ *
+ * @param {CcipRequestParameters} params - The parameters for the CCIP request
+ * @returns {Promise<Response>} - The response from the CCIP request
+ */
 export async function sendCcipRequest({
   body,
   url,
@@ -156,6 +175,15 @@ interface HandleDbStorageParams {
   chain: Chain;
 }
 
+/**
+ * Stores ENS-related data in an off-chain database
+ *
+ * This function is used when certain ENS operations require off-chain storage.
+ * It signs the data with the user's wallet and sends it to a specified URL for storage.
+ *
+ * @param {HandleDbStorageParams} params - The parameters for storing data
+ * @returns {Promise<Response>} - The response from the storage request
+ */
 export async function storeDataInDb({
   domain,
   url,
@@ -206,6 +234,16 @@ interface CommitParams {
   chain: Chain;
 }
 
+/**
+ * Commits to registering an ENS name
+ *
+ * This is the first step in the two-step ENS registration process. It creates and submits
+ * a commitment to the blockchain, which must be followed by the actual registration after
+ * a waiting period.
+ *
+ * @param {CommitParams} params - The parameters for the commit operation
+ * @returns {Promise<`0x${string}` | TransactionErrorType>} - The transaction hash or an error
+ */
 export const commit = async ({
   ensName,
   durationInYears,
@@ -280,6 +318,15 @@ interface RegisterParams {
   chain: Chain;
 }
 
+/**
+ * Registers an ENS name
+ *
+ * This is the second step in the two-step ENS registration process. It finalizes the registration
+ * of the ENS name after the commitment has been made and the waiting period has passed.
+ *
+ * @param {RegisterParams} params - The parameters for the registration
+ * @returns {Promise<`0x${string}` | TransactionErrorType>} - The transaction hash or an error
+ */
 export const register = async ({
   ensName,
   resolverAddress,
@@ -383,6 +430,15 @@ interface SetDomainRecordsParams {
   chain: Chain;
 }
 
+/**
+ * Sets various records for an ENS domain
+ *
+ * This function allows setting text records, addresses, and other records for an ENS domain.
+ * It can handle both on-chain and off-chain storage depending on the resolver configuration.
+ *
+ * @param {SetDomainRecordsParams} params - The parameters for setting domain records
+ * @returns {Promise<number | TransactionErrorType>} - A status code or an error
+ */
 export const setDomainRecords = async ({
   ensName,
   resolverAddress,
@@ -397,9 +453,10 @@ export const setDomainRecords = async ({
   try {
     const publicAddress = normalize(ensName.name);
 
-    // duplicated function logic on service.ts - createSubdomain
+    // Prepare calls for setting various records
     const calls: Hash[] = [];
 
+    // Add calls for text records
     for (let i = 0; i < Object.keys(textRecords).length; i++) {
       const key = Object.keys(textRecords)[i];
       const value = textRecords[key];
@@ -415,6 +472,7 @@ export const setDomainRecords = async ({
       }
     }
 
+    // Add calls for address records
     for (let i = 0; i < Object.keys(addresses).length; i++) {
       const [cryptocurrencyName, address] = Object.entries(addresses)[i];
       if (supportedCoinTypes.includes(cryptocurrencyName.toUpperCase())) {
@@ -435,12 +493,13 @@ export const setDomainRecords = async ({
       calls.push(callData);
     }
 
+    // Add calls for other records (e.g., contenthash)
     for (let i = 0; i < Object.keys(others).length; i++) {
       const [key, value] = Object.entries(others)[i];
       const callData = encodeFunctionData({
         functionName: "setContenthash",
         abi: L1ResolverABI,
-        args: [namehash(publicAddress), stringToHex(value)], // vallue = url
+        args: [namehash(publicAddress), stringToHex(value)], // value = url
       });
       calls.push(callData);
     }
@@ -456,6 +515,7 @@ export const setDomainRecords = async ({
         throw new Error("No domain resolver informed");
       }
 
+      // Simulate the multicall contract interaction
       await client.simulateContract({
         functionName: "multicall",
         abi: L1ResolverABI,
@@ -466,6 +526,7 @@ export const setDomainRecords = async ({
     } catch (error) {
       const data = getRevertErrorData(error);
       if (data?.errorName === "StorageHandledByOffChainDatabase") {
+        // Handle off-chain storage
         const [domain, url, message] = data.args as [
           DomainData,
           string,
@@ -488,6 +549,7 @@ export const setDomainRecords = async ({
           return errorType;
         }
       } else if (data?.errorName === "StorageHandledByL2") {
+        // Handle L2 storage
         const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
 
         const selectedChain = getChain(Number(chainId));
@@ -543,6 +605,16 @@ interface SetDomainAsPrimaryNameParams {
   chain: Chain;
 }
 
+/**
+ * Sets an ENS domain as the primary name for an Ethereum address
+ *
+ * This function allows a user to set their newly registered or existing ENS domain
+ * as the primary name associated with their Ethereum address. This is typically done
+ * after registering a new ENS name or when changing the primary name.
+ *
+ * @param {SetDomainAsPrimaryNameParams} params - The parameters for setting the primary name
+ * @returns {Promise<number | TransactionErrorType>} - A status code or an error
+ */
 export const setDomainAsPrimaryName = async ({
   authenticatedAddress,
   ensName,
@@ -572,6 +644,7 @@ export const setDomainAsPrimaryName = async ({
 
     const publicAddress = normalize(nameWithTLD);
 
+    // Simulate the setName contract interaction
     const { request } = await client.simulateContract({
       address: nameRegistrationSmartContracts[network].ENS_REVERSE_REGISTRAR,
       account: authenticatedAddress,
@@ -580,6 +653,7 @@ export const setDomainAsPrimaryName = async ({
       args: [publicAddress],
     });
 
+    // Execute the setName transaction
     const setAsPrimaryNameResult = await client.writeContract(request);
 
     if (!!setAsPrimaryNameResult) {

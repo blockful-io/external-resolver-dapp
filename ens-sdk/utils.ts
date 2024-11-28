@@ -6,10 +6,10 @@ import * as chains from "viem/chains";
 
 import { defineChain, namehash } from "viem";
 import { SupportedNetwork } from "../lib/wallet/chains";
-import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
+import { ENSName, SECONDS_PER_YEAR } from "@namehash/ens-utils";
 
 import { getAvailable } from "@ensdomains/ensjs/public";
-import { EnsPublicClient } from "./types";
+import { EnsPublicClient, NamePrice } from "./types";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -17,8 +17,6 @@ const walletConnectProjectId =
 if (!walletConnectProjectId) {
   throw new Error("No wallet connect project ID informed");
 }
-
-// Utils ⬇️
 
 export const createNameRegistrationSecret = (): string => {
   const platformHex = namehash("blockful-ens-external-resolver").slice(2, 10);
@@ -29,12 +27,6 @@ export const createNameRegistrationSecret = (): string => {
 
   return "0x" + platformHex + randomHex;
 };
-
-interface NamePrice {
-  base: bigint;
-  premium: bigint;
-}
-
 interface GetNamePriceParams {
   ensName: ENSName;
   durationInYears: bigint;
