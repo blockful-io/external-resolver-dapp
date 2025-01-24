@@ -13,6 +13,7 @@
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
+  { "inputs": [], "name": "FunctionNotSupported", "type": "error" },
   {
     "inputs": [
       { "internalType": "address", "name": "sender", "type": "address" },
@@ -29,23 +30,6 @@
     "type": "error"
   },
   {
-    "inputs": [{ "internalType": "string", "name": "cause", "type": "string" }],
-    "name": "SignatureVerifier__InvalidSignature",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "chainId", "type": "uint256" },
-      {
-        "internalType": "address",
-        "name": "contractAddress",
-        "type": "address"
-      }
-    ],
-    "name": "StorageHandledByL2",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "components": [
@@ -58,14 +42,14 @@
             "type": "address"
           }
         ],
-        "internalType": "struct IWriteDeferral.domainData",
+        "internalType": "struct OperationRouter.DomainData",
         "name": "sender",
         "type": "tuple"
       },
       { "internalType": "string", "name": "url", "type": "string" },
       {
         "components": [
-          { "internalType": "bytes", "name": "callData", "type": "bytes" },
+          { "internalType": "bytes", "name": "data", "type": "bytes" },
           { "internalType": "address", "name": "sender", "type": "address" },
           {
             "internalType": "uint256",
@@ -73,12 +57,29 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IWriteDeferral.messageData",
+        "internalType": "struct OperationRouter.MessageData",
         "name": "data",
         "type": "tuple"
       }
     ],
-    "name": "StorageHandledByOffChainDatabase",
+    "name": "OperationHandledOffchain",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "chainId", "type": "uint256" },
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "OperationHandledOnchain",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "string", "name": "cause", "type": "string" }],
+    "name": "SignatureVerifier__InvalidSignature",
     "type": "error"
   },
   {
@@ -187,50 +188,6 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "chainId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousContractAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newContractAddress",
-        "type": "address"
-      }
-    ],
-    "name": "L2HandlerContractAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "previousChainId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "newChainId",
-        "type": "uint256"
-      }
-    ],
-    "name": "L2HandlerDefaultChainIdChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "string",
         "name": "previousUrl",
         "type": "string"
@@ -262,25 +219,6 @@
       }
     ],
     "name": "NameChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "previousUrl",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "newUrl",
-        "type": "string"
-      }
-    ],
-    "name": "OffChainDatabaseHandlerURLChanged",
     "type": "event"
   },
   {
@@ -500,6 +438,13 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "bytes", "name": "data", "type": "bytes" }],
+    "name": "getOperationHandler",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "address", "name": "account", "type": "address" }
     ],
@@ -525,6 +470,16 @@
   {
     "inputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
     "name": "multicall",
+    "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "bytes[]", "name": "", "type": "bytes[]" }
+    ],
+    "name": "multicallWithNodeCheck",
     "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
     "stateMutability": "view",
     "type": "function"
@@ -560,23 +515,6 @@
     "name": "recordVersions",
     "outputs": [{ "internalType": "uint64", "name": "", "type": "uint64" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes", "name": "", "type": "bytes" },
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "bytes[]", "name": "", "type": "bytes[]" },
-      { "internalType": "bool", "name": "", "type": "bool" },
-      { "internalType": "uint16", "name": "", "type": "uint16" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
-    ],
-    "name": "register",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -745,16 +683,6 @@
     ],
     "name": "text",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "address", "name": "", "type": "address" }
-    ],
-    "name": "transfer",
-    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },

@@ -17,12 +17,12 @@ export type DomainData = {
 /**
  * @notice Struct used to define the message context used to construct a typed data signature, defined in EIP-712,
  * to authorize and define the deferred mutation being performed.
- * @param callData The encoded function call data of the mutation.
+ * @param data The encoded function call data of the mutation.
  * @param sender The address of the user performing the mutation (msg.sender).
  * @param expirationTimestamp The timestamp at which the mutation will expire.
  */
 export type MessageData = {
-  callData: `0x${string}`;
+  data: `0x${string}`;
   sender: `0x${string}`;
   expirationTimestamp: bigint;
 };

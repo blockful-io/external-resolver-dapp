@@ -1,36 +1,19 @@
 [
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_chainId", "type": "uint256" },
+      { "internalType": "string", "name": "newGatewayUrl", "type": "string" },
+      { "internalType": "string", "name": "newGraphqlUrl", "type": "string" },
       {
-        "internalType": "address",
-        "name": "_target_resolver",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "newOffChainDatabaseTimeoutDuration",
+        "type": "uint256"
       },
-      {
-        "internalType": "address",
-        "name": "_target_registrar",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IEVMVerifier",
-        "name": "_verifier",
-        "type": "address"
-      },
-      { "internalType": "string", "name": "_metadataUrl", "type": "string" }
+      { "internalType": "address[]", "name": "newSigners", "type": "address[]" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
-  { "inputs": [], "name": "CommandTooLong", "type": "error" },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "value", "type": "uint256" },
-      { "internalType": "uint256", "name": "max", "type": "uint256" }
-    ],
-    "name": "InvalidReference",
-    "type": "error"
-  },
+  { "inputs": [], "name": "FunctionNotSupported", "type": "error" },
   {
     "inputs": [
       { "internalType": "address", "name": "sender", "type": "address" },
@@ -48,26 +31,6 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "actual", "type": "uint256" },
-      { "internalType": "uint256", "name": "expected", "type": "uint256" }
-    ],
-    "name": "ResponseLengthMismatch",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "chainId", "type": "uint256" },
-      {
-        "internalType": "address",
-        "name": "contractAddress",
-        "type": "address"
-      }
-    ],
-    "name": "StorageHandledByL2",
-    "type": "error"
-  },
-  {
-    "inputs": [
       {
         "components": [
           { "internalType": "string", "name": "name", "type": "string" },
@@ -79,14 +42,14 @@
             "type": "address"
           }
         ],
-        "internalType": "struct IWriteDeferral.domainData",
+        "internalType": "struct OperationRouter.DomainData",
         "name": "sender",
         "type": "tuple"
       },
       { "internalType": "string", "name": "url", "type": "string" },
       {
         "components": [
-          { "internalType": "bytes", "name": "callData", "type": "bytes" },
+          { "internalType": "bytes", "name": "data", "type": "bytes" },
           { "internalType": "address", "name": "sender", "type": "address" },
           {
             "internalType": "uint256",
@@ -94,17 +57,29 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IWriteDeferral.messageData",
+        "internalType": "struct OperationRouter.MessageData",
         "name": "data",
         "type": "tuple"
       }
     ],
-    "name": "StorageHandledByOffChainDatabase",
+    "name": "OperationHandledOffchain",
     "type": "error"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "max", "type": "uint256" }],
-    "name": "TooManyCommands",
+    "inputs": [
+      { "internalType": "uint256", "name": "chainId", "type": "uint256" },
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "OperationHandledOnchain",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "string", "name": "cause", "type": "string" }],
+    "name": "SignatureVerifier__InvalidSignature",
     "type": "error"
   },
   {
@@ -112,24 +87,18 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
         "internalType": "uint256",
-        "name": "chainId",
+        "name": "contentType",
         "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousContractAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newContractAddress",
-        "type": "address"
       }
     ],
-    "name": "L2HandlerContractAddressChanged",
+    "name": "ABIChanged",
     "type": "event"
   },
   {
@@ -137,18 +106,81 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "a",
+        "type": "address"
+      }
+    ],
+    "name": "AddrChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "previousChainId",
+        "name": "coinType",
         "type": "uint256"
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "newChainId",
-        "type": "uint256"
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "newAddress",
+        "type": "bytes"
       }
     ],
-    "name": "L2HandlerDefaultChainIdChanged",
+    "name": "AddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "hash",
+        "type": "bytes"
+      }
+    ],
+    "name": "ContenthashChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "previousUrl",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "newUrl",
+        "type": "string"
+      }
+    ],
+    "name": "GatewayUrlSet",
     "type": "event"
   },
   {
@@ -175,18 +207,37 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "string",
-        "name": "previousUrl",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "string",
-        "name": "newUrl",
+        "name": "name",
         "type": "string"
       }
     ],
-    "name": "OffChainDatabaseHandlerURLChanged",
+    "name": "NameChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "previousDuration",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "OffChainDatabaseTimeoutDurationSet",
     "type": "event"
   },
   {
@@ -209,43 +260,197 @@
     "type": "event"
   },
   {
+    "anonymous": false,
     "inputs": [
-      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "x",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "y",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PubkeyChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "addedSigner",
+        "type": "address"
+      }
+    ],
+    "name": "SignerAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "removedSigner",
+        "type": "address"
+      }
+    ],
+    "name": "SignerRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "indexedKey",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "key",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "name": "TextChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "newVersion",
+        "type": "uint64"
+      }
+    ],
+    "name": "VersionChanged",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "ABI",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
       { "internalType": "bytes", "name": "", "type": "bytes" }
     ],
-    "name": "addrCallback",
-    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      {
+        "internalType": "address[]",
+        "name": "signersToAdd",
+        "type": "address[]"
+      }
     ],
-    "name": "addrCoinTypeCallback",
-    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
-    ],
-    "name": "contenthashCallback",
-    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes", "name": "response", "type": "bytes" },
-      { "internalType": "bytes", "name": "extradata", "type": "bytes" }
-    ],
-    "name": "getStorageSlotsCallback",
+    "name": "addSigners",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
+    ],
+    "name": "addr",
+    "outputs": [
+      { "internalType": "address payable", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "addr",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
+    ],
+    "name": "clearRecords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "name": "contenthash",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gatewayDatabaseTimeoutDuration",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gatewayUrl",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bytes", "name": "data", "type": "bytes" }],
+    "name": "getOperationHandler",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "isSigner",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -270,6 +475,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "bytes[]", "name": "", "type": "bytes[]" }
+    ],
+    "name": "multicallWithNodeCheck",
+    "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
+    ],
+    "name": "name",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
@@ -277,48 +501,33 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "bytes", "name": "", "type": "bytes" },
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "bytes[]", "name": "", "type": "bytes[]" },
-      { "internalType": "bool", "name": "", "type": "bool" },
-      { "internalType": "uint16", "name": "", "type": "uint16" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
-    ],
-    "name": "register",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes", "name": "", "type": "bytes" },
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "registerParams",
+    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "name": "pubkey",
     "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "", "type": "bytes32" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "name": "recordVersions",
+    "outputs": [{ "internalType": "uint64", "name": "", "type": "uint64" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
-      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      {
+        "internalType": "address[]",
+        "name": "signersToRemove",
+        "type": "address[]"
+      }
     ],
-    "name": "registerParamsCallback",
-    "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" },
-      { "internalType": "uint256", "name": "commitTime", "type": "uint256" },
-      { "internalType": "bytes", "name": "extraData", "type": "bytes" }
-    ],
-    "stateMutability": "pure",
+    "name": "removeSigners",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -334,7 +543,28 @@
       { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "resolve",
-    "outputs": [{ "internalType": "bytes", "name": "result", "type": "bytes" }],
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "response", "type": "bytes" },
+      { "internalType": "bytes", "name": "extraData", "type": "bytes" }
+    ],
+    "name": "resolveWithProof",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "setABI",
+    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },
@@ -373,6 +603,15 @@
     "inputs": [
       { "internalType": "string", "name": "newUrl", "type": "string" }
     ],
+    "name": "setGatewayUrl",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "newUrl", "type": "string" }
+    ],
     "name": "setMetadataUrl",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -380,12 +619,32 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "key", "type": "bytes32" },
-      { "internalType": "address", "name": "target", "type": "address" }
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" },
+      { "internalType": "string", "name": "newName", "type": "string" }
     ],
-    "name": "setTarget",
+    "name": "setName",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "newDuration", "type": "uint256" }
+    ],
+    "name": "setOffChainDatabaseTimoutDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "", "type": "bytes32" }
+    ],
+    "name": "setPubkey",
+    "outputs": [],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -400,6 +659,15 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "signers",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "bytes4", "name": "interfaceID", "type": "bytes4" }
     ],
@@ -409,20 +677,13 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "name": "targets",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "string", "name": "", "type": "string" }
     ],
-    "name": "textCallback",
-    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "stateMutability": "pure",
+    "name": "text",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {

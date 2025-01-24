@@ -111,6 +111,7 @@ export async function makeCommitment({
     })
     .catch((error) => {
       const errorType = getBlockchainTransactionError(error);
+
       return errorType || error;
     });
 }
@@ -156,7 +157,7 @@ export async function handleDBStorage({
     message,
     types: {
       Message: [
-        { name: "callData", type: "bytes" },
+        { name: "data", type: "bytes" },
         { name: "sender", type: "address" },
         { name: "expirationTimestamp", type: "uint256" },
       ],
@@ -164,9 +165,11 @@ export async function handleDBStorage({
     primaryType: "Message",
   });
 
+  debugger;
+
   return await ccipRequest({
     body: {
-      data: message.callData,
+      data: message.data,
       signature: { message, domain, signature },
       sender: message.sender,
     },
@@ -449,7 +452,34 @@ export const setDomainRecords = async ({
       });
     } catch (err) {
       const data = getRevertErrorData(err);
-      if (data?.errorName === "StorageHandledByOffChainDatabase") {
+      // OperationHandledOffchain - OperationHandledOnchain
+      if (data?.errorName === "OperationHandledOffchain") {
+        const [domain, url, message] = data.args as [
+          DomainData,
+          string,
+          MessageData,
+        ];
+
+        console.log("domain", domain);
+        console.log("url", url);
+        console.log("message", message);
+
+        try {
+          await handleDBStorage({
+            domain,
+            url,
+            message,
+            authenticatedAddress,
+            chain: chain,
+          });
+
+          return 200;
+        } catch (error) {
+          console.error("writing failed: ", { err });
+          const errorType = getBlockchainTransactionError(err);
+          return errorType;
+        }
+      } else if (data?.errorName === "StorageHandledByOffChainDatabase") {
         const [domain, url, message] = data.args as [
           DomainData,
           string,
