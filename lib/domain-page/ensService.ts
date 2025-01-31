@@ -35,6 +35,7 @@ import {
 } from "viem";
 import toast from "react-hot-toast";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { stringHasMoreThanOneDot } from "../utils/formats";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -102,7 +103,12 @@ export const getENSDomainDataThroughSubgraph = async ({
 }: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
   validateDomain(domain);
 
-  if (await getAvailable(client, { name: domain })) return null;
+  debugger;
+  if (
+    !stringHasMoreThanOneDot(domain) &&
+    (await getAvailable(client, { name: domain }))
+  )
+    return null;
 
   const textRecordsKeys = await getSubgraphRecords(client, {
     name: domain,

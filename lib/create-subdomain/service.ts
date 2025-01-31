@@ -2,6 +2,7 @@ import {
   Address,
   Chain,
   createPublicClient,
+  custom,
   decodeErrorResult,
   defineChain,
   encodeFunctionData,
@@ -9,7 +10,6 @@ import {
   getChainContractAddress,
   Hash,
   Hex,
-  http,
   keccak256,
   namehash,
   PublicClient,
@@ -27,7 +27,7 @@ import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
 import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
 import universalResolver from "../abi/universal-resolver.json";
-import offchainResolver from "../abi/offchain-resolver.json";
+import offchainResolver from "../abi/arbitrum-resolver.json";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
@@ -194,12 +194,14 @@ export const createSubdomain = async ({
           `0x${string}`,
         ];
 
+        // Create a new client for L2 using window.ethereum
         const l2Client = createPublicClient({
           chain: getChain(Number(chainId)),
-          transport: http(
-            "https://arb-sepolia.g.alchemy.com/v2/pYMWFbHDh3JJppeylChDxKE18jWFLQv8",
-          ),
+          transport: custom(window.ethereum),
         }).extend(walletActions);
+
+        // Switch chain using the wallet client
+        await l2Client.switchChain({ id: Number(chainId) });
 
         // SUBDOMAIN PRICING
         let value = 0n;
@@ -227,10 +229,6 @@ export const createSubdomain = async ({
 
         try {
           const { request } = await l2Client.simulateContract({
-            // functionName: calldata.functionName,
-            // abi: calldata.abi,
-            // args: calldata.args,
-            // account: signerAddress,
             ...calldata,
             address: contractAddress,
             value,
@@ -241,6 +239,8 @@ export const createSubdomain = async ({
           return { ok: true };
         } catch (err) {
           console.log("error while trying to make the request: ", { err });
+        } finally {
+          await l2Client.switchChain({ id: chain.id });
         }
       }
       default:
