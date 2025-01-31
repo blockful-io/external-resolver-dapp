@@ -1,31 +1,33 @@
 import {
   Address,
   Chain,
-  createWalletClient,
-  custom,
+  createPublicClient,
+  decodeErrorResult,
   defineChain,
   encodeFunctionData,
   fromBytes,
+  getChainContractAddress,
   Hash,
   Hex,
+  http,
   keccak256,
   namehash,
-  publicActions,
   PublicClient,
   stringToHex,
   toHex,
+  walletActions,
+  zeroHash,
 } from "viem";
 import { getRevertErrorData, handleDBStorage } from "../utils/blockchain-txs";
 import { DomainData, MessageData } from "../utils/types";
 import L1ResolverABI from "../abi/arbitrum-resolver.json";
-import toast from "react-hot-toast";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
 import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
-import { getNameRegistrationSecret } from "../name-registration/localStorage";
-import { DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES } from "../name-registration/constants";
+import universalResolver from "../abi/universal-resolver.json";
+import offchainResolver from "../abi/offchain-resolver.json";
 
 interface CreateSubdomainArgs {
   resolverAddress: Address;
@@ -116,84 +118,133 @@ export const createSubdomain = async ({
     functionName: "register",
     abi: L1ResolverABI,
     args: [
-      dnsName, // name
-      signerAddress, // owner
-      SECONDS_PER_YEAR.seconds,
-      getNameRegistrationSecret(), // secret
-      calldataResolver, // L2
-      calls, // records calldata
-      false, // reverseRecord
-      DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES, // fuses
-      `0x${"a".repeat(64)}` as Hex, // extraData
+      {
+        name: dnsName,
+        owner: signerAddress,
+        duration: SECONDS_PER_YEAR.seconds * BigInt(1000),
+        secret: zeroHash,
+        extraData: zeroHash,
+      },
     ],
     address: resolverAddress, // L1
     account: signerAddress,
     value: value,
   };
 
+  const universalResolverContractAddress = getChainContractAddress({
+    chain: client.chain,
+    contract: "ensUniversalResolver",
+  });
+
   try {
-    await client.simulateContract(calldata);
+    await client.readContract({
+      address: universalResolverContractAddress,
+      abi: universalResolver,
+      functionName: "resolve",
+      args: [
+        dnsName,
+        encodeFunctionData({
+          functionName: "getOperationHandler",
+          abi: offchainResolver,
+          args: [
+            encodeFunctionData({
+              functionName: "register",
+              abi: offchainResolver,
+              args: calldata.args,
+            }),
+          ],
+        }),
+      ],
+    });
   } catch (error) {
     const data = getRevertErrorData(error);
-    if (data?.errorName === "StorageHandledByOffChainDatabase") {
-      const [domain, url, message] = data.args as [
-        DomainData,
-        string,
-        MessageData,
-      ];
+    if (!data || !data.args || data.args?.length === 0) {
+      console.log({ error });
+      return;
+    }
 
-      const response = await handleDBStorage({
-        domain,
-        url,
-        message,
-        authenticatedAddress: signerAddress,
-        chain: chain,
-      });
+    const [params] = data.args;
+    const errorResult = decodeErrorResult({
+      abi: L1ResolverABI,
+      data: params as Hex,
+    });
 
-      return response;
-    } else if (data?.errorName === "StorageHandledByL2") {
-      const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
+    debugger;
 
-      const selectedChain = getChain(Number(chainId));
-
-      if (!selectedChain) {
-        toast.error("error");
-        return;
-      }
-
-      const clientWithWallet = createWalletClient({
-        chain: selectedChain,
-        transport: custom(window.ethereum),
-      }).extend(publicActions);
-
-      await clientWithWallet.addChain({ chain: selectedChain });
-
-      try {
-        const { request } = await clientWithWallet.simulateContract({
-          ...calldata,
-          address: contractAddress,
+    switch (errorResult?.errorName) {
+      case "OperationHandledOffchain": {
+        const [domain, url, message] = errorResult.args as [
+          DomainData,
+          string,
+          MessageData,
+        ];
+        await handleDBStorage({
+          domain,
+          url,
+          message,
+          authenticatedAddress: signerAddress,
+          chain,
         });
 
-        await clientWithWallet.writeContract(request);
-      } catch (error: any) {
-        toast.error(error?.cause?.reason ?? "Error creating subdomain");
-        /**
-         *  Since our app does not support Arbitrum Sepolia in a lot of ways
-         *  we want the user to be at this network for the least time possible,
-         *  meaning that if the subdomains request above fails, we want him
-         *  to be back in a safe place before he starts to use the application
-         *  functionalities once again, to guarantee a nice user experience.
-         */
-        await clientWithWallet.switchChain({ id: chains.sepolia.id });
-        return { ok: false };
+        return { ok: true };
       }
+      case "OperationHandledOnchain": {
+        const [chainId, contractAddress] = errorResult.args as [
+          bigint,
+          `0x${string}`,
+        ];
 
-      await clientWithWallet.switchChain({ id: chains.sepolia.id });
+        const l2Client = createPublicClient({
+          chain: getChain(Number(chainId)),
+          transport: http(
+            "https://arb-sepolia.g.alchemy.com/v2/pYMWFbHDh3JJppeylChDxKE18jWFLQv8",
+          ),
+        }).extend(walletActions);
 
-      return { ok: true };
-    } else {
-      toast.error("error");
-      console.error("writing failed: ", { error });
+        // SUBDOMAIN PRICING
+        let value = 0n;
+        if (calldata.functionName === "register") {
+          const registerParams = (await l2Client.readContract({
+            address: contractAddress,
+            abi: L1ResolverABI,
+            functionName: "registerParams",
+            args: [dnsName, SECONDS_PER_YEAR.seconds * BigInt(1000)],
+          })) as {
+            price: bigint;
+            commitTime: bigint;
+            extraData: Hex;
+            available: boolean;
+            token: Hex;
+          };
+          value = registerParams.price;
+
+          if (!registerParams.available) {
+            console.log("Domain unavailable");
+            return;
+          }
+          registerParams;
+        }
+
+        try {
+          const { request } = await l2Client.simulateContract({
+            // functionName: calldata.functionName,
+            // abi: calldata.abi,
+            // args: calldata.args,
+            // account: signerAddress,
+            ...calldata,
+            address: contractAddress,
+            value,
+          });
+
+          await l2Client.writeContract(request);
+
+          return { ok: true };
+        } catch (err) {
+          console.log("error while trying to make the request: ", { err });
+        }
+      }
+      default:
+        console.error("error registering domain: ", { error });
     }
   }
 };

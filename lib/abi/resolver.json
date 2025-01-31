@@ -520,6 +520,53 @@
   {
     "inputs": [
       {
+        "components": [
+          { "internalType": "bytes", "name": "name", "type": "bytes" },
+          { "internalType": "address", "name": "owner", "type": "address" },
+          { "internalType": "uint256", "name": "duration", "type": "uint256" },
+          { "internalType": "bytes32", "name": "secret", "type": "bytes32" },
+          { "internalType": "bytes", "name": "extraData", "type": "bytes" }
+        ],
+        "internalType": "struct RegisterRequest",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "name": "register",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "", "type": "bytes" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "registerParams",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "price", "type": "uint256" },
+          { "internalType": "bool", "name": "available", "type": "bool" },
+          { "internalType": "address", "name": "token", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "commitTime",
+            "type": "uint256"
+          },
+          { "internalType": "bytes", "name": "extraData", "type": "bytes" }
+        ],
+        "internalType": "struct OffchainRegister.RegisterParams",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address[]",
         "name": "signersToRemove",
         "type": "address[]"
@@ -683,6 +730,17 @@
     ],
     "name": "text",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "", "type": "bytes" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "transferFrom",
+    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },
