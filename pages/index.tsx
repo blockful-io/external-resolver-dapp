@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { CrossCircleSVG } from "@ensdomains/thorin";
-import { HomepageBg } from "@/components/01-atoms";
+import { HomepageBg } from "@/components/atoms";
 import { isNameAvailable } from "@/lib/utils/blockchain-txs";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { DebounceInput } from "react-debounce-input";
@@ -9,7 +9,7 @@ import { normalize } from "viem/ens";
 import Link from "next/link";
 import { EnsDomainStatus } from "@/types/ensDomainStatus";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
-import { DomainStatus } from "@/components/02-molecules";
+import { DomainStatus } from "@/components/molecules";
 import toast from "react-hot-toast";
 import { usePublicClient } from "wagmi";
 import { PublicClient } from "viem";
@@ -93,10 +93,10 @@ export default function Home() {
   };
 
   return (
-    <div className="relative flex h-screen flex-col items-center justify-center overflow-clip bg-white p-4">
-      <HomepageBg />
+    <div className="relative flex flex-1 flex-col items-center justify-center overflow-clip bg-white p-4">
+      <HomepageBg className="animate-float" />
 
-      <div className="flex w-full max-w-6xl -translate-y-1/3 flex-col items-center justify-center gap-y-8">
+      <div className="flex w-full max-w-6xl -translate-y-1/3 animate-fadeIn flex-col items-center justify-center gap-y-8">
         <div className="flex items-center justify-center gap-2 rounded-full border border-gray-200 px-3 py-2">
           <p>🔎</p>
           <p className="text-xl text-gray-500">Search domains</p>
@@ -156,7 +156,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-[-200px] h-[243px] w-[85%] rounded-ellipse bg-gradient-ens blur-[125px]"></div>
+      <div className="absolute bottom-[-200px] h-[243px] w-[85%] bg-gradient-ens blur-[125px]"></div>
     </div>
   );
 }

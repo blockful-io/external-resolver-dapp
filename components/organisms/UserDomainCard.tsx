@@ -1,16 +1,9 @@
 import Avatar from "boring-avatars";
-import CustomImage from "../02-molecules/CustomImage";
+import CustomImage from "../molecules/CustomImage";
 import { Button, Modal, Skeleton } from "@ensdomains/thorin";
-import {
-  EmailIcon,
-  GithubIcon,
-  LinkedInIcon,
-  PencilIcon,
-  TwitterIcon,
-} from "../01-atoms";
-import Link from "next/link";
+import { PencilIcon } from "../atoms";
 import { EditModalContent } from "./EditModalContent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount, useEnsName } from "wagmi";
 
 interface UserDomainCardProps {
@@ -30,22 +23,28 @@ export const UserDomainCard = ({
   url,
   name,
   avatar,
-  email,
-  github,
-  twitter,
-  linkedIn,
   description,
   onRecordsEdited,
   owner,
 }: UserDomainCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { address } = useAccount();
 
   const { data: authedUserName } = useEnsName({
     address: address,
   });
 
-  const showEditButton: boolean = authedUserName === owner || address === owner;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const showEditButton: boolean =
+    !!address && (authedUserName === owner || address === owner);
+
+  if (!isClient) {
+    return null; // Return null on the server-side
+  }
 
   return (
     <div className="flex w-[376px] flex-col overflow-hidden rounded-md border border-gray-200">
@@ -94,7 +93,12 @@ export const UserDomainCard = ({
               <h3 className="truncate text-[26px]">{name}</h3>
             </div>
             {url && (
-              <a href={url} target="_blank" className="text-base text-blue-500">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500"
+              >
                 {url}
               </a>
             )}
@@ -103,71 +107,8 @@ export const UserDomainCard = ({
         <Skeleton>
           <p className="text-base text-gray-400">{description}</p>
         </Skeleton>
-        {/* 
-        We don't support primary name setting yet
-
-        <Skeleton>
-        <div className="flex items-center justify-center gap-2 p-3 rounded-md border border-gray-200">
-          <Toggle />
-          <p>Primary name</p>
-          <InfoCircleSVG className="text-gray-400 h-4 w-4 mr-1" />
-        </div>
-      </Skeleton> */}
-        <div className="flex flex-col items-start justify-center gap-1">
-          {!!email && (
-            <Link
-              target="_blank"
-              href={`mailto:${email}`}
-              className="group flex gap-2 p-2"
-            >
-              <EmailIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {email}
-              </h3>
-            </Link>
-          )}
-
-          {!!github && (
-            <Link
-              target="_blank"
-              href={`https://github.com/${github}`}
-              className="group flex gap-2 p-2"
-            >
-              <GithubIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {github}
-              </h3>
-            </Link>
-          )}
-
-          {!!twitter && (
-            <Link
-              target="_blank"
-              href={`https://x.com/${twitter}`}
-              className="group flex gap-2 p-2"
-            >
-              <TwitterIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {twitter}
-              </h3>
-            </Link>
-          )}
-
-          {!!linkedIn && (
-            <Link
-              target="_blank"
-              href={`https://www.linkedin.com/in/${linkedIn}`}
-              className="group flex gap-2 p-2"
-            >
-              <LinkedInIcon className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-black" />
-              <h3 className="text-gray-400 transition-colors duration-300 group-hover:text-black">
-                {linkedIn}
-              </h3>
-            </Link>
-          )}
-        </div>
       </div>
-      <Modal open={modalOpen} onDismiss={() => {}}>
+      <Modal open={modalOpen} onDismiss={() => setModalOpen(false)}>
         <EditModalContent
           onRecordsEdited={onRecordsEdited}
           closeModal={() => {

@@ -165,8 +165,32 @@
     "name": "findResolver",
     "outputs": [
       {
-        "internalType": "contract Resolver",
-        "name": "",
+        "internalType": "bytes4",
+        "name": "callbackFunction",
+        "type": "bytes4"
+      },
+      { "internalType": "bytes", "name": "extraData", "type": "bytes" }
+    ],
+    "name": "OffchainLookup",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "returnData", "type": "bytes" }
+    ],
+    "name": "ResolverError",
+    "type": "error"
+  },
+  { "inputs": [], "name": "ResolverNotContract", "type": "error" },
+  { "inputs": [], "name": "ResolverNotFound", "type": "error" },
+  { "inputs": [], "name": "ResolverWildcardNotSupported", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
         "type": "address"
       },
       {

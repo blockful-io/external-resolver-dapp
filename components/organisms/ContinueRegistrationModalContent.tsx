@@ -4,7 +4,7 @@ import {
 } from "@/lib/name-registration/constants";
 import { LocalNameRegistrationData } from "@/lib/name-registration/types";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import { BasicInfoKey, SocialAccountsKeys } from "../02-molecules";
+import { BasicInfoKey, SocialAccountsKeys } from "../molecules";
 import { endNameRegistrationPreviouslyOpen } from "@/lib/name-registration/localStorage";
 import { useAccount } from "wagmi";
 import { Button, Modal } from "@ensdomains/thorin";

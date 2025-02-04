@@ -1,4 +1,4 @@
-import { FieldsProvider, useFields } from "@/components/02-molecules";
+import { FieldsProvider, useFields } from "@/components/molecules";
 
 import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import TabBody from "@/components/organisms/TabBody";
@@ -15,7 +15,7 @@ import { usePublicClient } from "wagmi";
 
 export const excludeKeys = [
   "com.twitter",
-  // "org.telegram", telegram is not yet shown in UserDomainCard
+  "org.telegram",
   "com.linkedin",
   "avatar",
   "com.github",

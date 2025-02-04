@@ -22,6 +22,7 @@ import {
   Address,
   PublicClient,
   Chain,
+  stringToHex,
 } from "viem";
 import { SupportedNetwork } from "../wallet/chains";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
@@ -31,10 +32,13 @@ import {
 } from "../wallet/txError";
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
-import DomainResolverABI from "../abi/resolver.json";
+import DomainResolverABI from "../abi/offchain-resolver.json";
 import { normalize } from "viem/ens";
-import { cryptocurrencies } from "../domain-page";
-import { getCoderByCoinName } from "@ensdomains/address-encoder";
+import { supportedCoinTypes } from "../domain-page";
+import {
+  coinNameToTypeMap,
+  getCoderByCoinName,
+} from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
@@ -352,17 +356,6 @@ export const register = async ({
   }
 };
 
-const cryptocurrenciesToCoinType: { [k: string]: string } = {
-  [cryptocurrencies.BTC]: "0",
-  [cryptocurrencies.LTC]: "2",
-  [cryptocurrencies.DOGE]: "3",
-  [cryptocurrencies.ETH]: "60",
-  [cryptocurrencies.BNB]: "714",
-  [cryptocurrencies.ARB1]: "2147525809",
-  [cryptocurrencies.OP]: "2147483658",
-  [cryptocurrencies.MATIC]: "2147483658",
-};
-
 /*
   3rd step of a name registration - set text records
 */
@@ -374,6 +367,7 @@ interface SetDomainRecordsParams {
   authenticatedAddress: Address;
   textRecords: Record<string, string>;
   addresses: Record<string, string>;
+  others: Record<string, string>;
   client: PublicClient & WalletClient;
   chain: Chain;
 }
@@ -385,6 +379,7 @@ export const setDomainRecords = async ({
   authenticatedAddress,
   textRecords,
   addresses,
+  others,
   client,
   chain,
 }: SetDomainRecordsParams) => {
@@ -411,16 +406,13 @@ export const setDomainRecords = async ({
 
     for (let i = 0; i < Object.keys(addresses).length; i++) {
       const [cryptocurrencyName, address] = Object.entries(addresses)[i];
-      if (
-        !Object.keys(cryptocurrencies).includes(
-          cryptocurrencyName.toUpperCase(),
-        )
-      ) {
+      if (supportedCoinTypes.includes(cryptocurrencyName.toUpperCase())) {
         console.error(`cryptocurrency ${cryptocurrencyName} not supported`);
         continue;
       }
+
       const coinType =
-        cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
+        coinNameToTypeMap[cryptocurrencyName as keyof typeof coinNameToTypeMap];
 
       const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
       const addressEncoded = fromBytes(coder.decode(address), "hex");
@@ -428,6 +420,16 @@ export const setDomainRecords = async ({
         functionName: "setAddr",
         abi: DomainResolverABI,
         args: [namehash(publicAddress), BigInt(coinType), addressEncoded],
+      });
+      calls.push(callData);
+    }
+
+    for (let i = 0; i < Object.keys(others).length; i++) {
+      const [key, value] = Object.entries(others)[i];
+      const callData = encodeFunctionData({
+        functionName: "setContenthash",
+        abi: L1ResolverABI,
+        args: [namehash(publicAddress), stringToHex(value)], // vallue = url
       });
       calls.push(callData);
     }
@@ -445,7 +447,7 @@ export const setDomainRecords = async ({
 
       await client.simulateContract({
         functionName: "multicall",
-        abi: DomainResolverABI,
+        abi: L1ResolverABI,
         args: [calls],
         account: authenticatedAddress,
         address: localResolverAddress,

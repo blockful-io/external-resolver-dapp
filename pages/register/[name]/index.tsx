@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { isNameAvailable } from "@/lib/utils/blockchain-txs";
-import { ProgressBar } from "@/components/01-atoms";
+import { ProgressBar } from "@/components/atoms";
 import {
   ProgressBlock,
   RegistrationBody,
   RegistrationSummary,
-} from "@/components/02-molecules";
+} from "@/components/molecules";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { useCallback, useEffect, useState } from "react";

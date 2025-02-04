@@ -2,6 +2,7 @@ import { defaultTextRecords } from "@/types/textRecords";
 import {
   batch,
   getAvailable,
+  getContentHashRecord,
   getExpiry,
   getName,
   getOwner,
@@ -11,10 +12,12 @@ import {
 } from "@ensdomains/ensjs/public";
 import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
 import { GraphQLClient } from "graphql-request";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
+import DomainResolverABI from "../abi/offchain-resolver.json";
+import abiUniversalResolver from "../abi/universal-resolver.json";
 import {
   getCoinNameByType,
-  getSupportedCoins,
+  supportedCoinTypes,
   transformTextRecords,
   updateAvatarInTexts,
   validateDomain,
@@ -28,14 +31,23 @@ import {
 import { metadataDomainQuery } from "./queries";
 import {
   Address,
+  ContractFunctionExecutionError,
+  decodeFunctionResult,
+  encodeFunctionData,
+  Hex,
+  hexToString,
   isAddress,
+  namehash,
   parseAbiItem,
   PublicClient,
+  toHex,
   WalletClient,
 } from "viem";
 import toast from "react-hot-toast";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { stringHasMoreThanOneDot } from "../utils/formats";
+import { nameRegistrationSmartContracts } from "../name-registration/constants";
+import { SupportedNetwork } from "../wallet/chains";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -74,6 +86,7 @@ export const getENSDomainData = async ({
       const domainData = await formatSubgraphDomainData({
         data: data,
         client: client,
+        domain: domain,
       });
       return domainData;
     } catch (error) {
@@ -124,12 +137,13 @@ export const getENSDomainDataThroughSubgraph = async ({
       getRecords.batch({
         name: domain,
         texts: availableTextRecords,
-        coins: getSupportedCoins(),
+        coins: supportedCoinTypes,
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
       getExpiry.batch({ name: domain }),
       getResolver.batch({ name: domain }),
+      getContentHashRecord.batch({ name: domain }),
     ),
   ]);
 
@@ -139,7 +153,7 @@ export const getENSDomainDataThroughSubgraph = async ({
     newAvatar,
     ...textRecords,
     ...owner,
-    owner: owner?.owner ?? "0x",
+    owner: owner?.owner,
     ...expiry,
   };
 
@@ -185,10 +199,11 @@ const getBasicENSDomainData = async ({
   }
 
   return {
-    owner: domainOwner?.owner ?? "0x",
+    owner: domainOwner?.owner,
     parent: getParent(name),
     subdomains: [],
     subdomainCount: 0,
+    contentHash: "",
     resolver: {
       id: "",
       address: domainAdd,
@@ -230,6 +245,46 @@ const getENSDomainDataThroughResolver = async ({
     },
   );
 
+  let contentHash: string | undefined;
+
+  try {
+    const dnsName = toHex(packetToBytes(name));
+
+    const [encodedContentHash] = (await client.readContract({
+      address:
+        nameRegistrationSmartContracts[SupportedNetwork.TESTNET]
+          .UNIVERSAL_RESOLVER,
+      functionName: "resolve",
+      abi: abiUniversalResolver,
+      args: [
+        dnsName,
+        encodeFunctionData({
+          abi: DomainResolverABI,
+          functionName: "contenthash",
+          args: [namehash(name)],
+        }),
+      ],
+    })) as [Hex];
+
+    if (encodedContentHash) {
+      contentHash = hexToString(
+        decodeFunctionResult({
+          abi: DomainResolverABI,
+          functionName: "contenthash",
+          data: encodedContentHash,
+        }) as Hex,
+      );
+
+      data.domain.contentHash = contentHash;
+    }
+  } catch (error) {
+    if (error instanceof ContractFunctionExecutionError) {
+      console.warn("Content hash not set or not supported by this resolver");
+    } else {
+      console.error("Error getting content hash", error);
+    }
+  }
+
   data.domain.resolver.address = resolverAdd;
 
   return data.domain;
@@ -238,11 +293,13 @@ const getENSDomainDataThroughResolver = async ({
 interface FormatSubgraphDomainDataParams {
   data: SubgraphEnsData;
   client: PublicClient & ClientWithEns;
+  domain: string;
 }
 
 const formatSubgraphDomainData = async ({
   data,
   client,
+  domain,
 }: FormatSubgraphDomainDataParams): Promise<DomainData> => {
   const transformedTexts = transformTextRecords(data.texts);
 
@@ -254,6 +311,7 @@ const formatSubgraphDomainData = async ({
 
   const domainData: DomainData = {
     owner: ownerName?.name ?? data.owner,
+    contentHash: data.contentHash?.decoded,
     resolver: {
       id: "id",
       address: data.resolverAddress,
@@ -271,7 +329,7 @@ const formatSubgraphDomainData = async ({
     expiryDate: data.expiry?.date?.getTime()!,
     subdomains: [],
     subdomainCount: 0,
-    parent: "eth",
+    parent: getParent(domain),
   };
 
   return domainData;
