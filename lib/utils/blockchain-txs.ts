@@ -169,8 +169,6 @@ export async function handleDBStorage({
     primaryType: "Message",
   });
 
-  debugger;
-
   return await ccipRequest({
     body: {
       data: message.data,
