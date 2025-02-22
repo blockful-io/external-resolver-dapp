@@ -6,14 +6,9 @@ import {
   decodeErrorResult,
   defineChain,
   encodeFunctionData,
-  fromBytes,
   getChainContractAddress,
-  Hash,
   Hex,
-  keccak256,
-  namehash,
   PublicClient,
-  stringToHex,
   toHex,
   walletActions,
   zeroHash,
@@ -21,7 +16,6 @@ import {
 import { getRevertErrorData, handleDBStorage } from "../utils/blockchain-txs";
 import { DomainData, MessageData } from "../utils/types";
 import L1ResolverABI from "../abi/arbitrum-resolver.json";
-import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
@@ -40,102 +34,37 @@ interface CreateSubdomainArgs {
   chain: Chain;
 }
 
-// TO-DO: Fix function later to accept more text / address params
-export const createSubdomain = async ({
-  resolverAddress,
-  signerAddress,
-  name,
-  address,
-  website,
-  description,
-  client,
-  chain,
-}: CreateSubdomainArgs) => {
-  const calls: Hash[] = [];
-
-  if (website) {
-    const websiteCallData = encodeFunctionData({
-      functionName: "setText",
-      abi: L1ResolverABI,
-      args: [namehash(name), "url", website],
-    });
-
-    calls.push(websiteCallData);
-  }
-
-  if (description) {
-    const descriptionCallData = encodeFunctionData({
-      functionName: "setText",
-      abi: L1ResolverABI,
-      args: [namehash(name), "description", description],
-    });
-
-    calls.push(descriptionCallData);
-  }
-
-  // set address
-  if (address) {
-    const coder = getCoderByCoinName("eth");
-    const addressEncoded = fromBytes(coder.decode(address), "hex");
-
-    const addressCallData = encodeFunctionData({
-      functionName: "setAddr",
-      abi: L1ResolverABI,
-      args: [namehash(name), 60, addressEncoded],
-    });
-
-    calls.push(addressCallData);
-  }
-
-  const dnsName = toHex(packetToBytes(name));
-
-  let value = 0n;
-
-  let calldataResolver = resolverAddress;
-
-  try {
-    const [_value /* commitTime */ /* extraData */, ,] =
-      (await client.readContract({
-        address: resolverAddress,
-        abi: L1ResolverABI,
-        functionName: "registerParams",
-        args: [toHex(name), SECONDS_PER_YEAR.seconds],
-      })) as [bigint, bigint, Hex];
-    value = _value;
-
-    const l2ResolverAddress = (await client.readContract({
-      address: resolverAddress,
-      abi: L1ResolverABI,
-      functionName: "targets",
-      args: [keccak256(stringToHex("resolver"))],
-    })) as Address;
-
-    calldataResolver = l2ResolverAddress; // l2ResolverAddress
-  } catch {
-    // interface not implemented by the resolver
-  }
-  const calldata = {
-    functionName: "register",
-    abi: L1ResolverABI,
-    args: [
-      {
-        name: dnsName,
-        owner: signerAddress,
-        duration: SECONDS_PER_YEAR.seconds * BigInt(1000),
-        secret: zeroHash,
-        extraData: zeroHash,
-      },
-    ],
-    address: resolverAddress, // L1
-    account: signerAddress,
-    value: value,
+// A new interface for the args required in the universal resolver call helper.
+interface ExecuteUniversalResolverCallArgs {
+  client: PublicClient & ClientWithEns;
+  universalResolverContractAddress: Address;
+  dnsName: Hex;
+  calldata: {
+    functionName: string;
+    abi: any; // Replace with a proper ABI type if available.
+    args: any[];
+    // address: Address;
+    // account: Address;
+    // value?: bigint;
   };
+  chain: Chain;
+  signerAddress: Address;
+  encodeFunctionData: typeof encodeFunctionData;
+}
 
-  const universalResolverContractAddress = getChainContractAddress({
-    chain: client.chain,
-    contract: "ensUniversalResolver",
-  });
-
+/**
+ * Executes the universal resolver contract call and handles both offchain and onchain operations.
+ * Receives an encodeFunctionData function as an argument.
+ */
+export async function executeUniversalResolverCall({
+  client,
+  universalResolverContractAddress,
+  dnsName,
+  calldata,
+  chain,
+  signerAddress,
+  encodeFunctionData,
+}: ExecuteUniversalResolverCallArgs): Promise<{ ok: boolean } | void> {
   try {
     await client.readContract({
       address: universalResolverContractAddress,
@@ -146,19 +75,13 @@ export const createSubdomain = async ({
         encodeFunctionData({
           functionName: "getOperationHandler",
           abi: offchainResolver,
-          args: [
-            encodeFunctionData({
-              functionName: "register",
-              abi: offchainResolver,
-              args: calldata.args,
-            }),
-          ],
+          args: [encodeFunctionData(calldata)],
         }),
       ],
     });
   } catch (error) {
     const data = getRevertErrorData(error);
-    if (!data || !data.args || data.args?.length === 0) {
+    if (!data || !data.args || data.args.length === 0) {
       console.log({ error });
       return;
     }
@@ -168,8 +91,6 @@ export const createSubdomain = async ({
       abi: L1ResolverABI,
       data: params as Hex,
     });
-
-    debugger;
 
     switch (errorResult?.errorName) {
       case "OperationHandledOffchain": {
@@ -189,6 +110,7 @@ export const createSubdomain = async ({
         return { ok: true };
       }
       case "OperationHandledOnchain": {
+        debugger;
         const [chainId, contractAddress] = errorResult.args as [
           bigint,
           `0x${string}`,
@@ -200,8 +122,19 @@ export const createSubdomain = async ({
           transport: custom(window.ethereum),
         }).extend(walletActions);
 
+        const chainIdNumber = Number(chainId);
+
+        // Add chain to wallet before switching
+        try {
+          await l2Client.addChain({
+            chain: getChain(chainIdNumber),
+          });
+        } catch (err) {
+          console.error("Failed to add chain:", err);
+        }
+
         // Switch chain using the wallet client
-        await l2Client.switchChain({ id: Number(chainId) });
+        await l2Client.switchChain({ id: chainIdNumber });
 
         // SUBDOMAIN PRICING
         let value = 0n;
@@ -210,7 +143,7 @@ export const createSubdomain = async ({
             address: contractAddress,
             abi: L1ResolverABI,
             functionName: "registerParams",
-            args: [dnsName, SECONDS_PER_YEAR.seconds * BigInt(1000)],
+            args: [dnsName, SECONDS_PER_YEAR.seconds],
           })) as {
             price: bigint;
             commitTime: bigint;
@@ -224,13 +157,13 @@ export const createSubdomain = async ({
             console.log("Domain unavailable");
             return;
           }
-          registerParams;
         }
 
         try {
           const { request } = await l2Client.simulateContract({
             ...calldata,
             address: contractAddress,
+            account: signerAddress,
             value,
           });
 
@@ -247,10 +180,93 @@ export const createSubdomain = async ({
         console.error("error registering domain: ", { error });
     }
   }
+}
+
+// TO-DO: Fix function later to accept more text / address params
+export const createSubdomain = async ({
+  resolverAddress,
+  signerAddress,
+  name,
+  address,
+  website,
+  description,
+  client,
+  chain,
+}: CreateSubdomainArgs) => {
+  const dnsName = toHex(packetToBytes(name));
+
+  const calldataRegister = {
+    functionName: "register",
+    abi: L1ResolverABI,
+    args: [
+      {
+        name: dnsName,
+        owner: signerAddress,
+        duration: SECONDS_PER_YEAR.seconds * BigInt(1000),
+        secret: zeroHash,
+        resolver: "0x029928615ffc0cb209747acc9c6eb4c504b527f6",
+        extraData: zeroHash,
+      },
+    ],
+    address: resolverAddress, // L1
+    account: signerAddress,
+  };
+
+  const universalResolverContractAddress = getChainContractAddress({
+    chain: client.chain,
+    contract: "ensUniversalResolver",
+  });
+
+  // Now we delegate the universal resolver contract call to our new helper.
+  const result = await executeUniversalResolverCall({
+    client,
+    universalResolverContractAddress,
+    dnsName,
+    calldata: calldataRegister,
+    chain,
+    signerAddress,
+    encodeFunctionData, // passed as an argument so the helper may encode its parameters
+  });
+
+  // const callDataTexts = {
+  //   functionName: "setText",
+  //   abi: L1ResolverABI,
+  //   args: [namehash(signerAddress), "url", website],
+  // };
+
+  // calls.push(callData);
+
+  // const calldataTexts = {
+  //   functionName: "setText",
+  //   abi: L1ResolverABI,
+  //   args: [
+  //     {
+  //       name: dnsName,
+  //       owner: signerAddress,
+  //       duration: SECONDS_PER_YEAR.seconds * BigInt(1000),
+  //       secret: zeroHash,
+  //       extraData: zeroHash,
+  //     },
+  //   ],
+  //   address: resolverAddress, // L1
+  //   account: signerAddress,
+  // };
+
+  // await executeUniversalResolverCall({
+  //   client,
+  //   universalResolverContractAddress,
+  //   dnsName,
+  //   calldata: callDataTexts,
+  //   chain,
+  //   signerAddress,
+  //   encodeFunctionData, // passed as an argument so the helper may encode its parameters
+  // });
+
+  return result;
 };
 
-export function getChain(chainId: number) {
-  return [
+export function getChain(chainId: number): Chain {
+  const chain = [
     ...Object.values(chains),
     defineChain({
       id: Number(chainId),
@@ -269,6 +285,12 @@ export function getChain(chainId: number) {
       },
     }),
   ].find((chain) => chain.id === chainId);
+
+  if (!chain) {
+    throw new Error(`Chain with id ${chainId} not found`);
+  }
+
+  return chain;
 }
 
 // gather the first part of the domain (e.g. floripa.blockful.eth -> floripa, floripa.normal.blockful.eth -> floripa.normal)

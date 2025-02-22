@@ -1,19 +1,42 @@
 [
   {
     "inputs": [
-      { "internalType": "string", "name": "newGatewayUrl", "type": "string" },
-      { "internalType": "string", "name": "newGraphqlUrl", "type": "string" },
+      { "internalType": "uint256", "name": "_chainId", "type": "uint256" },
       {
-        "internalType": "uint256",
-        "name": "newOffChainDatabaseTimeoutDuration",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_target_resolver",
+        "type": "address"
       },
-      { "internalType": "address[]", "name": "newSigners", "type": "address[]" }
+      {
+        "internalType": "address",
+        "name": "_target_registrar",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_target_nameWrapper",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IEVMVerifier",
+        "name": "_verifier",
+        "type": "address"
+      },
+      { "internalType": "string", "name": "_metadataUrl", "type": "string" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
+  { "inputs": [], "name": "CommandTooLong", "type": "error" },
   { "inputs": [], "name": "FunctionNotSupported", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "value", "type": "uint256" },
+      { "internalType": "uint256", "name": "max", "type": "uint256" }
+    ],
+    "name": "InvalidReference",
+    "type": "error"
+  },
   {
     "inputs": [
       { "internalType": "address", "name": "sender", "type": "address" },
@@ -78,110 +101,17 @@
     "type": "error"
   },
   {
-    "inputs": [{ "internalType": "string", "name": "cause", "type": "string" }],
-    "name": "SignatureVerifier__InvalidSignature",
+    "inputs": [
+      { "internalType": "uint256", "name": "actual", "type": "uint256" },
+      { "internalType": "uint256", "name": "expected", "type": "uint256" }
+    ],
+    "name": "ResponseLengthMismatch",
     "type": "error"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "contentType",
-        "type": "uint256"
-      }
-    ],
-    "name": "ABIChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "a",
-        "type": "address"
-      }
-    ],
-    "name": "AddrChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "coinType",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "newAddress",
-        "type": "bytes"
-      }
-    ],
-    "name": "AddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "hash",
-        "type": "bytes"
-      }
-    ],
-    "name": "ContenthashChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "previousUrl",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "newUrl",
-        "type": "string"
-      }
-    ],
-    "name": "GatewayUrlSet",
-    "type": "event"
+    "inputs": [{ "internalType": "uint256", "name": "max", "type": "uint256" }],
+    "name": "TooManyCommands",
+    "type": "error"
   },
   {
     "anonymous": false,
@@ -207,44 +137,6 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "name": "NameChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "previousDuration",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newDuration",
-        "type": "uint256"
-      }
-    ],
-    "name": "OffChainDatabaseTimeoutDurationSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
         "type": "address"
@@ -260,130 +152,24 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "x",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "y",
-        "type": "bytes32"
-      }
-    ],
-    "name": "PubkeyChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "addedSigner",
-        "type": "address"
-      }
-    ],
-    "name": "SignerAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "removedSigner",
-        "type": "address"
-      }
-    ],
-    "name": "SignerRemoved",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "indexedKey",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "key",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "value",
-        "type": "string"
-      }
-    ],
-    "name": "TextChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "newVersion",
-        "type": "uint64"
-      }
-    ],
-    "name": "VersionChanged",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "ABI",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
-    ],
+    "inputs": [],
+    "name": "TARGET_NAME_WRAPPER",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "signersToAdd",
-        "type": "address[]"
-      }
-    ],
-    "name": "addSigners",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "inputs": [],
+    "name": "TARGET_REGISTRAR",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "TARGET_RESOLVER",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -399,8 +185,8 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "uint256", "name": "", "type": "uint256" }
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" },
+      { "internalType": "uint256", "name": "coinType", "type": "uint256" }
     ],
     "name": "addr",
     "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
@@ -409,32 +195,48 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
+      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
     ],
-    "name": "clearRecords",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "addrCallback",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "inputs": [
+      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "addrCoinTypeCallback",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "chainId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
+    ],
     "name": "contenthash",
     "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "gatewayDatabaseTimeoutDuration",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gatewayUrl",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
+    "inputs": [
+      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "contenthashCallback",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -446,11 +248,12 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
+      { "internalType": "bytes", "name": "response", "type": "bytes" },
+      { "internalType": "bytes", "name": "extradata", "type": "bytes" }
     ],
-    "name": "isSigner",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
+    "name": "getStorageSlotsCallback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -485,35 +288,9 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
-    ],
-    "name": "name",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "owner",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "name": "pubkey",
-    "outputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "", "type": "bytes32" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "name": "recordVersions",
-    "outputs": [{ "internalType": "uint64", "name": "", "type": "uint64" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -525,6 +302,7 @@
           { "internalType": "address", "name": "owner", "type": "address" },
           { "internalType": "uint256", "name": "duration", "type": "uint256" },
           { "internalType": "bytes32", "name": "secret", "type": "bytes32" },
+          { "internalType": "address", "name": "resolver", "type": "address" },
           { "internalType": "bytes", "name": "extraData", "type": "bytes" }
         ],
         "internalType": "struct RegisterRequest",
@@ -565,19 +343,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "signersToRemove",
-        "type": "address[]"
-      }
-    ],
-    "name": "removeSigners",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -590,28 +355,7 @@
       { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "resolve",
-    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes", "name": "response", "type": "bytes" },
-      { "internalType": "bytes", "name": "extraData", "type": "bytes" }
-    ],
-    "name": "resolveWithProof",
-    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
-    ],
-    "name": "setABI",
-    "outputs": [],
+    "outputs": [{ "internalType": "bytes", "name": "result", "type": "bytes" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -650,15 +394,6 @@
     "inputs": [
       { "internalType": "string", "name": "newUrl", "type": "string" }
     ],
-    "name": "setGatewayUrl",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "string", "name": "newUrl", "type": "string" }
-    ],
     "name": "setMetadataUrl",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -666,32 +401,12 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" },
-      { "internalType": "string", "name": "newName", "type": "string" }
+      { "internalType": "bytes32", "name": "key", "type": "bytes32" },
+      { "internalType": "address", "name": "target", "type": "address" }
     ],
-    "name": "setName",
+    "name": "setTarget",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "newDuration", "type": "uint256" }
-    ],
-    "name": "setOffChainDatabaseTimoutDuration",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "", "type": "bytes32" }
-    ],
-    "name": "setPubkey",
-    "outputs": [],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -706,15 +421,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "signers",
-    "outputs": [
-      { "internalType": "address[]", "name": "", "type": "address[]" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       { "internalType": "bytes4", "name": "interfaceID", "type": "bytes4" }
     ],
@@ -724,13 +430,30 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "name": "targets",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "string", "name": "", "type": "string" }
+      { "internalType": "bytes32", "name": "node", "type": "bytes32" },
+      { "internalType": "string", "name": "key", "type": "string" }
     ],
     "name": "text",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes[]", "name": "values", "type": "bytes[]" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "textCallback",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "pure",
     "type": "function"
   },
   {

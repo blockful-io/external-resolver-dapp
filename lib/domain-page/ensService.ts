@@ -116,7 +116,6 @@ export const getENSDomainDataThroughSubgraph = async ({
 }: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
   validateDomain(domain);
 
-  debugger;
   if (
     !stringHasMoreThanOneDot(domain) &&
     (await getAvailable(client, { name: domain }))
