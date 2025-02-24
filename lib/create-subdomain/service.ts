@@ -8,6 +8,7 @@ import {
   encodeFunctionData,
   getChainContractAddress,
   Hex,
+  namehash,
   PublicClient,
   toHex,
   walletActions,
@@ -60,12 +61,13 @@ export async function executeUniversalResolverCall({
   client,
   universalResolverContractAddress,
   dnsName,
-  calldata,
+  calldata, //-> hex (da enconded date antes)
   chain,
   signerAddress,
   encodeFunctionData,
 }: ExecuteUniversalResolverCallArgs): Promise<{ ok: boolean } | void> {
   try {
+    debugger;
     await client.readContract({
       address: universalResolverContractAddress,
       abi: universalResolver,
@@ -204,7 +206,7 @@ export const createSubdomain = async ({
         owner: signerAddress,
         duration: SECONDS_PER_YEAR.seconds * BigInt(1000),
         secret: zeroHash,
-        resolver: "0x029928615ffc0cb209747acc9c6eb4c504b527f6",
+        resolver: "0x0a33f065c9c8f0F5c56BB84b1593631725F0f3af",
         extraData: zeroHash,
       },
     ],
@@ -228,11 +230,11 @@ export const createSubdomain = async ({
     encodeFunctionData, // passed as an argument so the helper may encode its parameters
   });
 
-  // const callDataTexts = {
-  //   functionName: "setText",
-  //   abi: L1ResolverABI,
-  //   args: [namehash(signerAddress), "url", website],
-  // };
+  const callDataTexts = {
+    functionName: "setText",
+    abi: L1ResolverABI,
+    args: [namehash(signerAddress), "url", website],
+  };
 
   // calls.push(callData);
 
@@ -252,15 +254,15 @@ export const createSubdomain = async ({
   //   account: signerAddress,
   // };
 
-  // await executeUniversalResolverCall({
-  //   client,
-  //   universalResolverContractAddress,
-  //   dnsName,
-  //   calldata: callDataTexts,
-  //   chain,
-  //   signerAddress,
-  //   encodeFunctionData, // passed as an argument so the helper may encode its parameters
-  // });
+  await executeUniversalResolverCall({
+    client,
+    universalResolverContractAddress,
+    dnsName,
+    calldata: callDataTexts,
+    chain,
+    signerAddress,
+    encodeFunctionData, // passed as an argument so the helper may encode its parameters
+  });
 
   return result;
 };

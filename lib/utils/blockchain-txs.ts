@@ -23,6 +23,8 @@ import {
   PublicClient,
   Chain,
   stringToHex,
+  getChainContractAddress,
+  toHex,
 } from "viem";
 import { SupportedNetwork } from "../wallet/chains";
 import { SECONDS_PER_YEAR, ENSName } from "@namehash/ens-utils";
@@ -33,7 +35,7 @@ import {
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
 import DomainResolverABI from "../abi/offchain-resolver.json";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
 import { supportedCoinTypes } from "../domain-page";
 import {
   coinNameToTypeMap,
@@ -42,9 +44,13 @@ import {
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
-import { getChain } from "../create-subdomain/service";
+import {
+  executeUniversalResolverCall,
+  getChain,
+} from "../create-subdomain/service";
 import toast from "react-hot-toast";
-import { sepolia } from "viem/chains";
+import { mainnet, sepolia } from "viem/chains";
+import { addEnsContracts } from "@ensdomains/ensjs";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -367,6 +373,7 @@ interface SetDomainRecordsParams {
   addresses: Record<string, string>;
   others: Record<string, string>;
   client: PublicClient & WalletClient;
+  ensClient: PublicClient & ClientWithEns;
   chain: Chain;
 }
 
@@ -379,6 +386,7 @@ export const setDomainRecords = async ({
   addresses,
   others,
   client,
+  ensClient,
   chain,
 }: SetDomainRecordsParams) => {
   try {
@@ -432,114 +440,148 @@ export const setDomainRecords = async ({
       calls.push(callData);
     }
 
-    try {
-      let localResolverAddress;
+    debugger;
 
-      if (resolverAddress) {
-        localResolverAddress = resolverAddress;
-      } else if (domainResolverAddress) {
-        localResolverAddress = domainResolverAddress;
-      } else {
-        throw new Error("No domain resolver informed");
-      }
+    const universalResolverContractAddress = getChainContractAddress({
+      chain: ensClient.chain,
+      contract: "ensUniversalResolver",
+    });
 
-      await client.simulateContract({
-        functionName: "multicall",
+    await executeUniversalResolverCall({
+      client: ensClient,
+      universalResolverContractAddress: universalResolverContractAddress,
+      dnsName: toHex(packetToBytes(ensName.name)),
+      calldata: {
+        functionName: "setText",
         abi: L1ResolverABI,
-        args: [calls],
-        account: authenticatedAddress,
-        address: localResolverAddress,
-      });
-    } catch (err) {
-      const data = getRevertErrorData(err);
-      // OperationHandledOffchain - OperationHandledOnchain
-      if (data?.errorName === "OperationHandledOffchain") {
-        const [domain, url, message] = data.args as [
-          DomainData,
-          string,
-          MessageData,
-        ];
+        args: [namehash(ensName.name), "url", "googles.com"],
+      },
+      chain,
+      signerAddress: authenticatedAddress,
+      encodeFunctionData: encodeFunctionData,
+    });
 
-        console.log("domain", domain);
-        console.log("url", url);
-        console.log("message", message);
+    // try {
+    //   let localResolverAddress;
 
-        try {
-          await handleDBStorage({
-            domain,
-            url,
-            message,
-            authenticatedAddress,
-            chain: chain,
-          });
+    //   if (resolverAddress) {
+    //     localResolverAddress = resolverAddress;
+    //   } else if (domainResolverAddress) {
+    //     localResolverAddress = domainResolverAddress;
+    //   } else {
+    //     throw new Error("No domain resolver informed");
+    //   }
 
-          return 200;
-        } catch (error) {
-          console.error("writing failed: ", { err });
-          const errorType = getBlockchainTransactionError(err);
-          return errorType;
-        }
-      } else if (data?.errorName === "StorageHandledByOffChainDatabase") {
-        const [domain, url, message] = data.args as [
-          DomainData,
-          string,
-          MessageData,
-        ];
+    //   await client.simulateContract({
+    //     functionName: "multicall",
+    //     abi: L1ResolverABI,
+    //     args: [calls],
+    //     account: authenticatedAddress,
+    //     address: localResolverAddress,
+    //   });
+    // } catch (err) {
+    //   const data = getRevertErrorData(err);
+    //   // OperationHandledOffchain - OperationHandledOnchain
+    //   if (data?.errorName === "OperationHandledOffchain") {
+    //     const [domain, url, message] = data.args as [
+    //       DomainData,
+    //       string,
+    //       MessageData,
+    //     ];
 
-        try {
-          await handleDBStorage({
-            domain,
-            url,
-            message,
-            authenticatedAddress,
-            chain: chain,
-          });
+    //     console.log("domain", domain);
+    //     console.log("url", url);
+    //     console.log("message", message);
 
-          return 200;
-        } catch (error) {
-          console.error("writing failed: ", { err });
-          const errorType = getBlockchainTransactionError(err);
-          return errorType;
-        }
-      } else if (data?.errorName === "StorageHandledByL2") {
-        const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
+    //     try {
+    //       await handleDBStorage({
+    //         domain,
+    //         url,
+    //         message,
+    //         authenticatedAddress,
+    //         chain: chain,
+    //       });
 
-        const selectedChain = getChain(Number(chainId));
+    //       return 200;
+    //     } catch (error) {
+    //       console.error("writing failed: ", { err });
+    //       const errorType = getBlockchainTransactionError(err);
+    //       return errorType;
+    //     }
+    //   } else if (data?.errorName === "OperationHandledOnchain") {
+    //     const callDataTexts = {
+    //       functionName: "setText",
+    //       abi: L1ResolverABI,
+    //       args: [namehash(publicAddress), "url", "google.com"],
+    //     };
 
-        if (!selectedChain) {
-          toast.error("error");
-          return;
-        }
+    //     const universalResolverContractAddress = getChainContractAddress({
+    //       chain: ensClient.chain!,
+    //       contract: "ensUniversalResolver",
+    //     });
 
-        const clientWithWallet = createWalletClient({
-          chain: selectedChain,
-          transport: custom(window.ethereum),
-        }).extend(publicActions);
+    //     return 200;
+    //   } else if (data?.errorName === "StorageHandledByOffChainDatabase") {
+    //     const [domain, url, message] = data.args as [
+    //       DomainData,
+    //       string,
+    //       MessageData,
+    //     ];
 
-        await clientWithWallet.addChain({ chain: selectedChain });
+    //     try {
+    //       await handleDBStorage({
+    //         domain,
+    //         url,
+    //         message,
+    //         authenticatedAddress,
+    //         chain: chain,
+    //       });
 
-        try {
-          const { request } = await clientWithWallet.simulateContract({
-            functionName: "multicall",
-            abi: L1ResolverABI,
-            args: [calls],
-            account: authenticatedAddress,
-            address: contractAddress,
-          });
-          await clientWithWallet.writeContract(request);
-        } catch {
-          await clientWithWallet.switchChain({ id: sepolia.id });
-        }
+    //       return 200;
+    //     } catch (error) {
+    //       console.error("writing failed: ", { err });
+    //       const errorType = getBlockchainTransactionError(err);
+    //       return errorType;
+    //     }
+    //   } else if (data?.errorName === "StorageHandledByL2") {
+    //     const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
 
-        await clientWithWallet.switchChain({ id: sepolia.id });
+    //     const selectedChain = getChain(Number(chainId));
 
-        return 200;
-      } else {
-        console.error("writing failed: ", { err });
-        const errorType = getBlockchainTransactionError(err);
-        return errorType;
-      }
-    }
+    //     if (!selectedChain) {
+    //       toast.error("error");
+    //       return;
+    //     }
+
+    //     const clientWithWallet = createWalletClient({
+    //       chain: selectedChain,
+    //       transport: custom(window.ethereum),
+    //     }).extend(publicActions);
+
+    //     await clientWithWallet.addChain({ chain: selectedChain });
+
+    //     try {
+    //       const { request } = await clientWithWallet.simulateContract({
+    //         functionName: "multicall",
+    //         abi: L1ResolverABI,
+    //         args: [calls],
+    //         account: authenticatedAddress,
+    //         address: contractAddress,
+    //       });
+    //       await clientWithWallet.writeContract(request);
+    //     } catch {
+    //       await clientWithWallet.switchChain({ id: sepolia.id });
+    //     }
+
+    //     await clientWithWallet.switchChain({ id: sepolia.id });
+
+    //     return 200;
+    //   } else {
+    //     console.error("writing failed: ", { err });
+    //     const errorType = getBlockchainTransactionError(err);
+    //     return errorType;
+    //   }
+    // }
   } catch (error: unknown) {
     console.error(error);
     const errorType = getBlockchainTransactionError(error);

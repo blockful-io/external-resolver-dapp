@@ -335,6 +335,7 @@ const SaveModalEdits = ({
         addresses: domainAddressesToUpdate,
         others: othersFieldsToUpdate,
         client: publicClient,
+        ensClient: publicClient,
         chain: chain,
       });
 
