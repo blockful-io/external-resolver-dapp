@@ -448,6 +448,8 @@ export const setDomainRecords = async ({
       signerAddress: authenticatedAddress,
       encodeFunctionData: encodeFunctionData,
     });
+
+    return 200;
   } catch (error: unknown) {
     console.error(error);
     const errorType = getBlockchainTransactionError(error);
