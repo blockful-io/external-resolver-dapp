@@ -8,19 +8,22 @@ import {
   encodeFunctionData,
   getChainContractAddress,
   Hex,
-  namehash,
   PublicClient,
   toHex,
   walletActions,
   zeroHash,
 } from "viem";
-import { getRevertErrorData, handleDBStorage } from "../utils/blockchain-txs";
+import {
+  getRevertErrorData,
+  handleDBStorage,
+  setDomainRecords,
+} from "../utils/blockchain-txs";
 import { DomainData, MessageData } from "../utils/types";
 import L1ResolverABI from "../abi/arbitrum-resolver.json";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import * as chains from "viem/chains";
 import { packetToBytes } from "viem/ens";
-import { SECONDS_PER_YEAR } from "@namehash/ens-utils";
+import { buildENSName, SECONDS_PER_YEAR } from "@namehash/ens-utils";
 import universalResolver from "../abi/universal-resolver.json";
 import offchainResolver from "../abi/arbitrum-resolver.json";
 
@@ -225,7 +228,19 @@ export const createSubdomain = async ({
     encodeFunctionData, // passed as an argument so the helper may encode its parameters
   });
 
-  // TODO - Set domain records
+  await setDomainRecords({
+    ensName: buildENSName(name),
+    authenticatedAddress: signerAddress,
+    textRecords: {
+      url: website,
+      addr: address,
+      description: description,
+    },
+    addresses: {},
+    others: {},
+    client,
+    chain,
+  });
 
   return result;
 };
