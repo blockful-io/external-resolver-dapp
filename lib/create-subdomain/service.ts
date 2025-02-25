@@ -64,7 +64,6 @@ export async function executeUniversalResolverCall({
   encodeFunctionData,
 }: ExecuteUniversalResolverCallArgs): Promise<{ ok: boolean } | void> {
   try {
-    debugger;
     await client.readContract({
       address: universalResolverContractAddress,
       abi: universalResolver,
@@ -109,7 +108,6 @@ export async function executeUniversalResolverCall({
         return { ok: true };
       }
       case "OperationHandledOnchain": {
-        debugger;
         const [chainId, contractAddress] = errorResult.args as [
           bigint,
           `0x${string}`,
@@ -227,39 +225,7 @@ export const createSubdomain = async ({
     encodeFunctionData, // passed as an argument so the helper may encode its parameters
   });
 
-  const callDataTexts = {
-    functionName: "setText",
-    abi: L1ResolverABI,
-    args: [namehash(signerAddress), "url", website],
-  };
-
-  // calls.push(callData);
-
-  // const calldataTexts = {
-  //   functionName: "setText",
-  //   abi: L1ResolverABI,
-  //   args: [
-  //     {
-  //       name: dnsName,
-  //       owner: signerAddress,
-  //       duration: SECONDS_PER_YEAR.seconds * BigInt(1000),
-  //       secret: zeroHash,
-  //       extraData: zeroHash,
-  //     },
-  //   ],
-  //   address: resolverAddress, // L1
-  //   account: signerAddress,
-  // };
-
-  await executeUniversalResolverCall({
-    client,
-    universalResolverContractAddress,
-    dnsName,
-    calldata: callDataTexts,
-    chain,
-    signerAddress,
-    encodeFunctionData, // passed as an argument so the helper may encode its parameters
-  });
+  // TODO - Set domain records
 
   return result;
 };
@@ -291,9 +257,3 @@ export function getChain(chainId: number): Chain {
 
   return chain;
 }
-
-// gather the first part of the domain (e.g. floripa.blockful.eth -> floripa, floripa.normal.blockful.eth -> floripa.normal)
-const extractLabelFromName = (name: string): string => {
-  const [, label] = /^(.+?)\.\w+\.\w+$/.exec(name) || [];
-  return label;
-};
