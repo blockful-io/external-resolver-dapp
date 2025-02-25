@@ -54,15 +54,12 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
       handleNextStep();
     }
 
-    const resolverAddress = getResolverAddress();
-
     try {
       const setDomainRecordsRes = await setDomainRecords({
         others: {},
         authenticatedAddress: address,
         ensName: nameRegistrationData.name,
         textRecords: nameRegistrationData.textRecords,
-        resolverAddress: resolverAddress,
         addresses: nameRegistrationData.domainAddresses,
         client: publicClient,
         chain: chain,

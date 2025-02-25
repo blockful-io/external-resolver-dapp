@@ -330,12 +330,10 @@ const SaveModalEdits = ({
       const setDomainRecordsRes = await setDomainRecords({
         ensName,
         authenticatedAddress: address,
-        domainResolverAddress: resolverAdd,
         textRecords: textRecordsToUpdate,
         addresses: domainAddressesToUpdate,
         others: othersFieldsToUpdate,
         client: publicClient,
-        ensClient: publicClient,
         chain: chain,
       });
 

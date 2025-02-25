@@ -11,7 +11,6 @@ import {
 import {
   namehash,
   publicActions,
-  type WalletClient,
   encodeFunctionData,
   createWalletClient,
   custom,
@@ -44,10 +43,7 @@ import {
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
-import {
-  executeUniversalResolverCall,
-  getChain,
-} from "../create-subdomain/service";
+import { executeUniversalResolverCall } from "../create-subdomain/service";
 import toast from "react-hot-toast";
 import { mainnet, sepolia } from "viem/chains";
 import { addEnsContracts } from "@ensdomains/ensjs";
@@ -366,27 +362,21 @@ export const register = async ({
 
 interface SetDomainRecordsParams {
   ensName: ENSName;
-  resolverAddress?: Address;
-  domainResolverAddress?: `0x${string}`;
   authenticatedAddress: Address;
   textRecords: Record<string, string>;
   addresses: Record<string, string>;
   others: Record<string, string>;
-  client: PublicClient & WalletClient;
-  ensClient: PublicClient & ClientWithEns;
+  client: PublicClient & ClientWithEns;
   chain: Chain;
 }
 
 export const setDomainRecords = async ({
   ensName,
-  resolverAddress,
-  domainResolverAddress,
   authenticatedAddress,
   textRecords,
   addresses,
   others,
   client,
-  ensClient,
   chain,
 }: SetDomainRecordsParams) => {
   try {
@@ -440,148 +430,24 @@ export const setDomainRecords = async ({
       calls.push(callData);
     }
 
-    debugger;
-
     const universalResolverContractAddress = getChainContractAddress({
-      chain: ensClient.chain,
+      chain: client.chain,
       contract: "ensUniversalResolver",
     });
 
     await executeUniversalResolverCall({
-      client: ensClient,
+      client: client,
       universalResolverContractAddress: universalResolverContractAddress,
       dnsName: toHex(packetToBytes(ensName.name)),
       calldata: {
-        functionName: "setText",
+        functionName: "multicall",
         abi: L1ResolverABI,
-        args: [namehash(ensName.name), "url", "googles.com"],
+        args: [calls],
       },
       chain,
       signerAddress: authenticatedAddress,
       encodeFunctionData: encodeFunctionData,
     });
-
-    // try {
-    //   let localResolverAddress;
-
-    //   if (resolverAddress) {
-    //     localResolverAddress = resolverAddress;
-    //   } else if (domainResolverAddress) {
-    //     localResolverAddress = domainResolverAddress;
-    //   } else {
-    //     throw new Error("No domain resolver informed");
-    //   }
-
-    //   await client.simulateContract({
-    //     functionName: "multicall",
-    //     abi: L1ResolverABI,
-    //     args: [calls],
-    //     account: authenticatedAddress,
-    //     address: localResolverAddress,
-    //   });
-    // } catch (err) {
-    //   const data = getRevertErrorData(err);
-    //   // OperationHandledOffchain - OperationHandledOnchain
-    //   if (data?.errorName === "OperationHandledOffchain") {
-    //     const [domain, url, message] = data.args as [
-    //       DomainData,
-    //       string,
-    //       MessageData,
-    //     ];
-
-    //     console.log("domain", domain);
-    //     console.log("url", url);
-    //     console.log("message", message);
-
-    //     try {
-    //       await handleDBStorage({
-    //         domain,
-    //         url,
-    //         message,
-    //         authenticatedAddress,
-    //         chain: chain,
-    //       });
-
-    //       return 200;
-    //     } catch (error) {
-    //       console.error("writing failed: ", { err });
-    //       const errorType = getBlockchainTransactionError(err);
-    //       return errorType;
-    //     }
-    //   } else if (data?.errorName === "OperationHandledOnchain") {
-    //     const callDataTexts = {
-    //       functionName: "setText",
-    //       abi: L1ResolverABI,
-    //       args: [namehash(publicAddress), "url", "google.com"],
-    //     };
-
-    //     const universalResolverContractAddress = getChainContractAddress({
-    //       chain: ensClient.chain!,
-    //       contract: "ensUniversalResolver",
-    //     });
-
-    //     return 200;
-    //   } else if (data?.errorName === "StorageHandledByOffChainDatabase") {
-    //     const [domain, url, message] = data.args as [
-    //       DomainData,
-    //       string,
-    //       MessageData,
-    //     ];
-
-    //     try {
-    //       await handleDBStorage({
-    //         domain,
-    //         url,
-    //         message,
-    //         authenticatedAddress,
-    //         chain: chain,
-    //       });
-
-    //       return 200;
-    //     } catch (error) {
-    //       console.error("writing failed: ", { err });
-    //       const errorType = getBlockchainTransactionError(err);
-    //       return errorType;
-    //     }
-    //   } else if (data?.errorName === "StorageHandledByL2") {
-    //     const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
-
-    //     const selectedChain = getChain(Number(chainId));
-
-    //     if (!selectedChain) {
-    //       toast.error("error");
-    //       return;
-    //     }
-
-    //     const clientWithWallet = createWalletClient({
-    //       chain: selectedChain,
-    //       transport: custom(window.ethereum),
-    //     }).extend(publicActions);
-
-    //     await clientWithWallet.addChain({ chain: selectedChain });
-
-    //     try {
-    //       const { request } = await clientWithWallet.simulateContract({
-    //         functionName: "multicall",
-    //         abi: L1ResolverABI,
-    //         args: [calls],
-    //         account: authenticatedAddress,
-    //         address: contractAddress,
-    //       });
-    //       await clientWithWallet.writeContract(request);
-    //     } catch {
-    //       await clientWithWallet.switchChain({ id: sepolia.id });
-    //     }
-
-    //     await clientWithWallet.switchChain({ id: sepolia.id });
-
-    //     return 200;
-    //   } else {
-    //     console.error("writing failed: ", { err });
-    //     const errorType = getBlockchainTransactionError(err);
-    //     return errorType;
-    //   }
-    // }
   } catch (error: unknown) {
     console.error(error);
     const errorType = getBlockchainTransactionError(error);

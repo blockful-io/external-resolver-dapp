@@ -44,9 +44,6 @@ interface ExecuteUniversalResolverCallArgs {
     functionName: string;
     abi: any; // Replace with a proper ABI type if available.
     args: any[];
-    // address: Address;
-    // account: Address;
-    // value?: bigint;
   };
   chain: Chain;
   signerAddress: Address;
