@@ -67,7 +67,7 @@ export const SubdomainsTabBody = ({
         <CreateSubdomainModalContent
           onRecordsEdited={fetchDomainData}
           alreadyCreatedSubdomains={subdomainsArray}
-          currentResolverAddress={domainData?.resolver.address!}
+          resolverAddress={domainData?.resolver.address!}
           name={String(name)}
           onCloseModal={() => {
             setCreateSubdomainModalOpen(false);

@@ -10,7 +10,7 @@ import { createSubname } from "@ensdomains/ensjs/wallet";
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
 interface CreateSubdomainModalContentProps {
   name: string;
-  currentResolverAddress: Address;
+  resolverAddress: Address;
   onCloseModal: () => void;
   onRecordsEdited?: () => void;
   alreadyCreatedSubdomains?: string[];
@@ -24,16 +24,17 @@ enum CreateSubdomainModalSteps {
 }
 
 export const CreateSubdomainModalContent = ({
-  currentResolverAddress,
+  resolverAddress,
   onCloseModal,
   onRecordsEdited,
   name,
   alreadyCreatedSubdomains,
 }: CreateSubdomainModalContentProps) => {
-  const [newSubdomain, setNewSubdomain] = useState<string>("");
-  const [subdomainAddress, setSubdomainAddress] = useState<string>("");
-  const [website, setWebsite] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [newSubdomain, setNewSubdomain] = useState("");
+  const [resolver, setResolver] = useState(resolverAddress);
+  const [subdomainAddress, setSubdomainAddress] = useState("");
+  const [website, setWebsite] = useState("");
+  const [description, setDescription] = useState("");
   const [isLoading, setIsloading] = useState(false);
   const authedUser = useAccount();
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
@@ -46,7 +47,6 @@ export const CreateSubdomainModalContent = ({
 
   const isSubdomainInvalid = () => {
     try {
-      normalize(newSubdomain);
       buildENSName(newSubdomain);
       if (alreadyCreatedSubdomains?.includes(`${newSubdomain}.${name}`)) {
         return "Subdomain is already created";
@@ -69,9 +69,10 @@ export const CreateSubdomainModalContent = ({
       await createSubname(walletClient.data, {
         name: `${newSubdomain}.${name}`,
         owner: authedUser.address!,
-        resolverAddress: "0x0a33f065c9c8f0F5c56BB84b1593631725F0f3af",
+        resolverAddress,
         expiry: 31622400n,
         contract: "nameWrapper",
+        fuses: 0,
       });
 
       !!onRecordsEdited && onRecordsEdited();
@@ -90,24 +91,31 @@ export const CreateSubdomainModalContent = ({
   // Map each step to a corresponding JSX element
   const stepComponents: Record<CreateSubdomainModalSteps, JSX.Element> = {
     [CreateSubdomainModalSteps.SubdomainInput]: (
-      <Input
-        clearable
-        label={"subdomain"}
-        placeholder={""}
-        type="text"
-        value={newSubdomain}
-        onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
-        suffix={
-          <div className="max-w-48 truncate whitespace-nowrap">{`.${name}`}</div>
-        }
-        error={isSubdomainInvalid()}
-      />
+      <>
+        <Input
+          clearable
+          label={"Subdomain"}
+          type="text"
+          value={newSubdomain}
+          onChange={(e) => setNewSubdomain(e.target.value.toLowerCase())}
+          suffix={
+            <div className="max-w-48 truncate whitespace-nowrap">{`.${name}`}</div>
+          }
+          error={isSubdomainInvalid()}
+        />
+        <Input
+          clearable
+          label={"Resolver address"}
+          placeholder={resolverAddress}
+          type="text"
+          value={resolver}
+          onChange={(e) => setResolver(e.target.value as Address)}
+          error={!isAddress(resolver) && "Invalid Address"}
+        />
+      </>
     ),
     [CreateSubdomainModalSteps.ProfileSettings]: (
       <>
-        <p className="text-gray-400">
-          Adjust your information and personalize your profile.
-        </p>
         <Input
           clearable
           label={"ETH Address"}
@@ -143,14 +151,12 @@ export const CreateSubdomainModalContent = ({
       </>
     ),
     [CreateSubdomainModalSteps.Confirmation]: (
-      <>
-        <NewSubdomainInfo
-          domain={`${newSubdomain}.${name}`}
-          description={description}
-          website={website}
-          ethAddress={subdomainAddress}
-        />
-      </>
+      <NewSubdomainInfo
+        domain={`${newSubdomain}.${name}`}
+        description={description}
+        website={website}
+        ethAddress={subdomainAddress}
+      />
     ),
     [CreateSubdomainModalSteps.Success]: (
       <div className="flex w-full flex-col items-center justify-center gap-4 px-10">
@@ -172,12 +178,10 @@ export const CreateSubdomainModalContent = ({
 
   // Map each step to a corresponding validation function
   const stepValidation: Record<CreateSubdomainModalSteps, () => boolean> = {
-    [CreateSubdomainModalSteps.SubdomainInput]: () => {
-      return !!newSubdomain.length;
-    },
-    [CreateSubdomainModalSteps.ProfileSettings]: () => {
-      return subdomainAddress === "" || isAddress(subdomainAddress);
-    },
+    [CreateSubdomainModalSteps.SubdomainInput]: () =>
+      !!newSubdomain && isAddress(resolver),
+    [CreateSubdomainModalSteps.ProfileSettings]: () =>
+      !subdomainAddress || isAddress(subdomainAddress),
     [CreateSubdomainModalSteps.Confirmation]: () => true,
     [CreateSubdomainModalSteps.Success]: () => true,
   };
