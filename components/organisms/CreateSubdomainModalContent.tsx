@@ -1,14 +1,13 @@
-import { createSubdomain } from "@/lib/create-subdomain/service";
 import { Button, Input, Spinner } from "@ensdomains/thorin";
 import { buildENSName } from "@namehash/ens-utils";
 import { normalize } from "viem/ens";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Address, isAddress, PublicClient } from "viem";
-import { useAccount, usePublicClient } from "wagmi";
-import { NewSubdomainInfo } from "./NewSubdomainInfo";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { Address, isAddress } from "viem";
+import { useAccount, useWalletClient } from "wagmi";
+import { createSubname } from "@ensdomains/ensjs/wallet";
 
+import { NewSubdomainInfo } from "./NewSubdomainInfo";
 interface CreateSubdomainModalContentProps {
   name: string;
   currentResolverAddress: Address;
@@ -40,8 +39,10 @@ export const CreateSubdomainModalContent = ({
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
     CreateSubdomainModalSteps.SubdomainInput,
   );
-  const publicClient = usePublicClient() as PublicClient & ClientWithEns;
   const { chain } = useAccount();
+  const walletClient = useWalletClient({
+    chainId: chain?.id,
+  });
 
   const isSubdomainInvalid = () => {
     try {
@@ -59,33 +60,28 @@ export const CreateSubdomainModalContent = ({
     setIsloading(true);
 
     if (!chain) {
-      toast.error(
+      return toast.error(
         "Impossible to create a subdomain if you are not connected to a chain",
       );
-      return;
     }
 
     try {
-      const response = await createSubdomain({
-        resolverAddress: currentResolverAddress,
-        signerAddress: authedUser.address!,
+      await createSubname(walletClient.data, {
         name: `${newSubdomain}.${name}`,
-        address: subdomainAddress,
-        website: website,
-        description: description,
-        client: publicClient,
-        chain: chain,
+        owner: authedUser.address!,
+        resolverAddress: "0x0a33f065c9c8f0F5c56BB84b1593631725F0f3af",
+        expiry: 31622400n,
+        contract: "nameWrapper",
       });
-      if (response?.ok) {
-        !!onRecordsEdited && onRecordsEdited();
-        toast.success("Subdomain created successfully 🙂");
-        setCurrentStep(CreateSubdomainModalSteps.Success);
-      }
-    } catch (error: any) {
-      toast.error(error?.cause?.reason ?? "Error creating subdomain");
-    }
 
-    setIsloading(false);
+      !!onRecordsEdited && onRecordsEdited();
+      toast.success("Subdomain created successfully 🙂");
+      setCurrentStep(CreateSubdomainModalSteps.Success);
+    } catch (error: any) {
+      toast.error(error.cause?.reason ?? "Error creating subdomain");
+    } finally {
+      setIsloading(false);
+    }
   };
 
   var urlRegex =
