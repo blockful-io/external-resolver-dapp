@@ -9,8 +9,8 @@ import {
   getRecords,
   getResolver,
   getWrapperData,
-} from "@ensdomains/ensjs/public";
-import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
+} from "ensjs-monorepo/packages/ensjs/src/public";
+import { getSubgraphRecords } from "ensjs-monorepo/packages/ensjs/src/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize, packetToBytes } from "viem/ens";
 import DomainResolverABI from "../abi/offchain-resolver.json";
@@ -43,7 +43,7 @@ import {
   WalletClient,
 } from "viem";
 import toast from "react-hot-toast";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
 import { stringHasMoreThanOneDot } from "../utils/formats";
 import { nameRegistrationSmartContracts } from "../name-registration/constants";
 import { SupportedNetwork } from "../wallet/chains";

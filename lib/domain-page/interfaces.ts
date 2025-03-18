@@ -2,8 +2,8 @@ import {
   DateWithValue,
   DecodedAddr,
   DecodedText,
-} from "@ensdomains/ensjs/dist/types/types";
-import { InternalGetContentHashReturnType } from "@ensdomains/ensjs/public";
+} from "ensjs-monorepo/packages/ensjs/src/types";
+import { InternalGetContentHashReturnType } from "ensjs-monorepo/packages/ensjs/src/public";
 import { Address } from "viem";
 
 export interface TextRecords {

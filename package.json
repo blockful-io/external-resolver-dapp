@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@ensdomains/address-encoder": "^1.1.2",
-    "@ensdomains/ensjs": "^4.0.0",
     "@ensdomains/thorin": "^0.6.50",
     "@namehash/ens-utils": "1.12.1",
     "@next/font": "^14.2.4",
@@ -20,6 +19,7 @@
     "bitcoin-address-validation": "^2.2.3",
     "boring-avatars": "^1.10.2",
     "classcat": "^5.0.5",
+    "ensjs-monorepo": "github:blockful-io/ensjs#ensip-20-register",
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",

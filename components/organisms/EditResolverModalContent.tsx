@@ -1,6 +1,6 @@
 import { walletWagmiConfig } from "@/lib/wallet/wallet-config";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
-import { setResolver } from "@ensdomains/ensjs/wallet";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
+import { setResolver } from "ensjs-monorepo/packages/ensjs/src/wallet";
 import { Button, Input } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";

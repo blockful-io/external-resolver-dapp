@@ -10,7 +10,7 @@ import { useAccount, useBalance, usePublicClient } from "wagmi";
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 import { PublicClient } from "viem";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
 
 interface RequestToRegisterComponentProps {
   handlePreviousStep: () => void;
