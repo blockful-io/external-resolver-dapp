@@ -8,7 +8,7 @@ import {
 import { useEffect } from "react";
 import { PublicClient, TransactionReceipt, WalletClient } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;

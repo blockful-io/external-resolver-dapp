@@ -40,8 +40,8 @@ import {
   getCoderByCoinName,
 } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
-import { getAvailable } from "@ensdomains/ensjs/public";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
+import { getAvailable } from "ensjs-monorepo/packages/ensjs/src/public";
 import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
 

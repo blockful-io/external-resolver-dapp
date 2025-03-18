@@ -1,5 +1,5 @@
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
-import { getSupportedInterfaces } from "@ensdomains/ensjs/public";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
+import { getSupportedInterfaces } from "ensjs-monorepo/packages/ensjs/src/public";
 import { Address, isAddress, PublicClient } from "viem";
 
 export const getUnsupportedResolverInterfaces = async (

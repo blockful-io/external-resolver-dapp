@@ -28,10 +28,10 @@ import {
 } from "@/lib/wallet/txError";
 import { setDomainRecords } from "@/lib/utils/blockchain-txs";
 import { buildENSName } from "@namehash/ens-utils";
-import { getResolver } from "@ensdomains/ensjs/public";
+import { getResolver } from "ensjs-monorepo/packages/ensjs/src/public";
 import { useAccount, usePublicClient } from "wagmi";
 import cc from "classcat";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
