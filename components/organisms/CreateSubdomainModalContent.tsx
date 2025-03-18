@@ -8,6 +8,8 @@ import { useAccount, useWalletClient } from "wagmi";
 import { createSubname } from "ensjs-monorepo/packages/ensjs/src/wallet";
 
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
+import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
+
 interface CreateSubdomainModalContentProps {
   name: string;
   resolverAddress: Address;
@@ -40,7 +42,7 @@ export const CreateSubdomainModalContent = ({
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
     CreateSubdomainModalSteps.SubdomainInput,
   );
-  const { chain } = useAccount();
+  const { chain, address } = useAccount();
   const walletClient = useWalletClient({
     chainId: chain?.id,
   });
@@ -66,13 +68,13 @@ export const CreateSubdomainModalContent = ({
     }
 
     try {
-      await createSubname(walletClient.data, {
+      await createSubname(walletClient.data as WalletClientWithAccount, {
         name: `${newSubdomain}.${name}`,
         owner: authedUser.address!,
         resolverAddress,
         expiry: 31622400n,
         contract: "nameWrapper",
-        fuses: 0,
+        account: address!,
       });
 
       !!onRecordsEdited && onRecordsEdited();
