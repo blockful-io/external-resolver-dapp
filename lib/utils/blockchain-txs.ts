@@ -42,7 +42,6 @@ import {
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
 import { getAvailable } from "@ensdomains/ensjs/public";
-import { getChain } from "../create-subdomain/service";
 import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
 
