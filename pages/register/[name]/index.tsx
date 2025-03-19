@@ -20,7 +20,7 @@ import { LocalNameRegistrationData } from "@/lib/name-registration/types";
 import { ContinueRegistrationModal } from "@/components/organisms/ContinueRegistrationModalContent";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 import { PublicClient } from "viem";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
 
 export async function getServerSideProps({
   params,
