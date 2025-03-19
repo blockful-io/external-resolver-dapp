@@ -5,10 +5,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Address, isAddress } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
-import { createSubname } from "ensjs-monorepo/packages/ensjs/src/wallet";
+import { createSubname } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
+import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
-import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
+
 interface CreateSubdomainModalContentProps {
   name: string;
   resolverAddress: Address;
