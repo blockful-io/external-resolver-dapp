@@ -5,7 +5,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Address, isAddress } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
-import { createSubname } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
+import { createSubname } from "ensjs-monorepo/packages/ensjs/src/wallet";
 
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
 interface CreateSubdomainModalContentProps {

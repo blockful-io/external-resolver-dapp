@@ -43,7 +43,7 @@ import {
   WalletClient,
 } from "viem";
 import toast from "react-hot-toast";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
 import { stringHasMoreThanOneDot } from "../utils/formats";
 import { nameRegistrationSmartContracts } from "../name-registration/constants";
 import { SupportedNetwork } from "../wallet/chains";

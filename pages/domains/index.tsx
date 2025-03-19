@@ -1,6 +1,6 @@
 import { ConnectMetamask } from "@/components/atoms";
 import { Table } from "@/components/molecules";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
 import { getNamesForAddress } from "ensjs-monorepo/packages/ensjs/dist/esm/subgraph";
 import { Heading, Skeleton } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";

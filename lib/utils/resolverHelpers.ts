@@ -1,4 +1,4 @@
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
 import { getSupportedInterfaces } from "ensjs-monorepo/packages/ensjs/dist/esm/public";
 import { Address, isAddress, PublicClient } from "viem";
 
