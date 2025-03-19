@@ -10,7 +10,7 @@ import {
   getResolver,
   getWrapperData,
 } from "ensjs-monorepo/packages/ensjs/src/public";
-import { getSubgraphRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/subgraph";
+import { getSubgraphRecords } from "ensjs-monorepo/packages/ensjs/src/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize, packetToBytes } from "viem/ens";
 import DomainResolverABI from "../abi/offchain-resolver.json";

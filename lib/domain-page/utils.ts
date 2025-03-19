@@ -1,4 +1,4 @@
-import { DecodedText } from "ensjs-monorepo/packages/ensjs/dist/types";
+import { DecodedText } from "ensjs-monorepo/packages/ensjs/src/types";
 import { ETHEREUM_ADDRESS_REGEX } from "../name-registration/constants";
 import { CoinType, coinTypeToNameMap } from "@ensdomains/address-encoder";
 

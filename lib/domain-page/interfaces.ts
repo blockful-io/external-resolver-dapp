@@ -2,7 +2,7 @@ import {
   DateWithValue,
   DecodedAddr,
   DecodedText,
-} from "ensjs-monorepo/packages/ensjs/dist/types";
+} from "ensjs-monorepo/packages/ensjs/src/types";
 import { InternalGetContentHashReturnType } from "ensjs-monorepo/packages/ensjs/src/public";
 import { Address } from "viem";
 

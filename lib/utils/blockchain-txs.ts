@@ -1,3 +1,5 @@
+import * as chains from "viem/chains";
+
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
@@ -366,6 +368,12 @@ interface SetDomainRecordsParams {
   others: Record<string, string>;
   client: PublicClient & WalletClient;
   chain: Chain;
+}
+
+function getChain(chainId: number): Chain | undefined {
+  return (Object.values(chains) as Chain[]).find(
+    (chain) => chain.id === chainId,
+  )
 }
 
 export const setDomainRecords = async ({
