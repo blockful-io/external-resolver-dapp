@@ -4,7 +4,7 @@ import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import TabBody from "@/components/organisms/TabBody";
 import { UserDomainCard } from "@/components/organisms/UserDomainCard";
 import { DomainData, getENSDomainData } from "@/lib/domain-page";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 import { Button, Heading, Skeleton, SkeletonGroup } from "@ensdomains/thorin";
 import Link from "next/link";

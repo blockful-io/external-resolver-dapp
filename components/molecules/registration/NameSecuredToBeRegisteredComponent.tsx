@@ -4,7 +4,7 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import { TransactionErrorType } from "@/lib/wallet/txError";
 import { PublicClient, TransactionReceipt } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 interface NameSecuredToBeRegisteredComponentProps {
   handlePreviousStep: () => void;

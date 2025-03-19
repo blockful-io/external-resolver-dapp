@@ -8,7 +8,7 @@ import { useAccount, useWalletClient } from "wagmi";
 import { createSubname } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
 
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
-import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
+import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 interface CreateSubdomainModalContentProps {
   name: string;

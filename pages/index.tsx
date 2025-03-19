@@ -13,7 +13,7 @@ import { DomainStatus } from "@/components/molecules";
 import toast from "react-hot-toast";
 import { usePublicClient } from "wagmi";
 import { PublicClient } from "viem";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 export default function Home() {
   const router = useRouter();
@@ -96,7 +96,7 @@ export default function Home() {
     <div className="relative flex flex-1 flex-col items-center justify-center overflow-clip bg-white p-4">
       <HomepageBg className="animate-float" />
 
-      <div className="flex w-full max-w-6xl -translate-y-1/3 animate-fadeIn flex-col items-center justify-center gap-y-8">
+      <div className="animate-fadeIn flex w-full max-w-6xl -translate-y-1/3 flex-col items-center justify-center gap-y-8">
         <div className="flex items-center justify-center gap-2 rounded-full border border-gray-200 px-3 py-2">
           <p>🔎</p>
           <p className="text-xl text-gray-500">Search domains</p>

@@ -31,7 +31,7 @@ import { buildENSName } from "@namehash/ens-utils";
 import { getResolver } from "ensjs-monorepo/packages/ensjs/dist/esm/public";
 import { useAccount, usePublicClient } from "wagmi";
 import cc from "classcat";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
