@@ -3,7 +3,7 @@ import {
   DecodedAddr,
   DecodedText,
 } from "ensjs-monorepo/packages/ensjs/dist/types";
-import { InternalGetContentHashReturnType } from "ensjs-monorepo/packages/ensjs/dist/esm/public";
+import { InternalGetContentHashReturnType } from "ensjs-monorepo/packages/ensjs/src/public";
 import { Address } from "viem";
 
 export interface TextRecords {

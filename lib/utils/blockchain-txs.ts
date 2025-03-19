@@ -41,7 +41,7 @@ import {
 } from "@ensdomains/address-encoder";
 import { CcipRequestParameters, DomainData, MessageData } from "./types";
 import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/src/contracts/consts";
-import { getAvailable } from "ensjs-monorepo/packages/ensjs/dist/esm/public";
+import { getAvailable } from "ensjs-monorepo/packages/ensjs/src/public";
 import toast from "react-hot-toast";
 import { sepolia } from "viem/chains";
 

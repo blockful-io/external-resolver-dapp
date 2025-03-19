@@ -9,7 +9,7 @@ import {
   getRecords,
   getResolver,
   getWrapperData,
-} from "ensjs-monorepo/packages/ensjs/dist/esm/public";
+} from "ensjs-monorepo/packages/ensjs/src/public";
 import { getSubgraphRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize, packetToBytes } from "viem/ens";
