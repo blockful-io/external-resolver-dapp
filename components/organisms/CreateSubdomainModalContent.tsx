@@ -1,6 +1,5 @@
 import { Button, Input, Spinner } from "@ensdomains/thorin";
 import { buildENSName } from "@namehash/ens-utils";
-import { normalize } from "viem/ens";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Address, isAddress } from "viem";
@@ -71,7 +70,7 @@ export const CreateSubdomainModalContent = ({
       await createSubname(walletClient.data! as WalletClientWithAccount, {
         name: `${newSubdomain}.${name}`,
         owner: authedUser.address!,
-        resolverAddress,
+        resolverAddress: resolver,
         expiry: 31622400n,
         contract: "nameWrapper",
         account: authedUser.address!,
