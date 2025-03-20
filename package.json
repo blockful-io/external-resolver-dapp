@@ -27,6 +27,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "next": "14.1.1-canary.52",
+    "pako": "^2.1.0",
     "react": "18.2.0",
     "react-debounce-input": "^3.3.0",
     "react-dom": "18.2.0",
