@@ -6,20 +6,17 @@ import { Address, isAddress } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
 import { createSubname } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
 import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
-
 import { NewSubdomainInfo } from "./NewSubdomainInfo";
 
 interface CreateSubdomainModalContentProps {
   name: string;
   resolverAddress: Address;
   onCloseModal: () => void;
-  onRecordsEdited?: () => void;
   alreadyCreatedSubdomains?: string[];
 }
 
 enum CreateSubdomainModalSteps {
   SubdomainInput = "SubdomainInput",
-  ProfileSettings = "ProfileSettings",
   Confirmation = "Confirmation",
   Success = "Success",
 }
@@ -27,15 +24,11 @@ enum CreateSubdomainModalSteps {
 export const CreateSubdomainModalContent = ({
   resolverAddress,
   onCloseModal,
-  onRecordsEdited,
   name,
   alreadyCreatedSubdomains,
 }: CreateSubdomainModalContentProps) => {
   const [newSubdomain, setNewSubdomain] = useState("");
   const [resolver, setResolver] = useState(resolverAddress);
-  const [subdomainAddress, setSubdomainAddress] = useState("");
-  const [website, setWebsite] = useState("");
-  const [description, setDescription] = useState("");
   const [isLoading, setIsloading] = useState(false);
   const authedUser = useAccount();
   const [currentStep, setCurrentStep] = useState<CreateSubdomainModalSteps>(
@@ -76,7 +69,6 @@ export const CreateSubdomainModalContent = ({
         account: authedUser.address!,
       });
 
-      !!onRecordsEdited && onRecordsEdited();
       toast.success("Subdomain created successfully 🙂");
       setCurrentStep(CreateSubdomainModalSteps.Success);
     } catch (error: any) {
@@ -115,48 +107,10 @@ export const CreateSubdomainModalContent = ({
         />
       </>
     ),
-    [CreateSubdomainModalSteps.ProfileSettings]: (
-      <>
-        <Input
-          clearable
-          label={"ETH Address"}
-          placeholder={""}
-          type="text"
-          value={subdomainAddress}
-          onChange={(e) => setSubdomainAddress(e.target.value.toLowerCase())}
-          error={
-            subdomainAddress.length &&
-            !isAddress(subdomainAddress) &&
-            "Invalid Address"
-          }
-        />
-        <Input
-          clearable
-          label={"Website"}
-          placeholder={""}
-          type="text"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value.toLowerCase())}
-          error={
-            website !== "" && !website.match(urlRegex) && "Invalid Website"
-          }
-        />
-        <Input
-          clearable
-          label={"Description"}
-          placeholder={""}
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value.toLowerCase())}
-        />
-      </>
-    ),
     [CreateSubdomainModalSteps.Confirmation]: (
       <NewSubdomainInfo
         domain={`${newSubdomain}.${name}`}
-        description={description}
-        website={website}
-        ethAddress={subdomainAddress}
+        resolver={resolver}
       />
     ),
     [CreateSubdomainModalSteps.Success]: (
@@ -181,8 +135,6 @@ export const CreateSubdomainModalContent = ({
   const stepValidation: Record<CreateSubdomainModalSteps, () => boolean> = {
     [CreateSubdomainModalSteps.SubdomainInput]: () =>
       !!newSubdomain && isAddress(resolver),
-    [CreateSubdomainModalSteps.ProfileSettings]: () =>
-      !subdomainAddress || isAddress(subdomainAddress),
     [CreateSubdomainModalSteps.Confirmation]: () => true,
     [CreateSubdomainModalSteps.Success]: () => true,
   };
@@ -190,17 +142,11 @@ export const CreateSubdomainModalContent = ({
   const handleNextStep = () => {
     switch (currentStep) {
       case CreateSubdomainModalSteps.SubdomainInput:
-        setCurrentStep(CreateSubdomainModalSteps.ProfileSettings);
-        break;
-      case CreateSubdomainModalSteps.ProfileSettings:
-        setCurrentStep(CreateSubdomainModalSteps.Confirmation);
-        break;
+        return setCurrentStep(CreateSubdomainModalSteps.Confirmation);
       case CreateSubdomainModalSteps.Confirmation:
-        setCurrentStep(CreateSubdomainModalSteps.Success);
-        break;
+        return setCurrentStep(CreateSubdomainModalSteps.Success);
       case CreateSubdomainModalSteps.Success:
-        setCurrentStep(CreateSubdomainModalSteps.SubdomainInput);
-        break;
+        return setCurrentStep(CreateSubdomainModalSteps.SubdomainInput);
     }
   };
 

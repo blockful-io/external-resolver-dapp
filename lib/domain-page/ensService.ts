@@ -262,7 +262,7 @@ const getENSDomainDataThroughResolver = async ({
       ],
     })) as [Hex];
 
-    if (encodedContentHash) {
+    if (encodedContentHash !== "0x") {
       contentHash = hexToString(
         decodeFunctionResult({
           abi: DomainResolverABI,
