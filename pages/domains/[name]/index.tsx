@@ -10,7 +10,7 @@ import { Button, Heading, Skeleton, SkeletonGroup } from "@ensdomains/thorin";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { PublicClient } from "viem";
+import { PublicClient, zeroAddress } from "viem";
 import { usePublicClient } from "wagmi";
 
 export const excludeKeys = [
@@ -50,7 +50,6 @@ export function ManageNamePageContent({ name }: { name: string }) {
       updateEditModalFieldsWithEnsData(data);
       setError(null);
     } catch (err) {
-      console.log(err);
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -122,6 +121,7 @@ export function ManageNamePageContent({ name }: { name: string }) {
                   twitter={textRecords?.["com.twitter"]}
                   linkedIn={textRecords?.["com.linkedin"]}
                   onRecordsEdited={handleFetchENSDomainData}
+                  resolverAddress={ensData?.resolver.address || zeroAddress}
                 />
               </Skeleton>
 

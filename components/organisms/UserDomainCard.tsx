@@ -5,6 +5,7 @@ import { PencilIcon } from "../atoms";
 import { EditModalContent } from "./EditModalContent";
 import { useState, useEffect } from "react";
 import { useAccount, useEnsName } from "wagmi";
+import { Address } from "viem";
 
 interface UserDomainCardProps {
   url?: string;
@@ -17,6 +18,7 @@ interface UserDomainCardProps {
   name?: string;
   owner?: string;
   onRecordsEdited?: () => void;
+  resolverAddress: Address;
 }
 
 export const UserDomainCard = ({
@@ -26,6 +28,7 @@ export const UserDomainCard = ({
   description,
   onRecordsEdited,
   owner,
+  resolverAddress,
 }: UserDomainCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -114,6 +117,7 @@ export const UserDomainCard = ({
           closeModal={() => {
             setModalOpen(false);
           }}
+          resolverAddress={resolverAddress}
         />
       </Modal>
     </div>

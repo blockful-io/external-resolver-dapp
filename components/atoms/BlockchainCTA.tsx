@@ -75,8 +75,7 @@ export const BlockchainCTA = ({
 
     setBlockchainCtaStatus(BlockchainCTAState.APPROVING_IN_WALLET);
 
-    const txHashOrError: `0x${string}` | TransactionErrorType | null =
-      await transactionRequest();
+    const txHashOrError = await transactionRequest();
 
     const transactionReverted =
       txHashOrError === TransactionErrorType.REVERTED ||
