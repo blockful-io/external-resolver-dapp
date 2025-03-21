@@ -10,8 +10,7 @@ import { useNameRegistration } from "@/lib/name-registration/useNameRegistration
 import ExternalLinkIcon from "@/components/atoms/icons/external-link";
 import { Input, RadioButton, Typography } from "@ensdomains/thorin";
 import { useEffect, useRef, useState } from "react";
-import { isAddress } from "viem";
-import toast from "react-hot-toast";
+import { isAddress, Address } from "viem";
 import { useAccount } from "wagmi";
 import { setNameRegistrationInLocalStorage } from "@/lib/name-registration/localStorage";
 
@@ -30,12 +29,8 @@ export const ENSResolverComponent = ({
   const radioButtonRefOptimism = useRef(null);
   const [customAddress, setCustomAddress] = useState("");
 
-  const {
-    nameRegistrationData,
-    setEnsResolver,
-    setCustomResolverAddress,
-    getResolverAddress,
-  } = useNameRegistration();
+  const { nameRegistrationData, setEnsResolver, setCustomResolverAddress } =
+    useNameRegistration();
 
   const { address } = useAccount();
 
@@ -214,6 +209,7 @@ export const ENSResolverComponent = ({
           type="text"
           className="!flex !items-start !justify-start"
           value={customAddress}
+          error={customAddress && !isAddress(customAddress)}
           onChange={(e) => {
             setCustomAddress(e.target.value);
           }}
@@ -226,15 +222,7 @@ export const ENSResolverComponent = ({
             (ensResolver === EnsResolver.Custom && !isAddress(customAddress))
           }
           onClick={() => {
-            if (ensResolver === EnsResolver.Custom) {
-              if (isAddress(customAddress)) {
-                let resAddress = getResolverAddress();
-                setCustomResolverAddress(resAddress);
-              } else {
-                toast.error("Resolver address is invalid");
-                return;
-              }
-            }
+            setCustomResolverAddress(customAddress as Address);
             saveEnsResolverInLocalStorage();
             handleNextStep();
           }}
