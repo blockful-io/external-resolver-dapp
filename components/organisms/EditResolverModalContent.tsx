@@ -1,5 +1,8 @@
 import { walletWagmiConfig } from "@/lib/wallet/wallet-config";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import {
+  ClientWithEns,
+  ClientWithAccount,
+} from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 import { setResolver } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
 import { Button, Input } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
@@ -55,7 +58,7 @@ export const EditResolverModalContent = ({
       try {
         const hash =
           address &&
-          (await setResolver(walletClient, {
+          (await setResolver(walletClient as ClientWithAccount, {
             name: name,
             contract: "nameWrapper",
             resolverAddress: resolverAddress,

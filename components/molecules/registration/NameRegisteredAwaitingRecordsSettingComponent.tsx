@@ -1,14 +1,11 @@
-import { BackButton, BlockchainCTA } from "@/components/atoms";
-import { setDomainRecords } from "@/lib/utils/blockchain-txs";
-import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
-import {
-  TransactionErrorType,
-  getBlockchainTransactionError,
-} from "@/lib/wallet/txError";
+import { Hash } from "viem";
 import { useEffect } from "react";
-import { PublicClient, TransactionReceipt, WalletClient } from "viem";
-import { useAccount, usePublicClient } from "wagmi";
-import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { useAccount, useWalletClient } from "wagmi";
+import { setRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
+
+import { BackButton, BlockchainCTA } from "@/components/atoms";
+import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
+import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 interface NameRegisteredAwaitingRecordsSettingComponentProps {
   handlePreviousStep: () => void;
@@ -21,32 +18,11 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
 }: NameRegisteredAwaitingRecordsSettingComponentProps) => {
   const { address, chain } = useAccount();
   const { nameRegistrationData, getResolverAddress } = useNameRegistration();
+  const walletClient = useWalletClient({
+    chainId: chain?.id,
+  });
 
-  const publicClient = usePublicClient() as PublicClient &
-    WalletClient &
-    ClientWithEns;
-
-  const setTextRecords = async (): Promise<
-    `0x${string}` | TransactionErrorType | null
-  > => {
-    if (!address) {
-      throw new Error(
-        "Impossible to set the text records of a name without an authenticated user",
-      );
-    }
-
-    if (!chain) {
-      throw new Error(
-        "Impossible to set the text records of a name without a chain",
-      );
-    }
-
-    if (!nameRegistrationData.name) {
-      throw new Error(
-        "Impossible to set the text records of a name without a name",
-      );
-    }
-
+  async function setTextRecords(): Promise<Hash> {
     if (
       !Object.entries(nameRegistrationData.textRecords).length &&
       !Object.entries(nameRegistrationData.domainAddresses).length
@@ -56,38 +32,34 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
 
     const resolverAddress = getResolverAddress();
 
-    try {
-      const setDomainRecordsRes = await setDomainRecords({
-        others: {},
-        authenticatedAddress: address,
-        ensName: nameRegistrationData.name,
-        textRecords: nameRegistrationData.textRecords,
-        resolverAddress: resolverAddress,
-        addresses: nameRegistrationData.domainAddresses,
-        client: publicClient,
-        chain: chain,
-      });
+    const texts = Object.entries(nameRegistrationData.textRecords).map(
+      ([key, value]) => ({
+        key,
+        value,
+      }),
+    );
 
-      if (
-        setDomainRecordsRes === null ||
-        typeof setDomainRecordsRes === "number"
-      ) {
-        return null;
-      } else {
-        throw new Error(setDomainRecordsRes);
-      }
-    } catch (error) {
-      console.error(error);
-      const errorType = getBlockchainTransactionError(error);
-      return errorType;
-    }
-  };
+    const coins = Object.entries(nameRegistrationData.domainAddresses).map(
+      ([coin, value]) => ({
+        coin,
+        value,
+      }),
+    );
+
+    return await setRecords(walletClient.data! as WalletClientWithAccount, {
+      name: nameRegistrationData.name?.name || "", // TODO: this nameRegistrationData.name?.name null should throw an error
+      coins,
+      texts,
+      account: address!,
+      resolverAddress,
+    });
+  }
 
   useEffect(() => {
     if (!Object.entries(nameRegistrationData.textRecords).length) {
       handleNextStep();
     }
-  }, []);
+  }, [handleNextStep, nameRegistrationData.textRecords]);
 
   return (
     <div className="flex flex-col items-start justify-start gap-[44px]">
@@ -105,7 +77,7 @@ export const NameRegisteredAwaitingRecordsSettingComponent = ({
       </div>
       <div className="flex flex-col space-y-4">
         <BlockchainCTA
-          onSuccess={(txReceipt: TransactionReceipt) => {
+          onSuccess={() => {
             setTimeout(handleNextStep, 5000);
           }}
           transactionRequest={setTextRecords}
