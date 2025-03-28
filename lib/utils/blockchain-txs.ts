@@ -2,7 +2,6 @@
 /* eslint-disable import/named */
 import ENSReverseRegistrarABI from "@/lib/abi/ens-reverse-registrar.json";
 import ETHRegistrarABI from "@/lib/abi/eth-registrar.json";
-import L1ResolverABI from "../abi/arbitrum-resolver.json";
 import {
   DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
   nameRegistrationSmartContracts,
@@ -11,14 +10,10 @@ import {
 import {
   namehash,
   publicActions,
-  type WalletClient,
-  encodeFunctionData,
   createWalletClient,
   custom,
   BaseError,
   RawContractError,
-  Hash,
-  fromBytes,
   Address,
   PublicClient,
   Chain,
@@ -31,16 +26,9 @@ import {
 } from "../wallet/txError";
 import { getNameRegistrationSecret } from "@/lib/name-registration/localStorage";
 import { parseAccount } from "viem/utils";
-import DomainResolverABI from "../abi/resolver.json";
 import { normalize } from "viem/ens";
-import { cryptocurrencies } from "../domain-page";
-import { getCoderByCoinName } from "@ensdomains/address-encoder";
-import { CcipRequestParameters, DomainData, MessageData } from "./types";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
-import { getAvailable } from "@ensdomains/ensjs/public";
-import { getChain } from "../create-subdomain/service";
-import toast from "react-hot-toast";
-import { sepolia } from "viem/chains";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { getAvailable } from "ensjs-monorepo/packages/ensjs/dist/esm/public";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
@@ -113,65 +101,6 @@ export async function makeCommitment({
       const errorType = getBlockchainTransactionError(error);
       return errorType || error;
     });
-}
-
-export async function ccipRequest({
-  body,
-  url,
-}: CcipRequestParameters): Promise<Response> {
-  return fetch(url.replace("/{sender}/{data}.json", ""), {
-    body: JSON.stringify(body, (_, value) =>
-      typeof value === "bigint" ? value.toString() : value,
-    ),
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-interface HandleDBStorageParams {
-  domain: DomainData;
-  url: string;
-  message: MessageData;
-  authenticatedAddress: `0x${string}`;
-  chain: Chain;
-}
-
-export async function handleDBStorage({
-  domain,
-  url,
-  message,
-  authenticatedAddress,
-  chain,
-}: HandleDBStorageParams): Promise<Response> {
-  const client = createWalletClient({
-    account: authenticatedAddress,
-    chain: chain,
-    transport: custom(window.ethereum),
-  });
-
-  const signature = await client.signTypedData({
-    domain,
-    message,
-    types: {
-      Message: [
-        { name: "callData", type: "bytes" },
-        { name: "sender", type: "address" },
-        { name: "expirationTimestamp", type: "uint256" },
-      ],
-    },
-    primaryType: "Message",
-  });
-
-  return await ccipRequest({
-    body: {
-      data: message.callData,
-      signature: { message, domain, signature },
-      sender: message.sender,
-    },
-    url,
-  });
 }
 
 /*
@@ -271,250 +200,50 @@ export const register = async ({
   publicClient,
   chain,
 }: RegisterParams): Promise<`0x${string}` | TransactionErrorType> => {
-  try {
-    const walletClient = createWalletClient({
-      account: authenticatedAddress,
-      chain: chain,
-      transport: custom(window.ethereum),
-    });
+  const walletClient = createWalletClient({
+    account: authenticatedAddress,
+    chain: chain,
+    transport: custom(window.ethereum),
+  });
 
-    const client = walletClient.extend(publicActions);
+  const client = walletClient.extend(publicActions);
 
-    if (!client) throw new Error("WalletClient not found");
+  if (!client) throw new Error("WalletClient not found");
 
-    const nameWithoutTLD = ensName.name.replace(".eth", "");
+  const nameWithoutTLD = ensName.name.replace(".eth", "");
 
-    const namePrice = await getNamePrice({
-      ensName,
-      durationInYears,
-      publicClient,
-    });
+  const namePrice = await getNamePrice({
+    ensName,
+    durationInYears,
+    publicClient,
+  });
 
-    if (!Object.values(SupportedNetwork).includes(chain.id)) {
-      throw new Error(`Unsupported network: ${chain.id}`);
-    }
-
-    const nameRegistrationContracts =
-      nameRegistrationSmartContracts[chain.id as SupportedNetwork];
-
-    const txHash = await client.writeContract({
-      address: nameRegistrationContracts.ETH_REGISTRAR,
-      chain: chain,
-      account: authenticatedAddress,
-      args: [
-        nameWithoutTLD,
-        authenticatedAddress,
-        durationInYears * SECONDS_PER_YEAR.seconds,
-        getNameRegistrationSecret(),
-        resolverAddress,
-        [],
-        registerAndSetAsPrimaryName,
-        DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
-      ],
-      value: namePrice,
-      abi: ETHRegistrarABI,
-      functionName: "register",
-      gas: 500000n,
-    });
-
-    return txHash;
-  } catch (error: unknown) {
-    const data = getRevertErrorData(error);
-
-    if (data?.errorName === "StorageHandledByOffChainDatabase") {
-      const [domain, url, message] = data.args as [
-        DomainData,
-        string,
-        MessageData,
-      ];
-
-      const signedData = await handleDBStorage({
-        domain,
-        url,
-        message,
-        authenticatedAddress,
-        chain: chain,
-      });
-
-      if (typeof signedData === "string") {
-        return signedData as `0x${string}`;
-      } else {
-        throw new Error("Error handling off-chain storage");
-      }
-    } else {
-      console.error(error);
-      const errorType = getBlockchainTransactionError(error);
-      return errorType;
-    }
+  if (!Object.values(SupportedNetwork).includes(chain.id)) {
+    throw new Error(`Unsupported network: ${chain.id}`);
   }
-};
 
-const cryptocurrenciesToCoinType: { [k: string]: string } = {
-  [cryptocurrencies.BTC]: "0",
-  [cryptocurrencies.LTC]: "2",
-  [cryptocurrencies.DOGE]: "3",
-  [cryptocurrencies.ETH]: "60",
-  [cryptocurrencies.BNB]: "714",
-  [cryptocurrencies.ARB1]: "2147525809",
-  [cryptocurrencies.OP]: "2147483658",
-  [cryptocurrencies.MATIC]: "2147483658",
-};
+  const nameRegistrationContracts =
+    nameRegistrationSmartContracts[chain.id as SupportedNetwork];
 
-/*
-  3rd step of a name registration - set text records
-*/
-
-interface SetDomainRecordsParams {
-  ensName: ENSName;
-  resolverAddress?: Address;
-  domainResolverAddress?: `0x${string}`;
-  authenticatedAddress: Address;
-  textRecords: Record<string, string>;
-  addresses: Record<string, string>;
-  client: PublicClient & WalletClient;
-  chain: Chain;
-}
-
-export const setDomainRecords = async ({
-  ensName,
-  resolverAddress,
-  domainResolverAddress,
-  authenticatedAddress,
-  textRecords,
-  addresses,
-  client,
-  chain,
-}: SetDomainRecordsParams) => {
-  try {
-    const publicAddress = normalize(ensName.name);
-
-    // duplicated function logic on service.ts - createSubdomain
-    const calls: Hash[] = [];
-
-    for (let i = 0; i < Object.keys(textRecords).length; i++) {
-      const key = Object.keys(textRecords)[i];
-      const value = textRecords[key];
-
-      if (value !== null && value !== undefined) {
-        const callData = encodeFunctionData({
-          functionName: "setText",
-          abi: DomainResolverABI,
-          args: [namehash(publicAddress), key, value],
-        });
-
-        calls.push(callData);
-      }
-    }
-
-    for (let i = 0; i < Object.keys(addresses).length; i++) {
-      const [cryptocurrencyName, address] = Object.entries(addresses)[i];
-      if (
-        !Object.keys(cryptocurrencies).includes(
-          cryptocurrencyName.toUpperCase(),
-        )
-      ) {
-        console.error(`cryptocurrency ${cryptocurrencyName} not supported`);
-        continue;
-      }
-      const coinType =
-        cryptocurrenciesToCoinType[cryptocurrencyName.toUpperCase()];
-
-      const coder = getCoderByCoinName(cryptocurrencyName.toLocaleLowerCase());
-      const addressEncoded = fromBytes(coder.decode(address), "hex");
-      const callData = encodeFunctionData({
-        functionName: "setAddr",
-        abi: DomainResolverABI,
-        args: [namehash(publicAddress), BigInt(coinType), addressEncoded],
-      });
-      calls.push(callData);
-    }
-
-    try {
-      let localResolverAddress;
-
-      if (resolverAddress) {
-        localResolverAddress = resolverAddress;
-      } else if (domainResolverAddress) {
-        localResolverAddress = domainResolverAddress;
-      } else {
-        throw new Error("No domain resolver informed");
-      }
-
-      await client.simulateContract({
-        functionName: "multicall",
-        abi: DomainResolverABI,
-        args: [calls],
-        account: authenticatedAddress,
-        address: localResolverAddress,
-      });
-    } catch (err) {
-      const data = getRevertErrorData(err);
-      if (data?.errorName === "StorageHandledByOffChainDatabase") {
-        const [domain, url, message] = data.args as [
-          DomainData,
-          string,
-          MessageData,
-        ];
-
-        try {
-          await handleDBStorage({
-            domain,
-            url,
-            message,
-            authenticatedAddress,
-            chain: chain,
-          });
-
-          return 200;
-        } catch (error) {
-          console.error("writing failed: ", { err });
-          const errorType = getBlockchainTransactionError(err);
-          return errorType;
-        }
-      } else if (data?.errorName === "StorageHandledByL2") {
-        const [chainId, contractAddress] = data.args as [bigint, `0x${string}`];
-
-        const selectedChain = getChain(Number(chainId));
-
-        if (!selectedChain) {
-          toast.error("error");
-          return;
-        }
-
-        const clientWithWallet = createWalletClient({
-          chain: selectedChain,
-          transport: custom(window.ethereum),
-        }).extend(publicActions);
-
-        await clientWithWallet.addChain({ chain: selectedChain });
-
-        try {
-          const { request } = await clientWithWallet.simulateContract({
-            functionName: "multicall",
-            abi: L1ResolverABI,
-            args: [calls],
-            account: authenticatedAddress,
-            address: contractAddress,
-          });
-          await clientWithWallet.writeContract(request);
-        } catch {
-          await clientWithWallet.switchChain({ id: sepolia.id });
-        }
-
-        await clientWithWallet.switchChain({ id: sepolia.id });
-
-        return 200;
-      } else {
-        console.error("writing failed: ", { err });
-        const errorType = getBlockchainTransactionError(err);
-        return errorType;
-      }
-    }
-  } catch (error: unknown) {
-    console.error(error);
-    const errorType = getBlockchainTransactionError(error);
-    return errorType;
-  }
+  return await client.writeContract({
+    address: nameRegistrationContracts.ETH_REGISTRAR,
+    chain: chain,
+    account: authenticatedAddress,
+    args: [
+      nameWithoutTLD,
+      authenticatedAddress,
+      durationInYears * SECONDS_PER_YEAR.seconds,
+      getNameRegistrationSecret(),
+      resolverAddress,
+      [],
+      registerAndSetAsPrimaryName,
+      DEFAULT_REGISTRATION_DOMAIN_CONTROLLED_FUSES,
+    ],
+    value: namePrice,
+    abi: ETHRegistrarABI,
+    functionName: "register",
+    gas: 500000n,
+  });
 };
 
 /*

@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { isNameAvailable } from "@/lib/utils/blockchain-txs";
-import { ProgressBar } from "@/components/01-atoms";
+import { ProgressBar } from "@/components/atoms";
 import {
   ProgressBlock,
   RegistrationBody,
   RegistrationSummary,
-} from "@/components/02-molecules";
+} from "@/components/molecules";
 import { useNameRegistration } from "@/lib/name-registration/useNameRegistration";
 import { ENSName, buildENSName } from "@namehash/ens-utils";
 import { useCallback, useEffect, useState } from "react";
@@ -20,7 +20,7 @@ import { LocalNameRegistrationData } from "@/lib/name-registration/types";
 import { ContinueRegistrationModal } from "@/components/organisms/ContinueRegistrationModalContent";
 import { domainWithEth, stringHasMoreThanOneDot } from "@/lib/utils/formats";
 import { PublicClient } from "viem";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 export async function getServerSideProps({
   params,

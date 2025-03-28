@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": ["dom", "dom.iterable", "esnext", "es2020"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "es2020"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,8 +20,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ],
+      "ensjs-monorepo/packages/ensjs/dist/esm/*": [
+        "node_modules/ensjs-monorepo/packages/ensjs/dist/types/*"
+      ]
     },
     "plugins": [
       {
@@ -24,7 +35,9 @@
       }
     ]
   },
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     "next-env.d.ts",
     "**/*.ts",

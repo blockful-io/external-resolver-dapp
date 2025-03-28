@@ -1,5 +1,5 @@
 import { Button, Modal, Skeleton } from "@ensdomains/thorin";
-import { Table } from "../02-molecules";
+import { Table } from "../molecules";
 import { DomainData } from "@/lib/domain-page";
 import { useState } from "react";
 import { CreateSubdomainModalContent } from "./CreateSubdomainModalContent";
@@ -7,13 +7,9 @@ import { useRouter } from "next/router";
 
 export interface SubdomainsTabProps {
   domainData: DomainData | null;
-  fetchDomainData: () => void;
 }
 
-export const SubdomainsTabBody = ({
-  domainData,
-  fetchDomainData,
-}: SubdomainsTabProps) => {
+export const SubdomainsTabBody = ({ domainData }: SubdomainsTabProps) => {
   const [createSubdomainModalOpen, setCreateSubdomainModalOpen] =
     useState(false);
 
@@ -65,9 +61,8 @@ export const SubdomainsTabBody = ({
 
       <Modal open={createSubdomainModalOpen} onDismiss={() => {}}>
         <CreateSubdomainModalContent
-          onRecordsEdited={fetchDomainData}
           alreadyCreatedSubdomains={subdomainsArray}
-          currentResolverAddress={domainData?.resolver.address!}
+          resolverAddress={domainData?.resolver.address!}
           name={String(name)}
           onCloseModal={() => {
             setCreateSubdomainModalOpen(false);

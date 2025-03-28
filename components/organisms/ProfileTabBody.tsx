@@ -1,21 +1,55 @@
 import {
-  Button,
-  CalendarSVG,
-  CogSVG,
-  EthTransparentSVG,
-  HeartSVG,
   Modal,
   Skeleton,
+  RecordItem,
+  EthTransparentInvertedSVG,
 } from "@ensdomains/thorin";
-import { ProfileRecordItem } from "../02-molecules";
-import { DatabaseIcon } from "../01-atoms";
-import { formatDate, formatHexAddress } from "@/lib/utils/formats";
+import {
+  formatBtcAddress,
+  formatDate,
+  formatHexAddress,
+} from "@/lib/utils/formats";
 import { CoinInfo, DomainData } from "@/lib/domain-page";
-import { useAccount, useEnsName } from "wagmi";
 import { useState } from "react";
 import { EditResolverModalContent } from "./EditResolverModalContent";
 import { useRouter } from "next/router";
 import { excludeKeys } from "@/pages/domains/[name]";
+import { EmailIcon, GithubIcon, LinkedInIcon, TwitterIcon } from "../atoms";
+import { TelegramIcon } from "../atoms/icons/telegram";
+import { isAddress } from "viem";
+import { CoinIcon } from "../molecules/CoinInfo";
+import { coinNameToTypeMap } from "@ensdomains/address-encoder";
+
+enum AccountKeys {
+  Twitter = "com.twitter",
+  GitHub = "com.github",
+  LinkedIn = "com.linkedin",
+  Telegram = "org.telegram",
+  Email = "email",
+}
+
+const accountKeysMap = {
+  [AccountKeys.Twitter]: {
+    icon: <TwitterIcon className="text-blue-500" />,
+    urlPrefix: "https://twitter.com/",
+  },
+  [AccountKeys.GitHub]: {
+    icon: <GithubIcon className="text-blue-500" />,
+    urlPrefix: "https://github.com/",
+  },
+  [AccountKeys.LinkedIn]: {
+    icon: <LinkedInIcon className="text-blue-500" />,
+    urlPrefix: "https://www.linkedin.com/in/",
+  },
+  [AccountKeys.Telegram]: {
+    icon: <TelegramIcon className="text-blue-500" />,
+    urlPrefix: "https://t.me/",
+  },
+  [AccountKeys.Email]: {
+    icon: <EmailIcon className="text-blue-500" />,
+    urlPrefix: "mailto:",
+  },
+};
 
 export interface ProfileTabProps {
   domainData: DomainData | null;
@@ -23,17 +57,9 @@ export interface ProfileTabProps {
 
 export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
   const [editResolverModalOpen, setEditResolverModalOpen] = useState(false);
-  const { address } = useAccount();
 
   const router = useRouter();
   const { name } = router.query; // Dynamic route parameter
-
-  const { data: authedUserName } = useEnsName({
-    address: address,
-  });
-
-  const showEditButton: boolean =
-    authedUserName === domainData?.owner || address === domainData?.owner;
 
   const millisecondsToSeconds = (millisecodNumber: number): number =>
     millisecodNumber / 1000;
@@ -45,6 +71,8 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
 
   let filteredRecords: Record<string, string> = {};
 
+  const textRecords = domainData?.resolver.texts;
+
   if (domainData && typeof domainData.resolver.texts === "object") {
     filteredRecords = Object.entries(domainData.resolver.texts)
       .filter(([key]) => !excludeKeys.includes(key))
@@ -54,26 +82,70 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
       }, {});
   }
 
+  const accountKeys = Object.values(AccountKeys);
+
+  const hasAccountKeys = accountKeys.some(
+    (key) => textRecords && key in textRecords,
+  );
+
   return (
     <div className="flex flex-grow flex-col gap-11">
+      {/* ACCOUNTS */}
+      {!!hasAccountKeys && (
+        <div className="flex flex-col gap-4">
+          <Skeleton>
+            <h3 className="text-base font-semibold">Accounts</h3>
+          </Skeleton>
+          <div className="flex w-full flex-wrap gap-2 overflow-auto p-1">
+            {Object.entries(domainData?.resolver.texts ?? {})
+              .filter(([key]) =>
+                Object.values(AccountKeys).includes(key as AccountKeys),
+              )
+              .map(([key, value]) => {
+                const { icon, urlPrefix } = accountKeysMap[key as AccountKeys];
+                return (
+                  <Skeleton key={key}>
+                    <RecordItem
+                      inline
+                      size="large"
+                      icon={icon}
+                      value={value}
+                      link={`${urlPrefix}${value}`}
+                      as="a"
+                    >
+                      {value}
+                    </RecordItem>
+                  </Skeleton>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+      {/* ADDRESSES */}
       {!!addresses?.length && (
         <div className="flex flex-col gap-4">
           <Skeleton>
             <h3 className="text-base font-semibold">Addresses</h3>
           </Skeleton>
-          <div className="grid grid-cols-2 gap-4">
-            {addresses.map((coin: CoinInfo | undefined, index: number) => (
-              <div key={index}>
-                {coin ? (
-                  <Skeleton key={coin.coin}>
-                    <ProfileRecordItem
-                      icon={EthTransparentSVG}
-                      text={coin.address}
-                    />
-                  </Skeleton>
-                ) : null}
-              </div>
-            ))}
+          <div className="flex w-full flex-wrap gap-2 overflow-auto">
+            {addresses.map((coin: CoinInfo | undefined, index: number) =>
+              coin ? (
+                <Skeleton key={coin.coin}>
+                  <RecordItem
+                    size="large"
+                    inline
+                    className="flex items-center justify-center"
+                    icon={<CoinIcon coin={coin.coin} className="h-6 w-6" />}
+                    value={coin.address}
+                  >
+                    {coin.coin !== coinNameToTypeMap.btc.toString()
+                      ? formatHexAddress(coin.address)
+                      : formatBtcAddress(coin.address)}
+                  </RecordItem>
+                </Skeleton>
+              ) : null,
+            )}
           </div>
         </div>
       )}
@@ -83,15 +155,12 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <Skeleton>
             <h3 className="text-base font-semibold">Other Records</h3>
           </Skeleton>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex w-full flex-wrap gap-4 overflow-auto">
             {Object.entries(filteredRecords).map(([key, value]) => (
               <Skeleton key={key}>
-                <ProfileRecordItem
-                  icon={EthTransparentSVG}
-                  key={key}
-                  label={key}
-                  text={value}
-                />
+                <RecordItem inline size="large" keyLabel={key} value={value}>
+                  {value}
+                </RecordItem>
               </Skeleton>
             ))}
           </div>
@@ -102,83 +171,106 @@ export const ProfileTabBody = ({ domainData }: ProfileTabProps) => {
           <h3 className="text-base font-semibold">Ownership</h3>
         </Skeleton>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Skeleton>
-            <ProfileRecordItem
-              icon={CogSVG}
-              label="manager"
-              text={domainData?.owner ?? ""}
-            />
-          </Skeleton>
+        <div className="flex w-full flex-wrap gap-2 overflow-auto">
+          {domainData?.owner && (
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="manager"
+                value={domainData?.owner ?? ""}
+              >
+                {isAddress(domainData?.owner)
+                  ? formatHexAddress(domainData?.owner)
+                  : domainData?.owner}
+              </RecordItem>
+            </Skeleton>
+          )}
 
-          <Skeleton>
-            {domainData?.owner && (
-              <ProfileRecordItem
-                icon={HeartSVG}
-                label="owner"
-                text={domainData?.owner}
-              />
-            )}
-          </Skeleton>
-
-          <Skeleton>
-            {expiryDate !== undefined && (
-              <ProfileRecordItem
-                icon={CalendarSVG}
-                label="expiry"
-                text={formatDate({
+          {domainData?.owner && (
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="owner"
+                value={domainData?.owner}
+              >
+                {isAddress(domainData?.owner)
+                  ? formatHexAddress(domainData?.owner)
+                  : domainData?.owner}
+              </RecordItem>
+            </Skeleton>
+          )}
+          {expiryDate !== undefined && (
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="expiry"
+                className="whitespace-nowrap"
+                value={formatDate({
                   unixTimestamp: millisecondsToSeconds(expiryDate),
                 })}
-              />
-            )}
-          </Skeleton>
-          <Skeleton>
-            {domainData?.parent && (
-              <ProfileRecordItem
-                icon={EthTransparentSVG}
-                label="parent"
-                text={domainData.parent}
-              />
-            )}
-          </Skeleton>
+              >
+                {formatDate({
+                  unixTimestamp: millisecondsToSeconds(expiryDate),
+                })}
+              </RecordItem>
+            </Skeleton>
+          )}
+          {domainData?.parent && (
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="parent"
+                value={domainData.parent}
+              >
+                {domainData.parent}
+              </RecordItem>
+            </Skeleton>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <Skeleton>
-          <h3 className="text-base font-semibold">Resolver</h3>
-        </Skeleton>
-        <div className="grid grid-cols-2 gap-4">
+      {domainData?.contentHash && (
+        <div className="flex flex-col gap-4">
           <Skeleton>
-            <div className="flex items-center justify-between gap-4 overflow-hidden rounded-md bg-gray-50 px-2 py-2">
-              <div className="flex items-center gap-4">
-                <div className="flex gap-4 rounded-md bg-blue-100 p-2">
-                  <DatabaseIcon className="h-5 w-5 text-blue-500" />
-                </div>
-
-                {resolver?.address && (
-                  <p className="truncate whitespace-nowrap">
-                    {formatHexAddress(resolver?.address)}
-                  </p>
-                )}
-              </div>
-
-              {showEditButton && (
-                <div>
-                  <Button
-                    onClick={() => {
-                      setEditResolverModalOpen(true);
-                    }}
-                    size="small"
-                  >
-                    Edit
-                  </Button>
-                </div>
-              )}
-            </div>
+            <h3 className="text-base font-semibold">Content Hash</h3>
           </Skeleton>
+          <div className="flex flex-col gap-4">
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="content hash"
+                value={domainData?.contentHash}
+              >
+                {domainData?.contentHash}
+              </RecordItem>
+            </Skeleton>
+          </div>
         </div>
-      </div>
+      )}
+      {domainData?.resolver && (
+        <div className="flex flex-col gap-4">
+          <Skeleton>
+            <h3 className="text-base font-semibold">Resolver</h3>
+          </Skeleton>
+          <div className="flex flex-col gap-4">
+            <Skeleton>
+              <RecordItem
+                inline
+                size="large"
+                keyLabel="resolver"
+                value={domainData.resolver.address}
+              >
+                {domainData.resolver.address}
+              </RecordItem>
+            </Skeleton>
+          </div>
+        </div>
+      )}
       {resolver?.address && (
         <Modal open={editResolverModalOpen} onDismiss={() => {}}>
           <EditResolverModalContent

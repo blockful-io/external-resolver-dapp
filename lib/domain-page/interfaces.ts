@@ -2,8 +2,8 @@ import {
   DateWithValue,
   DecodedAddr,
   DecodedText,
-} from "@ensdomains/ensjs/dist/types/types";
-import { InternalGetContentHashReturnType } from "@ensdomains/ensjs/public";
+} from "ensjs-monorepo/packages/ensjs/dist/types/types";
+import { InternalGetContentHashReturnType } from "ensjs-monorepo/packages/ensjs/dist/esm/public";
 import { Address } from "viem";
 
 export interface TextRecords {
@@ -21,16 +21,17 @@ export interface SubgraphEnsData {
   texts: DecodedText[];
   coins: DecodedAddr[];
   resolverAddress: `0x${string}`;
-  owner: Address;
+  owner?: Address;
   newAvatar?: string | null;
 }
 
 export interface DomainData {
   name?: string;
-  owner: string;
+  owner?: string;
   parent: string;
   subdomains: DomainData[];
   subdomainCount: number;
+  contentHash?: string;
   resolver: {
     id: string;
     address: Address;
@@ -51,6 +52,7 @@ export interface ResolverQueryDomainData {
   parent: string;
   subdomains: DomainData[];
   subdomainCount: number;
+  contentHash: string;
   resolver: {
     id: string;
     address: Address;

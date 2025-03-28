@@ -3,7 +3,7 @@ import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
-import { addEnsContracts } from "@ensdomains/ensjs";
+import { addEnsContracts } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/addEnsContracts";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;
@@ -33,7 +33,6 @@ const connectors = connectorsForWallets(
 export const walletWagmiConfig = createConfig({
   connectors,
   chains: [
-    sepoliaWithEns,
     {
       ...mainnetWithEns,
       subgraphs: {
@@ -42,6 +41,7 @@ export const walletWagmiConfig = createConfig({
         },
       },
     },
+    sepoliaWithEns,
   ],
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
@@ -55,7 +55,6 @@ export const walletWagmiConfig = createConfig({
 const wagmiConfig = createConfig({
   connectors,
   chains: [
-    sepoliaWithEns,
     {
       ...mainnetWithEns,
       subgraphs: {
@@ -64,6 +63,7 @@ const wagmiConfig = createConfig({
         },
       },
     },
+    sepoliaWithEns,
     arbitrum,
     arbitrumSepolia,
   ],

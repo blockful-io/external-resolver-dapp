@@ -2,22 +2,24 @@ import { defaultTextRecords } from "@/types/textRecords";
 import {
   batch,
   getAvailable,
+  getContentHashRecord,
   getExpiry,
   getName,
   getOwner,
   getRecords,
   getResolver,
   getWrapperData,
-} from "@ensdomains/ensjs/public";
-import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
+} from "ensjs-monorepo/packages/ensjs/dist/esm/public";
+import { getSubgraphRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/subgraph";
 import { GraphQLClient } from "graphql-request";
-import { normalize } from "viem/ens";
+import { normalize, packetToBytes } from "viem/ens";
+import DomainResolverABI from "../abi/offchain-resolver.json";
+import abiUniversalResolver from "../abi/universal-resolver.json";
 import {
   getCoinNameByType,
-  getSupportedCoins,
+  supportedCoinTypes,
   transformTextRecords,
   updateAvatarInTexts,
-  validateDomain,
 } from "./utils";
 import {
   DomainData,
@@ -28,13 +30,23 @@ import {
 import { metadataDomainQuery } from "./queries";
 import {
   Address,
+  ContractFunctionExecutionError,
+  decodeFunctionResult,
+  encodeFunctionData,
+  Hex,
+  hexToString,
   isAddress,
+  namehash,
   parseAbiItem,
   PublicClient,
+  toHex,
   WalletClient,
 } from "viem";
 import toast from "react-hot-toast";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { stringHasMoreThanOneDot } from "../utils/formats";
+import { nameRegistrationSmartContracts } from "../name-registration/constants";
+import { SupportedNetwork } from "../wallet/chains";
 
 // Ensure API key is available
 const ensSubgraphApiKey = process.env.NEXT_PUBLIC_ENS_SUBGRAPH_KEY;
@@ -73,6 +85,7 @@ export const getENSDomainData = async ({
       const domainData = await formatSubgraphDomainData({
         data: data,
         client: client,
+        domain: domain,
       });
       return domainData;
     } catch (error) {
@@ -100,9 +113,11 @@ export const getENSDomainDataThroughSubgraph = async ({
   domain,
   client,
 }: GetENSDomainDataThroughSubgraphParams): Promise<SubgraphEnsData | null> => {
-  validateDomain(domain);
-
-  if (await getAvailable(client, { name: domain })) return null;
+  if (
+    !stringHasMoreThanOneDot(domain) &&
+    (await getAvailable(client, { name: domain }))
+  )
+    return null;
 
   const textRecordsKeys = await getSubgraphRecords(client, {
     name: domain,
@@ -118,12 +133,13 @@ export const getENSDomainDataThroughSubgraph = async ({
       getRecords.batch({
         name: domain,
         texts: availableTextRecords,
-        coins: getSupportedCoins(),
+        coins: supportedCoinTypes,
         contentHash: true,
       }),
       getOwner.batch({ name: domain }),
       getExpiry.batch({ name: domain }),
       getResolver.batch({ name: domain }),
+      getContentHashRecord.batch({ name: domain }),
     ),
   ]);
 
@@ -133,7 +149,7 @@ export const getENSDomainDataThroughSubgraph = async ({
     newAvatar,
     ...textRecords,
     ...owner,
-    owner: owner?.owner ?? "0x",
+    owner: owner?.owner,
     ...expiry,
   };
 
@@ -179,10 +195,11 @@ const getBasicENSDomainData = async ({
   }
 
   return {
-    owner: domainOwner?.owner ?? "0x",
+    owner: domainOwner?.owner,
     parent: getParent(name),
     subdomains: [],
     subdomainCount: 0,
+    contentHash: "",
     resolver: {
       id: "",
       address: domainAdd,
@@ -224,6 +241,9 @@ const getENSDomainDataThroughResolver = async ({
     },
   );
 
+  const result = await getContentHashRecord(client, { name });
+  if (result) data.domain.contentHash = `${result.protocolType}://${result.decoded}`
+
   data.domain.resolver.address = resolverAdd;
 
   return data.domain;
@@ -232,11 +252,13 @@ const getENSDomainDataThroughResolver = async ({
 interface FormatSubgraphDomainDataParams {
   data: SubgraphEnsData;
   client: PublicClient & ClientWithEns;
+  domain: string;
 }
 
 const formatSubgraphDomainData = async ({
   data,
   client,
+  domain,
 }: FormatSubgraphDomainDataParams): Promise<DomainData> => {
   const transformedTexts = transformTextRecords(data.texts);
 
@@ -248,6 +270,7 @@ const formatSubgraphDomainData = async ({
 
   const domainData: DomainData = {
     owner: ownerName?.name ?? data.owner,
+    contentHash: data.contentHash?.decoded,
     resolver: {
       id: "id",
       address: data.resolverAddress,
@@ -265,7 +288,7 @@ const formatSubgraphDomainData = async ({
     expiryDate: data.expiry?.date?.getTime()!,
     subdomains: [],
     subdomainCount: 0,
-    parent: "eth",
+    parent: getParent(domain),
   };
 
   return domainData;

@@ -1,18 +1,15 @@
 import { EthSVG } from "@ensdomains/thorin";
 import Avatar from "boring-avatars";
+import { Address } from "viem";
 
 interface NewSubdomainInfoProps {
   domain: string;
-  website: string;
-  description: string;
-  ethAddress: string;
+  resolver: Address;
 }
 
 export const NewSubdomainInfo = ({
-  domain = "new domain",
-  website,
-  description,
-  ethAddress,
+  domain,
+  resolver,
 }: NewSubdomainInfoProps) => {
   return (
     <>
@@ -29,21 +26,19 @@ export const NewSubdomainInfo = ({
               variant="marble"
               colors={["#44BCF0", "#7298F8", "#A099FF", "#FFFFFF"]}
             />
-            <div className="flex flex-col">
-              <p className="font-bold">{domain}</p>
-              <p className="text-sm text-blue-500">{website}</p>
-            </div>
+            <span className="flex items-center text-center font-bold">
+              {domain}
+            </span>
           </div>
-          <p>{description}</p>
         </div>
 
         <div className="flex flex-col p-4">
           <div className="flex w-full justify-between">
             <div className="flex items-center gap-2">
               <EthSVG className="h-4 w-4 text-gray-400" />
-              <p className="text-gray-400">ETH Address</p>
+              <p className="text-gray-400">Resolver</p>
             </div>
-            <p className="max-w-32 truncate">{ethAddress}</p>
+            <span>{resolver}</span>
           </div>
         </div>
       </div>

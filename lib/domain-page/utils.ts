@@ -1,6 +1,5 @@
-import { DecodedText } from "@ensdomains/ensjs/dist/types/types";
+import { DecodedText } from "ensjs-monorepo/packages/ensjs/dist/types/types";
 import { ETHEREUM_ADDRESS_REGEX } from "../name-registration/constants";
-import { cryptocurrencies } from "./constants";
 import { CoinType, coinTypeToNameMap } from "@ensdomains/address-encoder";
 
 export const validateDomain = (domain: string): void => {
@@ -38,10 +37,4 @@ export const updateAvatarInTexts = (
   );
 };
 
-export const getSupportedCoins = (): string[] => [
-  cryptocurrencies.ETH,
-  cryptocurrencies.BTC,
-  cryptocurrencies.ARB1,
-  cryptocurrencies.OP,
-  cryptocurrencies.MATIC,
-];
+export const supportedCoinTypes = ["ETH", "BTC", "ARB1", "OP", "MATIC"];

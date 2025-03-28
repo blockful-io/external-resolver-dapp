@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import {
   AccountsTab,
   AddressesTab,
+  OthersTab,
   ProfileTab,
   Tab,
   useFields,
-} from "../02-molecules";
+} from "@/components/molecules";
 import {
   Button,
   CheckCircleSVG,
@@ -14,39 +15,30 @@ import {
 } from "@ensdomains/thorin";
 import { useRouter } from "next/router";
 import { Field } from "@/types/editFieldsTypes";
-import { BlockchainCTA } from "../01-atoms";
-import {
-  PublicClient,
-  TransactionReceipt,
-  WalletClient,
-  isAddress,
-} from "viem";
-import {
-  TransactionErrorType,
-  getBlockchainTransactionError,
-} from "@/lib/wallet/txError";
-import { setDomainRecords } from "@/lib/utils/blockchain-txs";
-import { buildENSName } from "@namehash/ens-utils";
-import { getResolver } from "@ensdomains/ensjs/public";
-import { useAccount, usePublicClient } from "wagmi";
+import { BlockchainCTA } from "@/components/atoms";
+import { Address, Hash, TransactionReceipt } from "viem";
+import { useAccount, useWalletClient } from "wagmi";
 import cc from "classcat";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { setRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
   [Tab.Accounts]: AccountsTab,
   [Tab.Addresses]: AddressesTab,
-  // [Tab.Others]: OthersTab,
+  [Tab.Others]: OthersTab,
 };
 
 interface EditModalContentProps {
   closeModal: () => void;
   onRecordsEdited?: () => void;
+  resolverAddress: Address;
 }
 
 export const EditModalContent = ({
   closeModal,
   onRecordsEdited,
+  resolverAddress,
 }: EditModalContentProps) => {
   const [selectedTab, setSelectedTab] = useState(Tab.Profile);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,9 +51,11 @@ export const EditModalContent = ({
     profileFields,
     accountsFields,
     addressesFields,
+    othersFields,
     initialProfileFields,
     initialAddressesFields,
     initialAccountsFields,
+    initialOthersFields,
     setFields,
   } = useFields();
 
@@ -92,8 +86,17 @@ export const EditModalContent = ({
         changedFieldsKeys.push(field);
       }
     });
+
+    Object.values(othersFields).forEach((field) => {
+      const initialOthersField = initialOthersFields.find(
+        ({ label }) => label === field.label,
+      ) ?? { value: "" };
+      if (field.value !== initialOthersField.value) {
+        changedFieldsKeys.push(field);
+      }
+    });
     setChangedFields(changedFieldsKeys);
-  }, [profileFields, accountsFields, addressesFields]);
+  }, [profileFields, accountsFields, addressesFields, othersFields]);
 
   const hasAnyInvalidField = () => {
     const invalidProfileField = Object.values(profileFields)
@@ -134,6 +137,7 @@ export const EditModalContent = ({
   if (isSaving) {
     return (
       <SaveModalEdits
+        resolverAddress={resolverAddress}
         changedFields={changedFields}
         nextStep={() => {
           onRecordsEdited && onRecordsEdited();
@@ -147,7 +151,7 @@ export const EditModalContent = ({
   }
 
   return (
-    <div className="w-[480px] overflow-hidden rounded-xl border">
+    <div className="w-[580px] overflow-hidden rounded-xl border">
       <div className="border-b border-gray-200">
         <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
           Edit Records
@@ -195,18 +199,18 @@ export const EditModalContent = ({
           >
             Addresses
           </button>
-          {/* <button
+          <button
             onClick={() => {
               setSelectedTab(Tab.Others);
             }}
-            className={`py-3 w-full flex items-center border-b justify-center hover:bg-gray-50 transition-all duration-300 ${
+            className={`flex w-full items-center justify-center border-b py-3 transition-all duration-300 hover:bg-gray-50 ${
               selectedTab === Tab.Others
-                ? "text-blue-500 border-blue-500"
-                : "text-gray-500 border-gray-200"
+                ? "border-blue-500 text-blue-500"
+                : "border-gray-200 text-gray-500"
             }`}
           >
             Others
-          </button> */}
+          </button>
         </div>
         <div className="h-[448px] w-full overflow-y-scroll bg-white p-6">
           <CurrentComponent />
@@ -261,86 +265,53 @@ interface SaveModalEditsProps {
   back: () => void;
   nextStep: () => void;
   changedFields: Field[];
+  resolverAddress: Address;
 }
 
 const SaveModalEdits = ({
   back,
   nextStep,
   changedFields,
+  resolverAddress,
 }: SaveModalEditsProps) => {
   const router = useRouter();
   const { address, chain } = useAccount();
-  const { textRecordsToUpdate, domainAddressesToUpdate } = useFields();
+  const walletClient = useWalletClient({
+    chainId: chain?.id,
+  });
+  const { textRecordsToUpdate, domainAddressesToUpdate, othersFieldsToUpdate } =
+    useFields();
 
-  const publicClient = usePublicClient() as PublicClient &
-    WalletClient &
-    ClientWithEns;
+  async function setTextRecords(): Promise<Hash> {
+    const texts = Object.entries(textRecordsToUpdate).map(([key, value]) => ({
+      key,
+      value,
+    }));
 
-  const setTextRecords = async (): Promise<
-    `0x${string}` | TransactionErrorType | null
-  > => {
-    if (!publicClient) {
-      throw new Error(
-        "Impossible to set the text records of a name without a public client",
-      );
-    }
+    const coins = Object.entries(domainAddressesToUpdate).map(
+      ([coin, value]) => ({
+        coin,
+        value,
+      }),
+    );
 
-    if (!address) {
-      throw new Error(
-        "Impossible to set the text records of a name without an authenticated user",
-      );
-    }
+    const contentHash = Object.entries(othersFieldsToUpdate).reduce(
+      (_, [, value]) => value,
+      "",
+    );
 
-    if (!chain) {
-      throw new Error(
-        "Impossible to set the text records of a name without a chain",
-      );
-    }
-
-    if (!router.query.name || !buildENSName(router.query.name as string)) {
-      throw new Error(
-        "Impossible to set the text records of a name without a name",
-      );
-    }
-
-    try {
-      const ensName = buildENSName(router.query.name as string);
-
-      const resolverAdd = await getResolver(publicClient, {
-        name: ensName.name,
-      });
-
-      if (!resolverAdd || !isAddress(resolverAdd)) {
-        throw new Error("Resolver not found");
-      }
-
-      const setDomainRecordsRes = await setDomainRecords({
-        ensName,
-        authenticatedAddress: address,
-        domainResolverAddress: resolverAdd,
-        textRecords: textRecordsToUpdate,
-        addresses: domainAddressesToUpdate,
-        client: publicClient,
-        chain: chain,
-      });
-
-      if (
-        setDomainRecordsRes === null ||
-        typeof setDomainRecordsRes === "number"
-      ) {
-        return null;
-      } else {
-        throw new Error("Error setting domain records");
-      }
-    } catch (error) {
-      console.error(error);
-      const errorType = getBlockchainTransactionError(error);
-      return errorType;
-    }
-  };
+    return await setRecords(walletClient.data! as WalletClientWithAccount, {
+      name: router.query.name as string,
+      coins,
+      texts,
+      account: address!,
+      resolverAddress,
+      contentHash: contentHash || undefined, // avoid sending empty string
+    });
+  }
 
   return (
-    <div className="w-[480px] overflow-hidden rounded-xl border bg-white">
+    <div className="w-[580px] overflow-hidden rounded-xl border bg-white">
       <div className="flex w-full justify-between border-b bg-gray-50 px-6 py-5 font-semibold text-black">
         Edit Records
       </div>
@@ -399,9 +370,7 @@ const SaveModalEdits = ({
 
         <div className="w-full">
           <BlockchainCTA
-            onSuccess={(txReceipt: TransactionReceipt) => {
-              nextStep();
-            }}
+            onSuccess={(_: TransactionReceipt) => nextStep()}
             transactionRequest={setTextRecords}
           />
         </div>
