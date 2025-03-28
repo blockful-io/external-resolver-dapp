@@ -241,45 +241,8 @@ const getENSDomainDataThroughResolver = async ({
     },
   );
 
-  let contentHash: string | undefined;
-
-  try {
-    const dnsName = toHex(packetToBytes(name));
-
-    const [encodedContentHash] = (await client.readContract({
-      address:
-        nameRegistrationSmartContracts[SupportedNetwork.TESTNET]
-          .UNIVERSAL_RESOLVER,
-      functionName: "resolve",
-      abi: abiUniversalResolver,
-      args: [
-        dnsName,
-        encodeFunctionData({
-          abi: DomainResolverABI,
-          functionName: "contenthash",
-          args: [namehash(name)],
-        }),
-      ],
-    })) as [Hex];
-
-    if (encodedContentHash !== "0x") {
-      contentHash = hexToString(
-        decodeFunctionResult({
-          abi: DomainResolverABI,
-          functionName: "contenthash",
-          data: encodedContentHash,
-        }) as Hex,
-      );
-
-      data.domain.contentHash = contentHash;
-    }
-  } catch (error) {
-    if (error instanceof ContractFunctionExecutionError) {
-      console.warn("Content hash not set or not supported by this resolver");
-    } else {
-      console.error("Error getting content hash", error);
-    }
-  }
+  const result = await getContentHashRecord(client, { name });
+  if (result) data.domain.contentHash = `${result.protocolType}://${result.decoded}`
 
   data.domain.resolver.address = resolverAdd;
 

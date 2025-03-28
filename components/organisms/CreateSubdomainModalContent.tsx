@@ -1,5 +1,5 @@
 import { Button, Input, Spinner } from "@ensdomains/thorin";
-import { buildENSName } from "@namehash/ens-utils";
+import { buildENSName, SECONDS_PER_YEAR } from "@namehash/ens-utils";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Address, isAddress } from "viem";
@@ -64,7 +64,7 @@ export const CreateSubdomainModalContent = ({
         name: `${newSubdomain}.${name}`,
         owner: authedUser.address!,
         resolverAddress: resolver,
-        expiry: 31622400n,
+        expiry: SECONDS_PER_YEAR.seconds,
         contract: "nameWrapper",
         account: authedUser.address!,
       });
