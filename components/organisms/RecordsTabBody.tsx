@@ -116,22 +116,24 @@ export const RecordsTabBody = ({ domainData }: RecordsTabProps) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <Skeleton>
-          <h3 className="text-base font-semibold">Content Hash</h3>
-        </Skeleton>
+      {domainData?.contentHash && (
         <div className="flex flex-col gap-4">
           <Skeleton>
-            <RecordItem
-              size="large"
-              keyLabel="content hash"
-              value={domainData?.contentHash || "No Content Hash"}
-            >
-              {domainData?.contentHash || "No Content Hash"}
-            </RecordItem>
+            <h3 className="text-base font-semibold">Content Hash</h3>
           </Skeleton>
+          <div className="flex flex-col gap-4">
+            <Skeleton>
+              <RecordItem
+                size="large"
+                keyLabel="content hash"
+                value={domainData.contentHash}
+              >
+                {domainData.contentHash}
+              </RecordItem>
+            </Skeleton>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

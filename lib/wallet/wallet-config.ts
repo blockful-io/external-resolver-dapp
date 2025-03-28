@@ -3,7 +3,7 @@ import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 import { createConfig, http } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
-import { addEnsContracts } from "@ensdomains/ensjs";
+import { addEnsContracts } from "ensjs-monorepo/packages/ensjs/dist/esm/contracts/addEnsContracts";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 const alchemyApiTestnetKey = process.env.NEXT_PUBLIC_ALCHEMY_TESTNET_KEY;

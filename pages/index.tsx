@@ -13,7 +13,7 @@ import { DomainStatus } from "@/components/molecules";
 import toast from "react-hot-toast";
 import { usePublicClient } from "wagmi";
 import { PublicClient } from "viem";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 export default function Home() {
   const router = useRouter();

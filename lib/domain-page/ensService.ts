@@ -9,8 +9,8 @@ import {
   getRecords,
   getResolver,
   getWrapperData,
-} from "@ensdomains/ensjs/public";
-import { getSubgraphRecords } from "@ensdomains/ensjs/subgraph";
+} from "ensjs-monorepo/packages/ensjs/dist/esm/public";
+import { getSubgraphRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/subgraph";
 import { GraphQLClient } from "graphql-request";
 import { normalize, packetToBytes } from "viem/ens";
 import DomainResolverABI from "../abi/offchain-resolver.json";
@@ -43,7 +43,7 @@ import {
   WalletClient,
 } from "viem";
 import toast from "react-hot-toast";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 import { stringHasMoreThanOneDot } from "../utils/formats";
 import { nameRegistrationSmartContracts } from "../name-registration/constants";
 import { SupportedNetwork } from "../wallet/chains";
@@ -241,45 +241,8 @@ const getENSDomainDataThroughResolver = async ({
     },
   );
 
-  let contentHash: string | undefined;
-
-  try {
-    const dnsName = toHex(packetToBytes(name));
-
-    const [encodedContentHash] = (await client.readContract({
-      address:
-        nameRegistrationSmartContracts[SupportedNetwork.TESTNET]
-          .UNIVERSAL_RESOLVER,
-      functionName: "resolve",
-      abi: abiUniversalResolver,
-      args: [
-        dnsName,
-        encodeFunctionData({
-          abi: DomainResolverABI,
-          functionName: "contenthash",
-          args: [namehash(name)],
-        }),
-      ],
-    })) as [Hex];
-
-    if (encodedContentHash) {
-      contentHash = hexToString(
-        decodeFunctionResult({
-          abi: DomainResolverABI,
-          functionName: "contenthash",
-          data: encodedContentHash,
-        }) as Hex,
-      );
-
-      data.domain.contentHash = contentHash;
-    }
-  } catch (error) {
-    if (error instanceof ContractFunctionExecutionError) {
-      console.warn("Content hash not set or not supported by this resolver");
-    } else {
-      console.error("Error getting content hash", error);
-    }
-  }
+  const result = await getContentHashRecord(client, { name });
+  if (result) data.domain.contentHash = `${result.protocolType}://${result.decoded}`
 
   data.domain.resolver.address = resolverAdd;
 

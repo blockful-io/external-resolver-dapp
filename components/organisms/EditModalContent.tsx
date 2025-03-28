@@ -16,22 +16,11 @@ import {
 import { useRouter } from "next/router";
 import { Field } from "@/types/editFieldsTypes";
 import { BlockchainCTA } from "@/components/atoms";
-import {
-  PublicClient,
-  TransactionReceipt,
-  WalletClient,
-  isAddress,
-} from "viem";
-import {
-  TransactionErrorType,
-  getBlockchainTransactionError,
-} from "@/lib/wallet/txError";
-import { setDomainRecords } from "@/lib/utils/blockchain-txs";
-import { buildENSName } from "@namehash/ens-utils";
-import { getResolver } from "@ensdomains/ensjs/public";
-import { useAccount, usePublicClient } from "wagmi";
+import { Address, Hash, TransactionReceipt } from "viem";
+import { useAccount, useWalletClient } from "wagmi";
 import cc from "classcat";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { WalletClientWithAccount } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
+import { setRecords } from "ensjs-monorepo/packages/ensjs/dist/esm/wallet";
 
 const tabComponents: Record<Tab, React.FC> = {
   [Tab.Profile]: ProfileTab,
@@ -43,11 +32,13 @@ const tabComponents: Record<Tab, React.FC> = {
 interface EditModalContentProps {
   closeModal: () => void;
   onRecordsEdited?: () => void;
+  resolverAddress: Address;
 }
 
 export const EditModalContent = ({
   closeModal,
   onRecordsEdited,
+  resolverAddress,
 }: EditModalContentProps) => {
   const [selectedTab, setSelectedTab] = useState(Tab.Profile);
   const [isSaving, setIsSaving] = useState(false);
@@ -146,6 +137,7 @@ export const EditModalContent = ({
   if (isSaving) {
     return (
       <SaveModalEdits
+        resolverAddress={resolverAddress}
         changedFields={changedFields}
         nextStep={() => {
           onRecordsEdited && onRecordsEdited();
@@ -273,85 +265,50 @@ interface SaveModalEditsProps {
   back: () => void;
   nextStep: () => void;
   changedFields: Field[];
+  resolverAddress: Address;
 }
 
 const SaveModalEdits = ({
   back,
   nextStep,
   changedFields,
+  resolverAddress,
 }: SaveModalEditsProps) => {
   const router = useRouter();
   const { address, chain } = useAccount();
+  const walletClient = useWalletClient({
+    chainId: chain?.id,
+  });
   const { textRecordsToUpdate, domainAddressesToUpdate, othersFieldsToUpdate } =
     useFields();
 
-  const publicClient = usePublicClient() as PublicClient &
-    WalletClient &
-    ClientWithEns;
+  async function setTextRecords(): Promise<Hash> {
+    const texts = Object.entries(textRecordsToUpdate).map(([key, value]) => ({
+      key,
+      value,
+    }));
 
-  const setTextRecords = async (): Promise<
-    `0x${string}` | TransactionErrorType | null
-  > => {
-    if (!publicClient) {
-      throw new Error(
-        "Impossible to set the text records of a name without a public client",
-      );
-    }
+    const coins = Object.entries(domainAddressesToUpdate).map(
+      ([coin, value]) => ({
+        coin,
+        value,
+      }),
+    );
 
-    if (!address) {
-      throw new Error(
-        "Impossible to set the text records of a name without an authenticated user",
-      );
-    }
+    const contentHash = Object.entries(othersFieldsToUpdate).reduce(
+      (_, [, value]) => value,
+      "",
+    );
 
-    if (!chain) {
-      throw new Error(
-        "Impossible to set the text records of a name without a chain",
-      );
-    }
-
-    if (!router.query.name || !buildENSName(router.query.name as string)) {
-      throw new Error(
-        "Impossible to set the text records of a name without a name",
-      );
-    }
-
-    try {
-      const ensName = buildENSName(router.query.name as string);
-
-      const resolverAdd = await getResolver(publicClient, {
-        name: ensName.name,
-      });
-
-      if (!resolverAdd || !isAddress(resolverAdd)) {
-        throw new Error("Resolver not found");
-      }
-
-      const setDomainRecordsRes = await setDomainRecords({
-        ensName,
-        authenticatedAddress: address,
-        domainResolverAddress: resolverAdd,
-        textRecords: textRecordsToUpdate,
-        addresses: domainAddressesToUpdate,
-        others: othersFieldsToUpdate,
-        client: publicClient,
-        chain: chain,
-      });
-
-      if (
-        setDomainRecordsRes === null ||
-        typeof setDomainRecordsRes === "number"
-      ) {
-        return null;
-      } else {
-        throw new Error("Error setting domain records");
-      }
-    } catch (error) {
-      console.error(error);
-      const errorType = getBlockchainTransactionError(error);
-      return errorType;
-    }
-  };
+    return await setRecords(walletClient.data! as WalletClientWithAccount, {
+      name: router.query.name as string,
+      coins,
+      texts,
+      account: address!,
+      resolverAddress,
+      contentHash: contentHash || undefined, // avoid sending empty string
+    });
+  }
 
   return (
     <div className="w-[580px] overflow-hidden rounded-xl border bg-white">
@@ -413,9 +370,7 @@ const SaveModalEdits = ({
 
         <div className="w-full">
           <BlockchainCTA
-            onSuccess={(txReceipt: TransactionReceipt) => {
-              nextStep();
-            }}
+            onSuccess={(_: TransactionReceipt) => nextStep()}
             transactionRequest={setTextRecords}
           />
         </div>

@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { formatEther, PublicClient } from "viem";
 import { usePublicClient } from "wagmi";
-import { ClientWithEns } from "@ensdomains/ensjs/dist/types/contracts/consts";
+import { ClientWithEns } from "ensjs-monorepo/packages/ensjs/dist/types/contracts/consts";
 
 export const RegistrationSummary = () => {
   const {
